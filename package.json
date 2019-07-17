@@ -18,6 +18,14 @@
   },
   "homepage": "https://github.com/HelloHowAreYouHaveANiceDay/nflg#readme",
   "devDependencies": {
+    "@types/node": "^12.6.8",
     "typescript": "^3.5.3"
+  },
+  "dependencies": {
+    "@types/graphql": "^14.2.2",
+    "graphql": "^14.4.2",
+    "graphql-yoga": "^1.18.1",
+    "reflect-metadata": "^0.1.13",
+    "type-graphql": "^0.17.4"
   }
 }

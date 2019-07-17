@@ -1,4 +1,23 @@
-export default class Nflgame {
+import { GraphQLServer } from 'graphql-yoga'
+// ... or using `require()`
+// const { GraphQLServer } = require('graphql-yoga')
+
+const typeDefs = `
+  type Query {
+    hello(name: String): String!
+  }
+`
+
+const resolvers = {
+  Query: {
+    hello: (_, { name }) => `Hello ${name || 'World'}`,
+  },
+}
+
+const server = new GraphQLServer({ typeDefs, resolvers })
+server.start(() => console.log('Server is running on localhost:4000'))
+
+class Nflgame {
     teams = [
         ['ARI', 'Arizona', 'Cardinals', 'Arizona Cardinals'],
         ['ATL', 'Atlanta', 'Falcons', 'Atlanta Falcons'],
