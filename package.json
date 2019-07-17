@@ -1,0 +1,23 @@
+{
+  "name": "nflg",
+  "version": "0.0.1",
+  "description": "a study of burnsushi's nflgame",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HelloHowAreYouHaveANiceDay/nflg.git"
+  },
+  "author": "Libo Li",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HelloHowAreYouHaveANiceDay/nflg/issues"
+  },
+  "homepage": "https://github.com/HelloHowAreYouHaveANiceDay/nflg#readme",
+  "devDependencies": {
+    "typescript": "^3.5.3"
+  }
+}
