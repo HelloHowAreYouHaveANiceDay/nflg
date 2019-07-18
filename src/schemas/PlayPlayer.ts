@@ -12,7 +12,7 @@ export default class {
     team: string
 
     @Field()
-    def_ast: number
+    defense_ast: number
 
     @Field()
     def_ffum: number
