@@ -41,27 +41,3 @@ interface xml_game {
         vs: number;
     }
 }
-
-
-export async function get_ss(season: number, seasonType: string, week: number) {
-
-    try {
-        const url = `https://www.nfl.com/ajax/scorestrip?season=${season}&seasonType=${seasonType}&week=${week}`;
-
-        const response = await axios.get(url, {
-            responseType: 'text'
-        });
-
-        const data = convert.xml2js(response.data, { compact: true }) as xml_ss
-
-        const games = data.ss.gms.g.map((e: xml_game) => {
-            return e._attributes
-        });
-
-        return games;
-
-    } catch (err) {
-        console.log(err)
-        // throw err
-    }
-}
