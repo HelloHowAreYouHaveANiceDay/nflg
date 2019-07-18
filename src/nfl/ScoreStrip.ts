@@ -52,12 +52,7 @@ export async function get_ss(season: number, seasonType: string, week: number) {
             responseType: 'text'
         });
 
-        // console.log(response);
-        // console.log(response.data)
-
         const data = convert.xml2js(response.data, { compact: true }) as xml_ss
-
-        // console.log(data)
 
         const games = data.ss.gms.g.map((e: xml_game) => {
             return e._attributes

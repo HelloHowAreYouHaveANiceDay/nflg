@@ -5,4 +5,7 @@ import { Field, Int, ObjectType } from "type-graphql";
 export default class Game {
     @Field()
     eid: number;
+
+    //home
+    //away
 }
