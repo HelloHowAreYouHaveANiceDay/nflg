@@ -15,11 +15,5 @@ export default class {
         const game = await getGameById(id);
         game.eid = id;
         return game
-        // const data = {
-        //     eid: 123,
-        //     homeShort: 'ATL'
-        // }
-
-        // return data;
     }
 }
