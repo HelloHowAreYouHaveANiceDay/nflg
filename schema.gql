@@ -5,7 +5,8 @@
 
 type default_1 {
   eid: Float!
-  homeShort: String!
+  qtr: String!
+  redzone: Boolean!
 }
 
 type Query {

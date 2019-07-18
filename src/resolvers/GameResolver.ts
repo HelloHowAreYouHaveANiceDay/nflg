@@ -12,12 +12,14 @@ import { getGameById } from '../nfl/Game'
 export default class {
     @Query(returns => Game)
     async getGameById(@Arg('id') id: number) {
-        // return await getGameById(id);
-        const data = {
-            eid: 123,
-            homeShort: 'ATL'
-        }
+        const game = await getGameById(id);
+        game.eid = id;
+        return game
+        // const data = {
+        //     eid: 123,
+        //     homeShort: 'ATL'
+        // }
 
-        return data;
+        // return data;
     }
 }

@@ -47,7 +47,7 @@ interface nflGame {
     }
 }
 
-interface nflPlayerStat {
+export interface nflPlayerStat {
     name: string;
     att?: number;
     comp?: number;
@@ -83,7 +83,7 @@ export async function getGameById(eid: number) {
 
         // console.log(response);
 
-        return response.data;
+        return response.data[eid];
 
     } catch (err) {
         console.log(err)

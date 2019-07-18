@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from "type-graphql";
+import { nflPlayerStat } from '../nfl/Game'
 
 // ObjectType defines class as a GraphQL type
 @ObjectType()
@@ -7,6 +8,9 @@ export default class {
     eid: number;
 
     @Field()
-    homeShort: string;
+    qtr: string;
+
+    @Field()
+    redzone: boolean;
 
 }
