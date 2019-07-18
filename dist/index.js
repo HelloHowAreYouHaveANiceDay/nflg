@@ -11,12 +11,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const graphql_yoga_1 = require("graphql-yoga");
 require("reflect-metadata");
 const type_graphql_1 = require("type-graphql");
-const ProjectResolver_1 = require("./resolvers/ProjectResolver");
-const TaskResolver_1 = require("./resolvers/TaskResolver");
+const GameResolver_1 = require("./resolvers/GameResolver");
 function bootstrap() {
     return __awaiter(this, void 0, void 0, function* () {
         const schema = yield type_graphql_1.buildSchema({
-            resolvers: [ProjectResolver_1.default, TaskResolver_1.default],
+            resolvers: [GameResolver_1.GameResolver],
             emitSchemaFile: true,
         });
         const server = new graphql_yoga_1.GraphQLServer({
