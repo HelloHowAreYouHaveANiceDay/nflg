@@ -1,4 +1,4 @@
-import * as $ from 'cheerio';
+import * as cheerio from 'cheerio';
 import axios from 'axios';
 
 const _range = (start: number, end: number, length = end - start) =>
@@ -22,9 +22,9 @@ function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
     return weeks
 }
 
-function checkMissingWeeks(schedule, year, phase) {
+// function checkMissingWeeks(schedule, year, phase) {
 
-}
+// }
 
 function getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
     // Returns the NFL.com XML schedule URL. 
@@ -41,13 +41,61 @@ function getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: numbe
     return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`
 }
 
-async function getWeekSchedule(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
+interface scheduleGame {
+    gameid: string,
+    gsis: string,
+    wday: string,
+    time: string,
+    year: number,
+    month: number,
+    day: number,
+    seasonType: string,
+    week: number,
+    // meridiem: null | string,
+    quarter: string,
+    homeShort: string,
+    homeName: string,
+    homeScore: number,
+    visitShort: string,
+    visitName: string,
+    visitScore: number,
+}
+
+export async function getWeekSchedule(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
     const url = getScheduleUrl(year, stype, week);
 
     try {
-        const response = axios.get(url);
-
-    } catch {
-
+        const response = await axios.get(url);
+        const xml = response.data;
+        const $ = cheerio.load(xml)
+        const games: scheduleGame[] = []
+        // game schedule is returned from the score strip as xml
+        // each <g> represents a game.
+        $('g').each((i, e) => {
+            const gid = $(e).attr('eid')
+            games[i] = {
+                gameid: gid,
+                wday: $(e).attr('d'),
+                gsis: $(e).attr('gsis'),
+                year,
+                month: +gid.slice(4,6),
+                day: +gid.slice(6,8),
+                time: $(e).attr('t'),
+                quarter: $(e).attr('q'),
+                seasonType: stype,
+                meridiem: null,
+                week: week,
+                homeShort: $(e).attr('h'),
+                homeName: $(e).attr('hnn'),
+                homeScore: +$(e).attr('hs'),
+                visitShort: $(e).attr('v'),
+                visitName: $(e).attr('vnn'),
+                visitScore: +$(e).attr('vs'),
+            } 
+        })
+        // console.log(games)
+        return games
+    } catch (err){
+        throw err;
     }
 }

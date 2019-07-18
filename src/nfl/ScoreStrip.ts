@@ -1,7 +1,6 @@
 import axios from 'axios';
-import * as convert from 'xml-js'
 
-interface xml_ss extends convert.ElementCompact{
+interface xml_ss {
     _declaration: {
         _attributes: {
             encoding: string,
