@@ -9,9 +9,15 @@ import { getGameById } from '../nfl/Game'
 // }
 
 @Resolver()
-export class GameResolver {
+export default class {
     @Query(returns => Game)
-    async game(@Arg('id') id: number) {
-        return await getGameById(id);
+    async getGameById(@Arg('id') id: number) {
+        // return await getGameById(id);
+        const data = {
+            eid: 123,
+            homeShort: 'ATL'
+        }
+
+        return data;
     }
 }

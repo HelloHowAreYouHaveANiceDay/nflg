@@ -81,7 +81,7 @@ export async function getGameById(eid: number) {
 
         const response = await Axios.get(url)
 
-        console.log(response);
+        // console.log(response);
 
         return response.data;
 

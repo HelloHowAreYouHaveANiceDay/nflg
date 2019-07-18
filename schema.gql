@@ -3,10 +3,11 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type Game {
+type default_1 {
   eid: Float!
+  homeShort: String!
 }
 
 type Query {
-  game(id: Float!): Game!
+  getGameById(id: Float!): default_1!
 }
