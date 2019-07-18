@@ -9,14 +9,16 @@ const _range = (start: number, end: number, length = end - start) =>
  * @param year 
  * @param phase 
  */
-function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
+export function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
     const weeks: (string | number)[][] = [];
 
-    _range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
-    _range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
 
     if (phase == 'POST') {
         _range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
+    } else if (phase == 'PRE') {
+        _range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
+    } else {
+        _range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
     }
 
     return weeks
@@ -31,9 +33,9 @@ function getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: numbe
 
     const baseUrl = 'https://www.nfl.com/ajax/scorestrip?'
 
-    if(stype == 'POST') {
+    if (stype == 'POST') {
         week += 17
-        if(week == 21) {
+        if (week == 21) {
             week += 1
         }
     }
@@ -78,12 +80,11 @@ export async function getWeekSchedule(year: number, stype: 'PRE' | 'REG' | 'POST
                 wday: $(e).attr('d'),
                 gsis: $(e).attr('gsis'),
                 year,
-                month: +gid.slice(4,6),
-                day: +gid.slice(6,8),
+                month: +gid.slice(4, 6),
+                day: +gid.slice(6, 8),
                 time: $(e).attr('t'),
                 quarter: $(e).attr('q'),
                 seasonType: stype,
-                meridiem: null,
                 week: week,
                 homeShort: $(e).attr('h'),
                 homeName: $(e).attr('hnn'),
@@ -91,11 +92,11 @@ export async function getWeekSchedule(year: number, stype: 'PRE' | 'REG' | 'POST
                 visitShort: $(e).attr('v'),
                 visitName: $(e).attr('vnn'),
                 visitScore: +$(e).attr('vs'),
-            } 
+            }
         })
         // console.log(games)
         return games
-    } catch (err){
+    } catch (err) {
         throw err;
     }
 }
