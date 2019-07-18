@@ -1,4 +1,4 @@
-import { Field, Int, String, ObjectType } from 'type-graphql';
+import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export default class Schedule {
