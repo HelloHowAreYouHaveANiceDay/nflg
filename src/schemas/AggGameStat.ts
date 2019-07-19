@@ -2,7 +2,7 @@ import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()
 export default class AggGameStat {
-    @Field(type => ID)
+    @Field()
     playerId: string
 
     @Field({nullable: true})
