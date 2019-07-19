@@ -8,7 +8,7 @@ import { getGameById } from '../nfl/Game'
 //     async gameByid(@Arg("eid") eid: number): Promise<any> { }
 // }
 
-@Resolver()
+@Resolver(Game)
 export default class {
     @Query(returns => Game)
     async getGameById(@Arg('id') id: number) {

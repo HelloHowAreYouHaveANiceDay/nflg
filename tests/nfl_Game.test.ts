@@ -1,4 +1,4 @@
-import { getGameById, getGame } from '../src/nfl/Game';
+import { getGameById, getPlayerStats, getGameStats } from '../src/nfl/Game';
 
 test.skip('getGame', () => {
     const id = 2018093002
@@ -8,7 +8,10 @@ test.skip('getGame', () => {
 
 import gameResponse from './gameByIdResponse.json';
 
-test('extract game component from response', () => {
-    const game = getGame(gameResponse)
-    expect(game).toEqual(gameResponse['2012020500'])
+
+test.skip('getGameStats', async () => {
+    expect.assertions(1)
+    return getGameStats(2012020500).then((stats) => {
+        expect(stats).toBeInstanceOf(Array)
+    })
 })
