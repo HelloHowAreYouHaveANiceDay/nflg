@@ -21,7 +21,7 @@ function getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: numbe
     return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`
 }
 
-interface scheduleGame {
+export interface scheduleGame {
     gameid: string,
     gsis: string,
     wday: string,

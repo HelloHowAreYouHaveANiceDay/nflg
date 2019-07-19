@@ -1,9 +1,10 @@
 import * as cheerio from 'cheerio';
 import axios from 'axios';
 import fs from 'fs-extra'
+import { scheduleGame } from './updateSchedule';
 
 
-const Schedule = require('../data/nflSchedule.json');
+// const Schedule = require('../data/nflSchedule.json');
 
 const _range = (start: number, end: number, length = end - start) =>
     Array.from({ length }, (_, i) => start + i)
@@ -70,7 +71,7 @@ export function search_schedule(year: number, week?: number, home?: string, away
 
     // const infos = []
     // Schedule.games.forEach((game) => {
-      
+
     // })
 }
 
@@ -79,15 +80,53 @@ function create_schedule() {
 
 }
 
-export class nflSchedule{
-    updateable: false;
+export class nflSchedule {
+    lastUpdated: false
+    games: scheduleGame[]
 
-    private constructor(schedule){
+    private constructor(schedule: nflSchedule) {
+        this.games = schedule.games
+        console.log(this.games)
+        // update
+    }
 
+    public async saveScheduleToFile(filepath: string) {
+        try {
+            const data = {
+                games: this.games
+            }
+            const response = await fs.outputJSON(filepath, data)
+            return response;
+        } catch (error) {
+            console.log(error)
+        }
     }
 
 
-    async fromFile(filepath: string){
-        const fileFound = await fs.
+    static async fromFile(filepath: string) {
+        const exists = await fs.pathExists(filepath);
+        if (exists) {
+            try {
+                const schedule = await fs.readJSON(filepath)
+                const t_s = this.transformFromNFLG(schedule);
+                return new nflSchedule(t_s)
+            } catch (err) {
+                console.error(err)
+            }
+        } else {
+            console.log('path does not exist')
+        }
+    }
+    
+    static transformFromNFLG(nflg_schedule: any){
+        const games = nflg_schedule.games;
+        const gamesMap = {}
+        //@ts-ignore
+        games.forEach((gameSubArray) => {
+            //@ts-ignore
+            gamesMap[gameSubArray[0]] = gameSubArray[1];
+        })
+        nflg_schedule.games = gamesMap
+        return nflg_schedule;
     }
 }
