@@ -1,7 +1,11 @@
 import { ObjectType, Field, ID } from "type-graphql";
+import Player from "./Player";
 
 @ObjectType()
 export default class AggGameStat {
+    @Field(type => Player)
+    player: Player
+
     @Field()
     playerId: string
 

@@ -1,5 +1,3 @@
-const gsis_profile_url = 'https://www.nfl.com/players/profile?id='
-const roster = 'https://www.nfl.com/teams/roster?team='
 
 const Players = require('./nflPlayers.json');
 // const Players = JSON.parse('./nflPlayers.json')
@@ -26,12 +24,18 @@ const Players = require('./nflPlayers.json');
 
 export function getPlayerById(playerId: string) {
 
-    const player = Players[playerId]
-    if (player) {
-        player.playerId = playerId;
-        return player
+    const p= Players[playerId]
+    if (p) {
+        p.playerId = playerId;
+        return p
     } else {
         return null
     }
 
+}
+
+
+export function updatePlayers() {
+    const gsis_profile_url = 'https://www.nfl.com/players/profile?id='
+    const roster = 'https://www.nfl.com/teams/rostjer?team='
 }

@@ -1,8 +1,9 @@
-import { Resolver, Query, Arg } from "type-graphql";
+import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
 import AggGameStat from "../schemas/AggGameStat";
 import { getGameStats } from "../nfl/Game";
+import { getPlayerById } from "../nfl/nflPlayer";
 
-@Resolver(AggGameStat)
+@Resolver(of => AggGameStat)
 export default class {
     @Query(returns => [AggGameStat])
     async getGameStatsByGameId(@Arg('id') id: number) {
@@ -12,5 +13,10 @@ export default class {
         } catch (err) {
             console.log(err)
         }
+    }
+
+    @FieldResolver()
+    player(@Root() stat: AggGameStat){
+        return getPlayerById(stat.playerId)
     }
 }
