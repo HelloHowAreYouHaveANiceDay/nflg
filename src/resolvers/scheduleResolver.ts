@@ -1,11 +1,43 @@
 import "reflect-metadata";
-import { Arg, FieldResolver, Query, Resolver, Root } from "type-graphql";
-import Schedule from '../schemas/schedule';
+import path from 'path';
+import { Args, ArgsType, Field, Query, Resolver, InputType, Root } from "type-graphql";
+import Schedule from '../schemas/Schedule';
 
-// @Resolver(of => Schedule)
-// export default class {
-//     @Query(returns => Schedule, {nullable: true})
-//     scheduleBy(@Arg("season") season: number, @Arg("seasonType") seasonType: string, @Arg("week") week: number): Schedule: undefined {
-//         return 
-//     }
-// }
+import { nflSchedule } from '../nfl/schedule/nflSchedule';
+
+@ArgsType()
+export class searchScheduleArgs {
+
+    @Field({ nullable: true })
+    year?: number;
+
+    @Field({ nullable: true })
+    week?: number;
+
+    @Field({ nullable: true })
+    home?: string;
+
+    @Field({ nullable: true })
+    away?: string;
+
+    @Field({ nullable: true })
+    season_type?: string;
+}
+
+@Resolver(of => Schedule)
+export default class ScheduleResolver {
+
+    @Query(returns => [Schedule], { nullable: true })
+    async searchSchedule(@Args() input: searchScheduleArgs) {
+        const fpath = 'c:/working/nflg/data/s_master.json'
+        console.log(fpath)
+        try {
+            const schedule = await nflSchedule.fromFile(fpath);
+            return schedule.searchSchedule(input);
+        } catch (error) {
+            throw error;
+        }
+    }
+
+}
+

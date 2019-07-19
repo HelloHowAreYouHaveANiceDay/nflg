@@ -5,6 +5,7 @@ import { buildSchema } from "type-graphql";
 import GameResolver from './resolvers/GameResolver';
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
+import ScheduleResolver from './resolvers/scheduleResolver';
 
 // const PORT = process.env.PORT || 4000;
 
@@ -13,7 +14,8 @@ async function bootstrap() {
         resolvers: [
             GameResolver, 
             AggGameStatResolver,
-            PlayerResolver
+            PlayerResolver,
+            ScheduleResolver
         ],
         // emitSchemaFile: true,
     });

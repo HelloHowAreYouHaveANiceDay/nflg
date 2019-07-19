@@ -2,18 +2,30 @@ import { Field, Int, ObjectType } from 'type-graphql';
 
 @ObjectType()
 export default class Schedule {
-    @Field(type => [Game])
-    games: Game[];
-}
-
-@ObjectType()
-class Game {
-    @Field(type => Int)
-    eid: number;
-
-    @Field(type => Int)
-    gsis: number;
+    @Field()
+    gameid: string
 
     @Field()
-    d: string;
+    gamekey: string
+
+    @Field()
+    home: string
+
+    @Field()
+    away: string
+
+    @Field()
+    time: string
+
+    @Field()
+    day: number
+
+    @Field()
+    wday: string
+
+    @Field()
+    week: string
+
+    @Field()
+    year: number
 }

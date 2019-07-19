@@ -1,4 +1,4 @@
-import { nflSchedule, getWeeksByYearPhase} from '../src/nfl/schedule/nflSchedule';
+import { nflSchedule, getWeeksByYearPhase } from '../src/nfl/schedule/nflSchedule';
 import path from 'path'
 
 // test.skip('get scorestrip', async () => {
@@ -14,12 +14,22 @@ import path from 'path'
 //     expect(weeks.length).toEqual(17)
 // })
 
-test('nflSchedule from nflg schedule', async () => {
-    const fpath = path.join(__dirname, '../data/nflSchedule.json')
-    const schedule = await nflSchedule.fromFile(fpath);
-    // console.log(schedule)
+// test.skip('ONETIME nflSchedule from nflg schedule', async () => {
+//     const fpath = path.join(__dirname, '../data/nflSchedule.json')
+//     const schedule = await nflSchedule.fromFile(fpath);
+//     // console.log(schedule)
+//     if (schedule) {
+//         const resultPath = path.join(__dirname, '../data/s_master.json')
+//         schedule.saveScheduleToFile(resultPath);
+//     }
+// })
+
+test('initialize schedule', async () => {
+    const fpath = path.join(__dirname, '../data/s_master.json');
+    const schedule = await nflSchedule.fromFile(fpath)
     if(schedule){
-        const resultPath = path.join(__dirname, '../data/s_master.json')
-        schedule.saveScheduleToFile(resultPath);
+        const games = schedule.searchSchedule({ home: 'NE', away: 'NYG', year: 2011 })
+        expect(games.length).toEqual(3)
     }
+
 })

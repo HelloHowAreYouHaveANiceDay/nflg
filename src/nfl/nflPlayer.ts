@@ -1,5 +1,5 @@
 
-const Players = require('../data/nflPlayers.json');
+const Players = require('../../data/nflPlayers.json');
 // const Players = JSON.parse('./nflPlayers.json')
 
 // export function getIdFromUrl(url: string) {
