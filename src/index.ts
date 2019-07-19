@@ -4,6 +4,7 @@ import { GraphQLServer } from "graphql-yoga";
 import { buildSchema } from "type-graphql";
 import GameResolver from './resolvers/GameResolver';
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
+import PlayerResolver from "./resolvers/PlayerResolver";
 
 // const PORT = process.env.PORT || 4000;
 
@@ -11,7 +12,8 @@ async function bootstrap() {
     const schema = await buildSchema({
         resolvers: [
             GameResolver, 
-            AggGameStatResolver
+            AggGameStatResolver,
+            PlayerResolver
         ],
         // emitSchemaFile: true,
     });
