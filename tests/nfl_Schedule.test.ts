@@ -1,4 +1,4 @@
-import { getWeekSchedule, getWeeksByYearPhase} from '../src/nfl/nflSchedule';
+import { getWeekSchedule, getWeeksByYearPhase} from '../src/nfl/schedule/nflSchedule';
 
 test.skip('get scorestrip', async () => {
     expect.assertions(1)

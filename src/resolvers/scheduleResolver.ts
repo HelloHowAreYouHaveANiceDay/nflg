@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Arg, FieldResolver, Query, Resolver, Root } from "type-graphql";
-import Schedule from './schedule';
+import Schedule from '../schemas/schedule';
 
 // @Resolver(of => Schedule)
 // export default class {
