@@ -1,16 +1,19 @@
-import { GraphQLServer } from "graphql-yoga";
 import "reflect-metadata";
+import { GraphQLServer } from "graphql-yoga";
 // import { ApolloServer } from 'apollo-server';
 import { buildSchema } from "type-graphql";
 import GameResolver from './resolvers/GameResolver';
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 
-const PORT = process.env.PORT || 4000;
+// const PORT = process.env.PORT || 4000;
 
 async function bootstrap() {
     const schema = await buildSchema({
-        resolvers: [GameResolver, AggGameStatResolver],
-        emitSchemaFile: true,
+        resolvers: [
+            GameResolver, 
+            AggGameStatResolver
+        ],
+        // emitSchemaFile: true,
     });
 
 
@@ -23,7 +26,7 @@ async function bootstrap() {
 
     // Create the GraphQL server
     // const server = new ApolloServer({
-    //     schema,
+        // schema,
     //     playground: true,
     // });
 

@@ -1,28 +1,28 @@
-import { ObjectType, Field } from "type-graphql";
+import { ObjectType, Field, ID } from "type-graphql";
 
 @ObjectType()
-export default class {
-    @Field()
+export default class AggGameStat {
+    @Field(type => ID)
     playerId: string
 
-    @Field()
+    @Field({nullable: true})
     name: string
 
     @Field()
     category: string
 
-    @Field()
+    @Field({nullable: true})
     passing_att: number
 
-    @Field()
+    @Field({nullable: true})
     passing_cmp: number
 
-    @Field()
+    @Field({nullable: true})
     passing_yds: number
 
-    @Field()
+    @Field({nullable: true})
     passing_ints: number
 
-    @Field()
+    @Field({nullable: true})
     passing_twopta: number
 }

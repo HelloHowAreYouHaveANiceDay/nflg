@@ -1,9 +1,9 @@
-import { Field, ObjectType } from "type-graphql";
+import { Field, ObjectType, ID } from "type-graphql";
 
 // ObjectType defines class as a GraphQL type
 @ObjectType()
-export default class {
-    @Field()
+export default class Game{
+    @Field(type => ID)
     eid: number;
 
     @Field()
