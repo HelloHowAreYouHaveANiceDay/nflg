@@ -1,4 +1,5 @@
 import { Field, Int, ObjectType } from 'type-graphql';
+import Game from './Game';
 
 @ObjectType()
 export default class Schedule {
@@ -7,6 +8,9 @@ export default class Schedule {
 
     @Field()
     gamekey: string
+
+    @Field(type => Game)
+    game: Game
 
     @Field()
     home: string

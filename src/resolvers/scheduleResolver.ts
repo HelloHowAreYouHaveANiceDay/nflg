@@ -1,7 +1,8 @@
 import "reflect-metadata";
 import path from 'path';
-import { Args, ArgsType, Field, Query, Resolver, InputType, Root } from "type-graphql";
+import { Args, ArgsType, Field, Query, Resolver, FieldResolver, Root } from "type-graphql";
 import Schedule from '../schemas/Schedule';
+import {getGameById, getGameStats} from '../nfl/Game';
 
 import { nflSchedule } from '../nfl/schedule/nflSchedule';
 
@@ -39,5 +40,15 @@ export default class ScheduleResolver {
         }
     }
 
+    @FieldResolver()
+    async game(@Root() schedule: Schedule){
+        try {
+            console.log(schedule);
+            const game = await getGameById(schedule.gameid)
+            return game
+        } catch (error) {
+            return {}
+        }
+    }
 }
 

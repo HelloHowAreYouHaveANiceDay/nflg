@@ -115,7 +115,7 @@ export interface nflPlayerGameStat {
     i20?: number;
 }
 
-export async function getGameById(eid: number) {
+export async function getGameById(eid: string) {
 
     try {
         const url = `https://www.nfl.com/liveupdate/game-center/${eid}/${eid}_gtd.json`;
@@ -124,17 +124,19 @@ export async function getGameById(eid: number) {
         return response.data[eid];
 
     } catch (err) {
-        console.log(err)
+        // console.log(err)
+        console.log('getGameFailed')
     }
 }
 
-export async function getGameStats(gameid: number) {
+export async function getGameStats(gameid: string) {
     try {
         const gameResponse = await getGameById(gameid);
         const stats = getPlayerStats(gameResponse);
         return stats
     } catch (err) {
-        console.log(err)
+        // console.log(err)
+        console.log('stats failed')
     }
 }
 

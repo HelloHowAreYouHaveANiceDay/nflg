@@ -5,7 +5,7 @@ import AggGameStat from "./AggGameStat";
 @ObjectType()
 export default class Game{
     @Field(type => ID)
-    eid: number;
+    eid: string;
 
     @Field()
     qtr: string;

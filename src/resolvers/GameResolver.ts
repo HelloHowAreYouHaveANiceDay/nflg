@@ -11,7 +11,7 @@ import { getGameById, getGameStats } from '../nfl/Game'
 @Resolver(of => Game)
 export default class {
     @Query(returns => Game)
-    async getGameById(@Arg('id') id: number) {
+    async getGameById(@Arg('id') id: string) {
         const game = await getGameById(id);
         game.eid = id;
         return game

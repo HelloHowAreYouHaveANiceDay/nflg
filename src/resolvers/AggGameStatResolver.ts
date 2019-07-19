@@ -6,7 +6,7 @@ import { getPlayerById } from "../nfl/nflPlayer";
 @Resolver(of => AggGameStat)
 export default class {
     @Query(returns => [AggGameStat])
-    async getGameStatsByGameId(@Arg('id') id: number) {
+    async getGameStatsByGameId(@Arg('id') id: string) {
         try {
             const stats = await getGameStats(id);
             return stats
