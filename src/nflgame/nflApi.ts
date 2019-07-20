@@ -78,7 +78,7 @@ export default class NFLApi {
     }
 
     // gets the game detail data from NFL's gamecenter endpoint
-    async getGame(gameid: string) {
+    static async getGame(gameid: string) {
         try {
             const url = `https://www.nfl.com/liveupdate/game-center/${eid}/${eid}_gtd.json`;
             const response = await axios.get(url)

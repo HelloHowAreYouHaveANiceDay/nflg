@@ -34,86 +34,13 @@ interface gameTeam {
 }
 
 interface aggGameStats {
-    passing: {
-        [key: string]: nflPlayerGameStat
-    },
-    rushing: {
-        [key: string]: nflPlayerGameStat
-    },
-    receiving: {
-        [key: string]: nflPlayerGameStat
-    },
-    fumbles: {
-        [key: string]: nflPlayerGameStat
-    },
-    kicking: {
-        [key: string]: nflPlayerGameStat
-    },
-    punting: {
-        [key: string]: nflPlayerGameStat
-    },
-    kickret: {
-        [key: string]: nflPlayerGameStat
-    },
-    puntret: {
-        [key: string]: nflPlayerGameStat
-    },
-    defense: {
-        [key: string]: nflPlayerGameStat
-    },
-    team: {
-        [key: string]: {
-            totfd: number,
-            totyds: number,
-            pyds: number,
-            ryds: number,
-            pen: number,
-            penyds: number,
-            trnovr: number,
-            pt: number,
-            ptyds: number
-            ptavg: number
-            top: string
-        }
-    },
+  
 }
 
 interface nflGameResponse {
     [key: string]: nflGame | number
 }
 
-export interface nflPlayerGameStat {
-    name: string;
-    att?: number;
-    cmp?: number;
-    yds?: number;
-    tds?: number;
-    rec?: number;
-    ints?: number;
-    lngtd?: number;
-    tot?: number;
-    rcv?: number;
-    trcv?: number;
-    lost?: number;
-    lng?: number;
-    twopta?: number;
-    twoptm?: number;
-    fgm?: number;
-    fga?: number;
-    fgyds?: number;
-    forced?: number;
-    notforced?: number;
-    oob?: number;
-    rec_yds?: number;
-    rec_tds?: number;
-    totpfg: number;
-    xpmade?: number;
-    xpa?: number;
-    xpb?: number;
-    xptot?: number;
-    avg?: number;
-    i20?: number;
-}
 
 
 export async function getGameStats(gameid: string) {
