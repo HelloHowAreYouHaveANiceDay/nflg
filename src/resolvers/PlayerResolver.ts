@@ -1,6 +1,6 @@
 import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
 import Player from "../schemas/Player";
-import { getPlayerById } from "../nfl/nflPlayer";
+import { getPlayerById } from "../nflgame/nflPlayer";
 
 // @Resolver(of => Game)
 // export default class {

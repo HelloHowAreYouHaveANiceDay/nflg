@@ -2,28 +2,9 @@ import "reflect-metadata";
 import path from 'path';
 import { Args, ArgsType, Field, Query, Resolver, FieldResolver, Root } from "type-graphql";
 import Schedule from '../schemas/Schedule';
-import {getGameById, getGameStats} from '../nfl/Game';
+import {searchScheduleArgs} from '../schemas/Schedule';
 
-import { nflSchedule } from '../nfl/schedule/nflSchedule';
-
-@ArgsType()
-export class searchScheduleArgs {
-
-    @Field({ nullable: true })
-    year?: number;
-
-    @Field({ nullable: true })
-    week?: number;
-
-    @Field({ nullable: true })
-    home?: string;
-
-    @Field({ nullable: true })
-    away?: string;
-
-    @Field({ nullable: true })
-    season_type?: string;
-}
+import { nflSchedule } from '../nflgame/schedule/nflSchedule';
 
 @Resolver(of => Schedule)
 export default class ScheduleResolver {

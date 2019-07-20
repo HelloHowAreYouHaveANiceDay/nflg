@@ -1,7 +1,7 @@
 import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
 import AggGameStat from "../schemas/AggGameStat";
-import { getGameStats } from "../nfl/Game";
-import { getPlayerById } from "../nfl/nflPlayer";
+import { getGameStats } from "../nflgame/Game";
+import { getPlayerById } from "../nflgame/nflPlayer";
 
 @Resolver(of => AggGameStat)
 export default class {

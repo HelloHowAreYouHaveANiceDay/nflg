@@ -7,35 +7,47 @@ import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
 import ScheduleResolver from './resolvers/scheduleResolver';
 
-// const PORT = process.env.PORT || 4000;
+import nflGame from './nflgame/nflgame';
+import jsonCache from './nflgame/jsonCache';
 
-async function bootstrap() {
-    const schema = await buildSchema({
-        resolvers: [
-            GameResolver, 
-            AggGameStatResolver,
-            PlayerResolver,
-            ScheduleResolver
-        ],
-        // emitSchemaFile: true,
-    });
+// // GRAPHQL PORTION
+// async function bootstrap() {
+//     const schema = await buildSchema({
+//         resolvers: [
+//             GameResolver, 
+//             AggGameStatResolver,
+//             PlayerResolver,
+//             ScheduleResolver
+//         ],
+//         // emitSchemaFile: true,
+//     });
 
 
 
-    const server = new GraphQLServer({
-        schema,
-    });
+//     const server = new GraphQLServer({
+//         schema,
+//     });
 
-    server.start(() => console.log("Server is running on http://localhost:4000"));
+//     server.start(() => console.log("Server is running on http://localhost:4000"));
 
-}
+// }
 
-bootstrap();
+// bootstrap();
 
-if (module.hot) {
-    module.hot.accept();
-    module.hot.dispose(() => console.log('Module disposed. '));
-}
+
+// HRM
+// if (module.hot) {
+//     module.hot.accept();
+//     module.hot.dispose(() => console.log('Module disposed. '));
+// }
+
+
+const nflg = new nflGame('C:/working/nflg/data/');
+const jc = new jsonCache('C:/working/nflg/data/');
+
+// nflg.updateSchedule();
+
+// jc.searchSchedule();
 
 // class Nflgame {
 //     teams = [

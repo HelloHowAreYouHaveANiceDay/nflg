@@ -1,4 +1,4 @@
-import { nflSchedule, getWeeksByYearPhase } from '../src/nfl/schedule/nflSchedule';
+import { nflSchedule, getWeeksByYearPhase } from '../src/nflgame/schedule/nflSchedule';
 import path from 'path'
 
 // test.skip('get scorestrip', async () => {

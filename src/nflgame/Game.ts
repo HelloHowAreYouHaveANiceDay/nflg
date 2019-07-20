@@ -115,19 +115,6 @@ export interface nflPlayerGameStat {
     i20?: number;
 }
 
-export async function getGameById(eid: string) {
-
-    try {
-        const url = `https://www.nfl.com/liveupdate/game-center/${eid}/${eid}_gtd.json`;
-
-        const response = await Axios.get(url)
-        return response.data[eid];
-
-    } catch (err) {
-        // console.log(err)
-        console.log('getGameFailed')
-    }
-}
 
 export async function getGameStats(gameid: string) {
     try {

@@ -1,4 +1,4 @@
-import { getGameById, getPlayerStats, getGameStats } from '../src/nfl/Game';
+import { getGameById, getPlayerStats, getGameStats } from '../src/nflgame/Game';
 
 test.skip('getGame', () => {
     const id = '2018093002'

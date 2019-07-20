@@ -25,16 +25,13 @@ export interface scheduleGame {
 export default class NFLApi {
     static getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
         // Returns the NFL.com XML schedule URL. 
-
         const baseUrl = 'https://www.nfl.com/ajax/scorestrip?'
-
         if (stype == 'POST') {
             week += 17
             if (week == 21) {
                 week += 1
             }
         }
-
         return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`
     }
 
@@ -42,6 +39,7 @@ export default class NFLApi {
         year: number,
         stype: 'PRE' | 'REG' | 'POST',
         week: number) {
+
         const url = this.getScheduleUrl(year, stype, week);
 
         try {
@@ -76,6 +74,17 @@ export default class NFLApi {
             return games
         } catch (err) {
             throw err;
+        }
+    }
+
+    // gets the game detail data from NFL's gamecenter endpoint
+    async getGame(gameid: string) {
+        try {
+            const url = `https://www.nfl.com/liveupdate/game-center/${eid}/${eid}_gtd.json`;
+            const response = await axios.get(url)
+            return response.data[gameid];
+        } catch (err) {
+            throw err
         }
     }
 }
