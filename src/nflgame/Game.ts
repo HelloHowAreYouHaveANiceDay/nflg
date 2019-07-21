@@ -1,47 +1,3 @@
-import Axios from "axios";
-
-interface nflGame {
-    home: gameTeam
-    away: gameTeam
-    drives: {}
-    scrsummary: {}
-    weather: string | null
-    media: string | null
-    y1: string
-    qtr: string
-    note: string | null
-    down: number
-    togo: number
-    redzone: boolean
-    clock: string
-    posteam: string
-    stadium: string | null
-}
-
-interface gameTeam {
-    score: {
-        '1': number
-        '2': number
-        '3': number
-        '4': number
-        '5': number
-        'T': number
-    },
-    abbr: string
-    to: number
-    stats: aggGameStats
-    players: any | null
-}
-
-interface aggGameStats {
-  
-}
-
-interface nflGameResponse {
-    [key: string]: nflGame | number
-}
-
-
 
 export async function getGameStats(gameid: string) {
     try {
@@ -66,7 +22,7 @@ export function getPlayerStats(nflGame: nflGame | null) {
 
 }
 
-function flattenStats(stats: aggGameStats) {
+function flattenStats(stats: nflAggGameStats) {
     // verbose, but clearer. Should refactor
 
     const playerStats: any[] = []

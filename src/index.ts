@@ -42,12 +42,14 @@ import jsonCache from './nflgame/jsonCache';
 // }
 
 
-const nflg = new nflGame('C:/working/nflg/data/');
-const jc = new jsonCache('C:/working/nflg/data/');
+const nflg = new nflGame('C:/working/nflg/data');
+const jc = new jsonCache('C:/working/nflg/data');
+
 
 // nflg.updateSchedule();
-
 // jc.searchSchedule();
+nflg.getGame('2012020500');
+
 
 // class Nflgame {
 //     teams = [

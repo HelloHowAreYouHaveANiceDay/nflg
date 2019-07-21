@@ -1,8 +1,9 @@
 import fs from 'fs-extra';
+import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
 
 export default class jsonCache {
     folderpath: string;
-    
+
 
     constructor(filepath: string) {
         this.folderpath = filepath;
@@ -14,7 +15,7 @@ export default class jsonCache {
 
     // get list of games
     async getSchedule() {
-        const schedulePath = `${this.folderpath}s_master.json`
+        const schedulePath = `${this.folderpath}/s_master.json`
         const exists = await fs.pathExists(schedulePath);
         if (exists) {
             try {
@@ -35,7 +36,7 @@ export default class jsonCache {
 
     // get list of players
     async getPlayerList() {
-        const playerPath = `${this.folderpath}p_master.json`
+        const playerPath = `${this.folderpath}/p_master.json`
         const exists = await fs.pathExists(playerPath);
         if (exists) {
             const players = await fs.readJSON(playerPath);
@@ -51,14 +52,21 @@ export default class jsonCache {
     // retrieve a game from the cache
     async getGame(gameid: string) {
         try {
-            
+            const game = await fs.readJSON(`${this.folderpath}/${gameid}.json`)
+            return game
         } catch (error) {
-            
+            return false;
         }
     }
 
     // save a game to the cache
-    saveGame(data) {
-
+    async saveGame(gameid: string, data: nflApiGame) {
+        try {
+            await fs.outputJSON(`${this.folderpath}/${gameid}.json`, data);
+            return true;
+        } catch (err) {
+            console.log(err)
+            return false;
+        }
     }
 }
