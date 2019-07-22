@@ -38,9 +38,14 @@ function currentWeekNumber() {
 }
 
 export default class NFLApi {
-    static async yearPhaseWeek() {
+    static async yearPhaseWeek(week?: gameWeekArgs) {
 
-        const currentWeek = await NFLApi.currentYearPhaseWeek()
+        let currentWeek: gameWeekArgs ;
+        if(!week){
+            currentWeek = await NFLApi.currentYearPhaseWeek()
+        } else {
+            currentWeek = week;
+        }
 
         const nflYear = [
             ['PRE', 0],
