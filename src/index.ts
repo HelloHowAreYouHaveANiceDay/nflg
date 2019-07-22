@@ -10,6 +10,7 @@ import ScheduleResolver from './resolvers/scheduleResolver';
 import nflGame from './nflgame/nflgame';
 import jsonCache from './nflgame/jsonCache';
 import NFLApi from "./nflgame/nflApi";
+import _ from "lodash";
 
 // // GRAPHQL PORTION
 // async function bootstrap() {
@@ -51,12 +52,14 @@ const jc = new jsonCache('C:/working/nflg/data');
 // jc.searchSchedule();
 // nflg.getGame('2012020500');
 async function getweek() {
-    const week = await NFLApi.currentYearPhaseWeek();
+    const week = await NFLApi.yearPhaseWeek();
     return week
 }
 (getweek().then((result) => {
     console.log(result)
+    // console.log(_.last(result))
 }));
+
 
 
 // class Nflgame {

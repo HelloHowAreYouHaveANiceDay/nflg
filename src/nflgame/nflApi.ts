@@ -1,9 +1,10 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
+import _ from 'lodash';
 
-interface gameWeekArgs{
+interface gameWeekArgs {
     year: number;
-    phase: string;
+    stype: string;
     week: number;
 }
 
@@ -30,15 +31,83 @@ export interface scheduleGame {
 const nflCurrentSchedule = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml'
 const nflCurrentSchedulePostSeason = 'http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml'
 
-function yearPhaseWeek(year?: number, phase?: string, week?: number) {
 
-}
 
 function currentWeekNumber() {
 
 }
 
 export default class NFLApi {
+    static async yearPhaseWeek(year?: number, phase?: string, week?: number) {
+
+        const currentWeek = await NFLApi.currentYearPhaseWeek()
+
+        const nflYear = [
+            ['PRE', 0],
+            ['PRE', 1],
+            ['PRE', 2],
+            ['PRE', 3],
+            ['PRE', 4],
+            ['PRE', 5],
+            ['REG', 1],
+            ['REG', 2],
+            ['REG', 3],
+            ['REG', 4],
+            ['REG', 5],
+            ['REG', 6],
+            ['REG', 7],
+            ['REG', 8],
+            ['REG', 9],
+            ['REG', 10],
+            ['REG', 11],
+            ['REG', 12],
+            ['REG', 13],
+            ['REG', 14],
+            ['REG', 15],
+            ['REG', 16],
+            ['REG', 17],
+            ['REG', 18],
+            ['POST', 1],
+            ['POST', 2],
+            ['POST', 3],
+            ['POST', 4],
+            ['POST', 5],
+        ]
+
+        const scheduleWeeks: gameWeekArgs[] = []
+
+
+        // There should be a better way to write this
+        // 1. generate all the weeks up to the current year
+        const mapWeeks = _.map(_.range(2009, currentWeek.year + 1), 
+        // 2. generate based on the list of season games
+            (y) => nflYear.map((w) => {
+            return {
+                year: y,
+                week: +w[1],
+                stype: w[0].toString()
+
+            }
+        }))
+        
+        // 3. flatten the array
+        const allWeeks = _.flatten(mapWeeks)
+
+        // 4. run through the generated weeks up to the current week
+        for (let i = 0; i < allWeeks.length; i++) {
+            scheduleWeeks.push(allWeeks[i]);
+
+            // stop once it is a current week
+            if (allWeeks[i].year == currentWeek.year
+                && allWeeks[i].week == currentWeek.week
+                && allWeeks[i].stype == currentWeek.stype) {
+                i = allWeeks.length;
+            }
+        }
+
+        return _.reverse(scheduleWeeks);
+    }
+
     static getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
         // Returns the NFL.com XML schedule URL. 
         const baseUrl = 'https://www.nfl.com/ajax/scorestrip?'
@@ -100,20 +169,20 @@ export default class NFLApi {
         const week: gameWeekArgs = {
             week: +$('gms').attr('w'),
             year: +$('gms').attr('y'),
-            phase: 'REG'
+            stype: 'REG'
         }
         const p = $('gms').attr('t')
 
-        if (p == 'P'){
-            week.phase = 'PRE'
-        } else if(p == 'POST' || p == 'PRO'){
-            week.phase = 'POST'
+        if (p == 'P') {
+            week.stype = 'PRE'
+        } else if (p == 'POST' || p == 'PRO') {
+            week.stype = 'POST'
             week.week -= 17
         } else {
             // phase is REG
         }
 
-        return week;       
+        return week;
     }
 
     // gets the game detail data from NFL's gamecenter endpoint
