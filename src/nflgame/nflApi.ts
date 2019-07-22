@@ -1,25 +1,41 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 
+interface gameWeekArgs{
+    year: number;
+    phase: string;
+    week: number;
+}
 
 export interface scheduleGame {
-    gameid: string,
-    gsis: string,
-    wday: string,
-    time: string,
-    year: number,
-    month: number,
-    day: number,
-    gameType: string,
-    week: number,
-    // meridiem: null | string,
-    quarter: string,
-    homeShort: string,
-    homeName: string,
-    homeScore: number,
-    visitShort: string,
-    visitName: string,
-    visitScore: number,
+    gameid: string;
+    gsis: string;
+    wday: string;
+    time: string;
+    year: number;
+    month: number;
+    day: number;
+    gameType: string;
+    week: number;
+    // meridiem: null | string;
+    quarter: string;
+    homeShort: string;
+    homeName: string;
+    homeScore: number;
+    visitShort: string;
+    visitName: string;
+    visitScore: number;
+}
+
+const nflCurrentSchedule = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml'
+const nflCurrentSchedulePostSeason = 'http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml'
+
+function yearPhaseWeek(year?: number, phase?: string, week?: number) {
+
+}
+
+function currentWeekNumber() {
+
 }
 
 export default class NFLApi {
@@ -75,6 +91,29 @@ export default class NFLApi {
         } catch (err) {
             throw err;
         }
+    }
+
+
+    static async currentYearPhaseWeek() {
+        const currentSchedule = await axios.get(nflCurrentSchedule)
+        const $ = cheerio.load(currentSchedule.data);
+        const week: gameWeekArgs = {
+            week: +$('gms').attr('w'),
+            year: +$('gms').attr('y'),
+            phase: 'REG'
+        }
+        const p = $('gms').attr('t')
+
+        if (p == 'P'){
+            week.phase = 'PRE'
+        } else if(p == 'POST' || p == 'PRO'){
+            week.phase = 'POST'
+            week.week -= 17
+        } else {
+            // phase is REG
+        }
+
+        return week;       
     }
 
     // gets the game detail data from NFL's gamecenter endpoint
