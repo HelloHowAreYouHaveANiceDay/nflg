@@ -16,18 +16,6 @@ const _range = (start: number, end: number, length = end - start) =>
  * @param phase 
  */
 export function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
-    const weeks: (string | number)[][] = [];
-
-
-    if (phase == 'POST') {
-        _range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
-    } else if (phase == 'PRE') {
-        _range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
-    } else {
-        _range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
-    }
-
-    return weeks
 }
 
 function createSchedule() {
@@ -42,13 +30,6 @@ interface scheduleQuery {
     gameType?: string;
 }
 
-export interface scheduleSearchArgs {
-    year?: number;
-    week?: number;
-    home?: string;
-    away?: string;
-    season_type?: string;
-}
 
 export class nflSchedule {
     lastUpdated: false
@@ -62,11 +43,6 @@ export class nflSchedule {
         // update
     }
 
-    public searchSchedule(args: scheduleSearchArgs) {
-        const match = args
-        console.log(match)
-        return _.filter(this.games, match);
-    }
 
     public async saveScheduleToFile(filepath: string) {
         try {

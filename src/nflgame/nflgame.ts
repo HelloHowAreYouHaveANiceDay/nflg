@@ -2,7 +2,8 @@ import jsonCache from './jsonCache';
 import Game from '../schemas/Game';
 import Player from '../schemas/Player';
 import NFLApi from './nflApi';
-import { scheduleSearchArgs } from './schedule/nflSchedule';
+import { scheduleSearchArgs } from './Schedule';
+import _ from 'lodash';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
 
 export default class nflGame {
@@ -25,6 +26,8 @@ export default class nflGame {
     async updatePlayers() {
 
     }
+
+
 
     async getGame(gameid: string) {
         try {
@@ -62,22 +65,21 @@ export default class nflGame {
     }
 
     async getGamesBySchedule(params: scheduleSearchArgs) {
-
+        const match = params
+        console.log(match)
+        return _.filter(this.games, match);
     }
 }
 
-const _range = (start: number, end: number, length = end - start) =>
-    Array.from({ length }, (_, i) => start + i)
-
-export function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
+function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
     const weeks: (string | number)[][] = [];
 
     if (phase == 'POST') {
-        _range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
+        _.range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
     } else if (phase == 'PRE') {
-        _range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
+        _.range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
     } else {
-        _range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
+        _.range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
     }
 
     return weeks
