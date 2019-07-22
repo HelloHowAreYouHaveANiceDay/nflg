@@ -38,7 +38,7 @@ function currentWeekNumber() {
 }
 
 export default class NFLApi {
-    static async yearPhaseWeek(year?: number, phase?: string, week?: number) {
+    static async yearPhaseWeek() {
 
         const currentWeek = await NFLApi.currentYearPhaseWeek()
 
