@@ -71,20 +71,6 @@ export default class nflGame {
     async getGamesBySchedule(params: scheduleSearchArgs) {
         const match = params
         console.log(match)
-        return _.filter(this.games, match);
+        return _.filter(this.schedule, match);
     }
 }
-
-// function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
-//     const weeks: (string | number)[][] = [];
-
-//     if (phase == 'POST') {
-//         _.range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
-//     } else if (phase == 'PRE') {
-//         _.range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
-//     } else {
-//         _.range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
-//     }
-
-//     return weeks
-// }

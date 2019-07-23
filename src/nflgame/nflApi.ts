@@ -29,14 +29,10 @@ export interface scheduleGame {
     awayScore: number;
 }
 
-const nflCurrentSchedule = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml'
-const nflCurrentSchedulePostSeason = 'http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml'
-
-
-
-function currentWeekNumber() {
-
-}
+const nflCurrentSchedule = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml';
+const nflCurrentSchedulePostSeason = 'http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml';
+const nflRosterUrl = 'http://www.nfl.com/teams/roster?team=';
+const nflProfileUrl = 'http://www.nfl.com/players/profile?id=';
 
 export default class NFLApi {
     static async yearPhaseWeek(week?: gameWeekArgs) {
@@ -128,74 +124,147 @@ export default class NFLApi {
 
     static async getWeekSchedule(params: gameWeekArgs) {
 
-    const url = NFLApi.getScheduleUrl(params.year, params.stype, params.week);
+        const url = NFLApi.getScheduleUrl(params.year, params.stype, params.week);
 
-    try {
-        const response = await axios.get(url);
-        const xml = response.data;
-        const $ = cheerio.load(xml)
-        const games: Game[] = []
-        // game schedule is returned from the score strip as xml
-        // each <g> represents a game.
-        $('g').each((i, e) => {
-            const gid = $(e).attr('eid')
-            games[i] = {
-                gameid: gid,
-                wday: $(e).attr('d'),
-                gsis: $(e).attr('gsis'),
-                year: params.year,
-                month: +gid.slice(4, 6),
-                day: +gid.slice(6, 8),
-                time: $(e).attr('t'),
-                quarter: $(e).attr('q'),
-                gameType: params.stype,
-                week: params.week,
-                homeShort: $(e).attr('h'),
-                homeName: $(e).attr('hnn'),
-                homeScore: +$(e).attr('hs'),
-                awayShort: $(e).attr('v'),
-                awayName: $(e).attr('vnn'),
-                awayScore: +$(e).attr('vs'),
-            }
-        })
-        // console.log(games)
-        return games
-    } catch (err) {
-        throw err;
+        try {
+            const response = await axios.get(url);
+            const xml = response.data;
+            const $ = cheerio.load(xml)
+            const games: Game[] = []
+            // game schedule is returned from the score strip as xml
+            // each <g> represents a game.
+            $('g').each((i, e) => {
+                const gid = $(e).attr('eid')
+                games[i] = {
+                    gameid: gid,
+                    wday: $(e).attr('d'),
+                    gsis: $(e).attr('gsis'),
+                    year: params.year,
+                    month: +gid.slice(4, 6),
+                    day: +gid.slice(6, 8),
+                    time: $(e).attr('t'),
+                    quarter: $(e).attr('q'),
+                    gameType: params.stype,
+                    week: params.week,
+                    homeShort: $(e).attr('h'),
+                    homeName: $(e).attr('hnn'),
+                    homeScore: +$(e).attr('hs'),
+                    awayShort: $(e).attr('v'),
+                    awayName: $(e).attr('vnn'),
+                    awayScore: +$(e).attr('vs'),
+                }
+            })
+            // console.log(games)
+            return games
+        } catch (err) {
+            throw err;
+        }
     }
-}
 
 
     static async currentYearPhaseWeek() {
-    const currentSchedule = await axios.get(nflCurrentSchedule)
-    const $ = cheerio.load(currentSchedule.data);
-    const week: gameWeekArgs = {
-        week: +$('gms').attr('w'),
-        year: +$('gms').attr('y'),
-        stype: 'REG'
-    }
-    const p = $('gms').attr('t')
+        const currentSchedule = await axios.get(nflCurrentSchedule)
+        const $ = cheerio.load(currentSchedule.data);
+        const week: gameWeekArgs = {
+            week: +$('gms').attr('w'),
+            year: +$('gms').attr('y'),
+            stype: 'REG'
+        }
+        const p = $('gms').attr('t')
 
-    if (p == 'P') {
-        week.stype = 'PRE'
-    } else if (p == 'POST' || p == 'PRO') {
-        week.stype = 'POST'
-        week.week -= 17
-    } else {
-        // phase is REG
-    }
+        if (p == 'P') {
+            week.stype = 'PRE'
+        } else if (p == 'POST' || p == 'PRO') {
+            week.stype = 'POST'
+            week.week -= 17
+        } else {
+            // phase is REG
+        }
 
-    return week;
-}
+        return week;
+    }
 
     // gets the game detail data from NFL's gamecenter endpoint
     static async getGame(gameid: string) {
-    try {
-        const url = `https://www.nfl.com/liveupdate/game-center/${gameid}/${gameid}_gtd.json`;
-        const response = await axios.get(url)
-        return response.data[gameid];
-    } catch (err) {
-        throw err
+        try {
+            const url = `https://www.nfl.com/liveupdate/game-center/${gameid}/${gameid}_gtd.json`;
+            const response = await axios.get(url)
+            return response.data[gameid];
+        } catch (err) {
+            throw err
+        }
+    }
+
+    static async rosterParser(rawRoster: string) {
+        const $ = cheerio.load(rawRoster);
+        const evens = $('tr[class=even]');
+        const odds = $('tr[class=odd]');
+        const players: any[] = [];
+        //@ts-ignore
+        const addPlayer = (index, element) => {
+            const meta = $(element).children()
+            const player: any = {}
+            meta.each((i, e) => {
+                switch (i) {
+                    case 0:
+                        player.number = $(e).text();
+                        break;
+                    case 1:
+                        const name = $(e).children().first().text().trim()
+                        if (name.includes(',')) {
+                            player.lastName = name.split(',')[0]
+                            player.firstName = name.split(',')[1]
+                        } else {
+                            player.lastName = name
+                            player.firstName = ''
+                        }
+                        player.profileUrl = $(e).children().first().attr('href')
+                        player.playerid = profileIdFromUrl(player.profileUrl);
+                        break;
+                    case 2:
+                        player.position = $(e).text()
+                        break;
+                    case 3: 
+                        player.status = $(e).text()
+                        break;
+                    case 4:
+                        player.height = $(e).text();
+                        break;
+                    case 5:
+                        player.weight = $(e).text();
+                        break;
+                    case 6:
+                        player.birthdate = $(e).text();
+                        break;
+                    case 7:
+                        player.yexp = $(e).text();
+                        break;
+                    case 8:
+                        player.college = $(e).text();
+                    default:
+                        break;
+                }
+            })
+            players.push(player);
+        }
+
+        evens.each(addPlayer);
+        odds.each(addPlayer);
+        return players;
+        // return _.concat(evens, odds);
+    }
+
+    static async getRoster(team: string) {
+        try {
+            const url = nflRosterUrl + team
+            const response = await axios.get(url);
+            return response.data;
+        } catch (err) {
+            throw err
+        }
     }
 }
+
+function profileIdFromUrl(url: string) {
+    return url.match(/([0-9]+)/)![0];
 }

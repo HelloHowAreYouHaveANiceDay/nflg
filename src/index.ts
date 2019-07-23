@@ -11,6 +11,7 @@ import nflGame from './nflgame/nflgame';
 import jsonCache from './nflgame/jsonCache';
 import NFLApi from "./nflgame/nflApi";
 import _ from "lodash";
+import Axios from "axios";
 
 // // GRAPHQL PORTION
 // async function bootstrap() {
@@ -52,10 +53,13 @@ const jc = new jsonCache('C:/working/nflg/data');
 // jc.searchSchedule();
 // nflg.getGame('2012020500');
 async function getweek() {
-    const week = await nflg.regenerateSchedule();
-    return week
+    const response = await Axios.get('https://www.nfl.com/players/profile?id=00-0019596');
+    // const week = await NFLApi.getRoster('NYG');
+    // return week
+    return response.data
 }
 (getweek().then((result) => {
+    // const parsed = NFLApi.rosterParser(result);
     console.log(result)
     // console.log(_.last(result))
 }));
