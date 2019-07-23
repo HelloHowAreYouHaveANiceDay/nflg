@@ -5,14 +5,53 @@ import AggGameStat from "./AggGameStat";
 @ObjectType()
 export default class Game{
     @Field(type => ID)
-    eid: string;
+    gameid: string;
 
     @Field()
-    qtr: string;
+    wday: string;
 
     @Field()
-    redzone: boolean;
+    gsis: string;
+
+    @Field()
+    year: number;
+
+    @Field()
+    week: number
+
+    @Field()
+    month: number;
+
+    @Field()
+    day: number;
+
+    @Field()
+    time: string;
+
+    @Field()
+    quarter: string;
+
+    @Field()
+    gameType: string;
+    
+    @Field()
+    homeShort: string;
+
+    @Field()
+    homeName: string;
+
+    @Field()
+    homeScore: number;
+
+    @Field()
+    awayShort: string;
+
+    @Field()
+    awayName: string;
+
+    @Field()
+    awayScore: number;
 
     @Field(type => [AggGameStat])
-    aggregatedGameStats: AggGameStat[]
+    aggregatedGameStats?: AggGameStat[]
 }

@@ -9,18 +9,22 @@ import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
 export default class nflGame {
     cache: jsonCache;
     nflApi: NFLApi;
-    games: Game[];
+    schedule: Game[];
     players: Player[];
 
     constructor(filePath: string) {
         this.cache = new jsonCache(filePath);
     }
 
-    async updateSchedule() {
-        const currentSchedule = await this.cache.getSchedule();
-        console.log(currentSchedule);
-        // get local json file
-        // check local access
+    async regenerateSchedule() {
+        try {
+            const gamesTillNow = await NFLApi.yearPhaseWeek();
+            const games = await Promise.all(gamesTillNow.map(NFLApi.getWeekSchedule));
+            const save = await this.cache.saveSchedule(_.flatten(games))
+            return save;
+        } catch (err) {
+            throw err;
+        }
     }
 
     async updatePlayers() {
@@ -71,16 +75,16 @@ export default class nflGame {
     }
 }
 
-function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
-    const weeks: (string | number)[][] = [];
+// function getWeeksByYearPhase(year: number, phase: 'PRE' | 'POST' | 'REG') {
+//     const weeks: (string | number)[][] = [];
 
-    if (phase == 'POST') {
-        _.range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
-    } else if (phase == 'PRE') {
-        _.range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
-    } else {
-        _.range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
-    }
+//     if (phase == 'POST') {
+//         _.range(1, 5).forEach((week) => weeks.push([year, 'POST', week]))
+//     } else if (phase == 'PRE') {
+//         _.range(0, 5).forEach((week) => weeks.push([year, 'PRE', week]))
+//     } else {
+//         _.range(1, 18).forEach((week) => weeks.push([year, 'REG', week]))
+//     }
 
-    return weeks
-}
+//     return weeks
+// }

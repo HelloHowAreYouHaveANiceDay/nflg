@@ -1,6 +1,7 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 import _ from 'lodash';
+import Game from '../schemas/Game';
 
 interface gameWeekArgs {
     year: number;
@@ -23,9 +24,9 @@ export interface scheduleGame {
     homeShort: string;
     homeName: string;
     homeScore: number;
-    visitShort: string;
-    visitName: string;
-    visitScore: number;
+    awayShort: string;
+    awayName: string;
+    awayScore: number;
 }
 
 const nflCurrentSchedule = 'http://www.nfl.com/liveupdate/scorestrip/ss.xml'
@@ -40,8 +41,8 @@ function currentWeekNumber() {
 export default class NFLApi {
     static async yearPhaseWeek(week?: gameWeekArgs) {
 
-        let currentWeek: gameWeekArgs ;
-        if(!week){
+        let currentWeek: gameWeekArgs;
+        if (!week) {
             currentWeek = await NFLApi.currentYearPhaseWeek()
         } else {
             currentWeek = week;
@@ -84,17 +85,17 @@ export default class NFLApi {
 
         // There should be a better way to write this
         // 1. generate all the weeks up to the current year
-        const mapWeeks = _.map(_.range(2009, currentWeek.year + 1), 
-        // 2. generate based on the list of season games
+        const mapWeeks = _.map(_.range(2009, currentWeek.year + 1),
+            // 2. generate based on the list of season games
             (y) => nflYear.map((w) => {
-            return {
-                year: y,
-                week: +w[1],
-                stype: w[0].toString()
+                return {
+                    year: y,
+                    week: +w[1],
+                    stype: w[0].toString()
 
-            }
-        }))
-        
+                }
+            }))
+
         // 3. flatten the array
         const allWeeks = _.flatten(mapWeeks)
 
@@ -113,7 +114,7 @@ export default class NFLApi {
         return _.reverse(scheduleWeeks);
     }
 
-    static getScheduleUrl(year: number, stype: 'PRE' | 'REG' | 'POST', week: number) {
+    static getScheduleUrl(year: number, stype: string, week: number) {
         // Returns the NFL.com XML schedule URL. 
         const baseUrl = 'https://www.nfl.com/ajax/scorestrip?'
         if (stype == 'POST') {
@@ -125,79 +126,76 @@ export default class NFLApi {
         return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`
     }
 
-    static async getWeekSchedule(
-        year: number,
-        stype: 'PRE' | 'REG' | 'POST',
-        week: number) {
+    static async getWeekSchedule(params: gameWeekArgs) {
 
-        const url = this.getScheduleUrl(year, stype, week);
+    const url = NFLApi.getScheduleUrl(params.year, params.stype, params.week);
 
-        try {
-            const response = await axios.get(url);
-            const xml = response.data;
-            const $ = cheerio.load(xml)
-            const games: scheduleGame[] = []
-            // game schedule is returned from the score strip as xml
-            // each <g> represents a game.
-            $('g').each((i, e) => {
-                const gid = $(e).attr('eid')
-                games[i] = {
-                    gameid: gid,
-                    wday: $(e).attr('d'),
-                    gsis: $(e).attr('gsis'),
-                    year,
-                    month: +gid.slice(4, 6),
-                    day: +gid.slice(6, 8),
-                    time: $(e).attr('t'),
-                    quarter: $(e).attr('q'),
-                    gameType: stype,
-                    week: week,
-                    homeShort: $(e).attr('h'),
-                    homeName: $(e).attr('hnn'),
-                    homeScore: +$(e).attr('hs'),
-                    visitShort: $(e).attr('v'),
-                    visitName: $(e).attr('vnn'),
-                    visitScore: +$(e).attr('vs'),
-                }
-            })
-            // console.log(games)
-            return games
-        } catch (err) {
-            throw err;
-        }
+    try {
+        const response = await axios.get(url);
+        const xml = response.data;
+        const $ = cheerio.load(xml)
+        const games: Game[] = []
+        // game schedule is returned from the score strip as xml
+        // each <g> represents a game.
+        $('g').each((i, e) => {
+            const gid = $(e).attr('eid')
+            games[i] = {
+                gameid: gid,
+                wday: $(e).attr('d'),
+                gsis: $(e).attr('gsis'),
+                year: params.year,
+                month: +gid.slice(4, 6),
+                day: +gid.slice(6, 8),
+                time: $(e).attr('t'),
+                quarter: $(e).attr('q'),
+                gameType: params.stype,
+                week: params.week,
+                homeShort: $(e).attr('h'),
+                homeName: $(e).attr('hnn'),
+                homeScore: +$(e).attr('hs'),
+                awayShort: $(e).attr('v'),
+                awayName: $(e).attr('vnn'),
+                awayScore: +$(e).attr('vs'),
+            }
+        })
+        // console.log(games)
+        return games
+    } catch (err) {
+        throw err;
     }
+}
 
 
     static async currentYearPhaseWeek() {
-        const currentSchedule = await axios.get(nflCurrentSchedule)
-        const $ = cheerio.load(currentSchedule.data);
-        const week: gameWeekArgs = {
-            week: +$('gms').attr('w'),
-            year: +$('gms').attr('y'),
-            stype: 'REG'
-        }
-        const p = $('gms').attr('t')
-
-        if (p == 'P') {
-            week.stype = 'PRE'
-        } else if (p == 'POST' || p == 'PRO') {
-            week.stype = 'POST'
-            week.week -= 17
-        } else {
-            // phase is REG
-        }
-
-        return week;
+    const currentSchedule = await axios.get(nflCurrentSchedule)
+    const $ = cheerio.load(currentSchedule.data);
+    const week: gameWeekArgs = {
+        week: +$('gms').attr('w'),
+        year: +$('gms').attr('y'),
+        stype: 'REG'
     }
+    const p = $('gms').attr('t')
+
+    if (p == 'P') {
+        week.stype = 'PRE'
+    } else if (p == 'POST' || p == 'PRO') {
+        week.stype = 'POST'
+        week.week -= 17
+    } else {
+        // phase is REG
+    }
+
+    return week;
+}
 
     // gets the game detail data from NFL's gamecenter endpoint
     static async getGame(gameid: string) {
-        try {
-            const url = `https://www.nfl.com/liveupdate/game-center/${gameid}/${gameid}_gtd.json`;
-            const response = await axios.get(url)
-            return response.data[gameid];
-        } catch (err) {
-            throw err
-        }
+    try {
+        const url = `https://www.nfl.com/liveupdate/game-center/${gameid}/${gameid}_gtd.json`;
+        const response = await axios.get(url)
+        return response.data[gameid];
+    } catch (err) {
+        throw err
     }
+}
 }

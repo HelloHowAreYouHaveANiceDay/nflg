@@ -52,7 +52,7 @@ const jc = new jsonCache('C:/working/nflg/data');
 // jc.searchSchedule();
 // nflg.getGame('2012020500');
 async function getweek() {
-    const week = await NFLApi.yearPhaseWeek();
+    const week = await nflg.regenerateSchedule();
     return week
 }
 (getweek().then((result) => {

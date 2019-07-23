@@ -1,5 +1,6 @@
 import fs from 'fs-extra';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
+import Game from '../schemas/Game';
 
 export default class jsonCache {
     folderpath: string;
@@ -32,6 +33,17 @@ export default class jsonCache {
             return [];
         }
 
+    }
+
+    async saveSchedule(schedule: Game[]) {
+        const schedulePath = `${this.folderpath}/s_master.json`
+        try {
+            await fs.writeJSON(schedulePath, schedule)
+            return true;
+        } catch (err) {
+            // console.error(err)
+            throw err;
+        }
     }
 
     // get list of players
