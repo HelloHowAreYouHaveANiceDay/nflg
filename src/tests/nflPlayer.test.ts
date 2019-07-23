@@ -6,6 +6,7 @@ import Player from '../schemas/Player';
 
 test('parse player profile', async () => {
     const page = await fs.readFile(path.join(__dirname, './profilePage.html'), 'utf-8');
+    const cruz = await fs.readFile(path.join(__dirname, './cruz_profile.html'), 'utf-8');
     console.log(page.length);
     const willHernandez: Player = {
         firstName: 'Will',
@@ -25,5 +26,23 @@ test('parse player profile', async () => {
         position: 'OG',
         number: 71,
     }
-    expect(parseProfile(page)).toEqual(willHernandez)
+    const victorCruz: Player = {
+        firstName: 'Victor',
+        lastName: 'Cruz',
+        fullName: 'Victor Cruz',
+        gsisId: '00-0027265',
+        playerId: 'CRU827288',
+        profileId: '2507855',
+        profileUrl: 'http://www.nfl.com/player/victorcruz/2507855/profile',
+        height: 72,
+        weight: 202,
+        age: 32,
+        birthDate: '11/11/1986',
+        birthCity: 'Paterson , NJ',
+        college: 'Massachusetts',
+        team: '',
+        position: '',
+        number: 0,
+    }
+    expect(parseProfile(cruz)).toEqual(victorCruz)
 })

@@ -7,7 +7,7 @@ export function parseProfile(html: string) {
     // const playerInfo = $('div.player-info').children()
     const nameStrip = $('#playerName').attr('content');
     const playerId = $('#playerId').attr('content');
-    const team = $('#playerTeam').attr('content');
+    let team = $('#playerTeam').attr('content');
     const url = $('link[rel=canonical]').attr('href')
     // const physicalRow = playerInfo.filter((i, e) => i == 2);
     // regex seems to be the easiest way to get at these specific pieces of data.
@@ -19,19 +19,27 @@ export function parseProfile(html: string) {
     const collegeStrip = html.match(/(?:<strong>)(?:College)(?:<\/strong>)\W\s+([\w-\s]+)/)
 
     // console.log(numberStrip);
+    let number = 0
+    let position = ''
 
     // TODO: a lot of redundancy here.
     const firstName = nameStrip.split(' ')[0].trim()
     const lastName = nameStrip.split(' ')[1].trim()
     const fullName = `${firstName} ${lastName}`
-    const number = +numberStrip.match(/(\d+)/)![0]
-    const position = numberStrip.match(/([A-Z]+)/)![0]
     const birthDate = birthStrip![1]
     const birthCity = birthStrip![2]
     const weight = +weightStrip
     const college = collegeStrip![1]
     const age = +ageStrip
     const height = feetInchesToInches(heightStrip)
+
+    if (!numberStrip) {
+        team = ''
+    } else {
+        number = +numberStrip.match(/(\d+)/)![0]
+        position = numberStrip.match(/([A-Z]+)/)![0]
+    }
+
 
 
 
