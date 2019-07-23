@@ -2,6 +2,7 @@ import axios from 'axios'
 import cheerio from 'cheerio'
 import _ from 'lodash';
 import Game from '../schemas/Game';
+import { Schedule } from '../schemas/Schedule';
 
 interface gameWeekArgs {
     year: number;
@@ -130,7 +131,7 @@ export default class NFLApi {
             const response = await axios.get(url);
             const xml = response.data;
             const $ = cheerio.load(xml)
-            const games: Game[] = []
+            const games: Schedule[] = []
             // game schedule is returned from the score strip as xml
             // each <g> represents a game.
             $('g').each((i, e) => {
@@ -138,7 +139,7 @@ export default class NFLApi {
                 games[i] = {
                     gameid: gid,
                     wday: $(e).attr('d'),
-                    gsis: $(e).attr('gsis'),
+                    gsis: +$(e).attr('gsis'),
                     year: params.year,
                     month: +gid.slice(4, 6),
                     day: +gid.slice(6, 8),

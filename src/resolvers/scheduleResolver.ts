@@ -23,7 +23,7 @@ export default class ScheduleResolver {
     @FieldResolver()
     async game(@Root() schedule: Schedule){
         try {
-            console.log(schedule);
+            // console.log(schedule);
             const game = await nflGame.getInstance().getGame(schedule.gameid)
             return game
         } catch (error) {

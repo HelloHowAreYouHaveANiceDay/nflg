@@ -12,7 +12,7 @@ import nflGame from './nflgame/nflgame';
 
 nflGame.getInstance(path.join(__dirname, '../data/'));
 
-// GRAPHQL PORTION
+// // GRAPHQL PORTION
 async function bootstrap() {
 
     const schema = await buildSchema({

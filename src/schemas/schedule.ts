@@ -25,20 +25,50 @@ export class Schedule {
     @Field()
     gameid: string
 
+    // @Field()
+    // gamekey: string
+
     @Field()
-    gamekey: string
+    gsis: number
 
     @Field(type => Game)
-    game: Game
+    game?: Game
+
+    // @Field()
+    // home: string
+
+    // @Field()
+    // away: string
 
     @Field()
-    home: string
+    month: number;
 
     @Field()
-    away: string
+    quarter: string;
+
+    @Field()
+    week: number;
 
     @Field()
     gameType: string
+
+    @Field()
+    homeShort: string
+
+    @Field()
+    homeName: string;
+
+    @Field()
+    homeScore: number;
+
+    @Field()
+    awayShort: string;
+
+    @Field()
+    awayName: string;
+
+    @Field()
+    awayScore: number;
 
     @Field()
     time: string
@@ -49,8 +79,8 @@ export class Schedule {
     @Field()
     wday: string
 
-    @Field()
-    week: string
+    // @Field()
+    // week: string
 
     @Field()
     year: number

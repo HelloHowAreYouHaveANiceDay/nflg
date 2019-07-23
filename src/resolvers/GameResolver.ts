@@ -21,6 +21,7 @@ export default class {
     @FieldResolver()
     async aggregatedGameStats(@Root() game: Game) {
         try {
+            console.log(game.gameid);
             const stats = await nflGame.getInstance().getAggGameStats(game.gameid);
             return stats
         } catch (err) {

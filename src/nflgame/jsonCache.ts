@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
-import Game from '../schemas/Game';
 import Player from '../schemas/Player';
+import Schedule from './Schedule';
 
 export default class jsonCache {
     folderpath: string;
@@ -21,7 +21,7 @@ export default class jsonCache {
         const exists = fs.pathExistsSync(schedulePath);
         if (exists) {
             try {
-                const schedule: Game[] = fs.readJSONSync(schedulePath)
+                const schedule: Schedule[] = fs.readJSONSync(schedulePath)
                 return schedule;
             } catch (err) {
                 // json read unsuccessful
@@ -36,7 +36,7 @@ export default class jsonCache {
 
     }
 
-    async saveSchedule(schedule: Game[]) {
+    async saveSchedule(schedule: Schedule[]) {
         const schedulePath = `${this.folderpath}/s_master.json`
         try {
             await fs.writeJSON(schedulePath, schedule)

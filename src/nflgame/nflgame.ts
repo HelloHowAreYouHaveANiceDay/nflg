@@ -1,13 +1,11 @@
 import jsonCache from './jsonCache';
-import Game from '../schemas/Game';
 import Player from '../schemas/Player';
 import NFLApi from './nflApi';
-import { searchScheduleArgs } from '../schemas/Schedule';
+import { searchScheduleArgs, Schedule } from '../schemas/Schedule';
 import _ from 'lodash';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
 import { parseProfile } from './nflPlayer';
 import { getPlayerStats } from './Game';
-import { getWeekSchedule } from './schedule/updateSchedule';
 
 function transposeArgs(args: searchScheduleArgs) {
     const params: any = {
@@ -17,7 +15,7 @@ function transposeArgs(args: searchScheduleArgs) {
         week: args.week,
         year: args.year
     }
-    return _.omitBy(params, _.isEmpty);
+    return _.omitBy(params, _.isUndefined);
 }
 
 export default class nflGame {
@@ -25,12 +23,13 @@ export default class nflGame {
     private static filePath: string;
     cache: jsonCache;
     nflApi: NFLApi;
-    schedule: Game[];
+    schedule: Schedule[];
     players: Player[];
 
     private constructor(filePath: string) {
         nflGame.filePath = filePath;
         this.cache = new jsonCache(filePath);
+        //@ts-ignore
         this.schedule = this.cache.getSchedule();
         this.players = this.cache.getPlayerList();
     }
@@ -53,6 +52,7 @@ export default class nflGame {
         try {
             const gamesTillNow = await NFLApi.yearPhaseWeek();
             const games = await Promise.all(gamesTillNow.map(NFLApi.getWeekSchedule));
+            //@ts-ignore
             const save = await this.cache.saveSchedule(_.flatten(games))
             return save;
         } catch (err) {
@@ -61,7 +61,7 @@ export default class nflGame {
     }
 
     async searchSchedule(args: searchScheduleArgs) {
-        console.log(transposeArgs(args));
+        // console.log(transposeArgs(args));
         try {
             if (this.schedule.length < 1) {
                 await this.regenerateSchedule();
@@ -80,7 +80,10 @@ export default class nflGame {
 
 
 
-    async getGame(gameid: string) {
+    async getGame(gameid?: string) {
+        if(!gameid) {
+            throw new Error('no gameid passed')
+        }
         try {
             const cacheGame = await this.cache.getGame(gameid);
             if (!cacheGame) {
@@ -91,10 +94,13 @@ export default class nflGame {
                 // and save it to cache
                 await this.cache.saveGame(gameid, gameResponse);
                 // before returning it to the user
+                // @ts-ignore
+                gameResponse.gameid = gameid;
                 return gameResponse;
             } else {
                 // if the game is found in cache that is returned instead.
                 console.log('game found in cache')
+                cacheGame.gameid = gameid;
                 return cacheGame;
             }
         } catch (err) {

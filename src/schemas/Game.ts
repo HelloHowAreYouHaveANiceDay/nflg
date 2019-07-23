@@ -33,24 +33,6 @@ export default class Game{
 
     @Field()
     gameType: string;
-    
-    @Field()
-    homeShort: string;
-
-    @Field()
-    homeName: string;
-
-    @Field()
-    homeScore: number;
-
-    @Field()
-    awayShort: string;
-
-    @Field()
-    awayName: string;
-
-    @Field()
-    awayScore: number;
 
     @Field(type => [AggGameStat])
     aggregatedGameStats?: AggGameStat[]
