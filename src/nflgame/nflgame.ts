@@ -5,6 +5,7 @@ import NFLApi from './nflApi';
 import { scheduleSearchArgs } from './Schedule';
 import _ from 'lodash';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
+import { parseProfile } from './nflPlayer';
 
 export default class nflGame {
     cache: jsonCache;
@@ -15,6 +16,12 @@ export default class nflGame {
     constructor(filePath: string) {
         this.cache = new jsonCache(filePath);
     }
+
+    async mountCache(){
+        this.schedule = await this.cache.getSchedule();
+        this.players = await this.cache.getPlayerList();
+    }
+
 
     async regenerateSchedule() {
         try {
@@ -28,10 +35,10 @@ export default class nflGame {
     }
 
     async updatePlayers() {
-
+        // not needed as players can be fetched on the fly
     }
 
-
+    
 
     async getGame(gameid: string) {
         try {
@@ -55,7 +62,7 @@ export default class nflGame {
         }
     }
 
-    async fetchGame(gameid: string) {
+    private async fetchGame(gameid: string) {
         try {
             const game: nflApiGame = await NFLApi.getGame(gameid)
             return game
@@ -64,8 +71,21 @@ export default class nflGame {
         }
     }
 
-    async getPlayer(playerid: string) {
+    private async fetchPlayer(gsisId: string){
+        const html = await NFLApi.getPlayerProfile(gsisId)
+        const player = parseProfile(html);
+        await this.players.push(player);
+        await this.cache.savePlayerList(this.players);
+        return player
+    }
 
+    async getPlayer(gsisId: string) {
+        const match = _.filter(this.players, {gsisId: gsisId});     
+        if(match.length == 0){
+            return await this.fetchPlayer(gsisId)
+        } else {
+            return match[0];
+        }
     }
 
     async getGamesBySchedule(params: scheduleSearchArgs) {

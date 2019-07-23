@@ -263,6 +263,11 @@ export default class NFLApi {
             throw err
         }
     }
+
+    static async getPlayerProfile(gsisId: string) {
+        const response = await axios.get(`https://www.nfl.com/players/profile?id=${gsisId}`);
+        return response.data;
+    }
 }
 
 function profileIdFromUrl(url: string) {

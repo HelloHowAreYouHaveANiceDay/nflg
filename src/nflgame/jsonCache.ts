@@ -21,7 +21,7 @@ export default class jsonCache {
         const exists = await fs.pathExists(schedulePath);
         if (exists) {
             try {
-                const schedule = await fs.readJSON(schedulePath)
+                const schedule: Game[] = await fs.readJSON(schedulePath)
                 return schedule;
             } catch (err) {
                 // json read unsuccessful
@@ -54,6 +54,8 @@ export default class jsonCache {
         if (exists) {
             const players = await fs.readJSON(playerPath);
             return players
+        } else {
+            return []
         }
     }
 

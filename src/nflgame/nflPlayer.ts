@@ -1,6 +1,7 @@
 import cheerio from 'cheerio';
+import Player from '../schemas/Player';
 
-export function parseProfile(html: string) {
+export function parseProfile(html: string): Player {
     const $ = cheerio.load(html);
     // number and postiion only available to active players
     const numberStrip = $('span.player-number').text()
@@ -39,9 +40,6 @@ export function parseProfile(html: string) {
         number = +numberStrip.match(/(\d+)/)![0]
         position = numberStrip.match(/([A-Z]+)/)![0]
     }
-
-
-
 
     return {
         fullName,
