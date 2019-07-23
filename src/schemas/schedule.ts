@@ -21,7 +21,7 @@ export class searchScheduleArgs {
 }
 
 @ObjectType()
-export default class Schedule {
+export class Schedule {
     @Field()
     gameid: string
 
@@ -36,6 +36,9 @@ export default class Schedule {
 
     @Field()
     away: string
+
+    @Field()
+    gameType: string
 
     @Field()
     time: string

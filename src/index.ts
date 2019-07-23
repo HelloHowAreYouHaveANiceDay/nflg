@@ -6,36 +6,41 @@ import GameResolver from './resolvers/GameResolver';
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
 import ScheduleResolver from './resolvers/scheduleResolver';
+import path from 'path';
 
 import nflGame from './nflgame/nflgame';
-import jsonCache from './nflgame/jsonCache';
-import NFLApi from "./nflgame/nflApi";
-import _ from "lodash";
-import Axios from "axios";
 
-// // GRAPHQL PORTION
-// async function bootstrap() {
-//     const schema = await buildSchema({
-//         resolvers: [
-//             GameResolver, 
-//             AggGameStatResolver,
-//             PlayerResolver,
-//             ScheduleResolver
-//         ],
-//         // emitSchemaFile: true,
-//     });
+nflGame.getInstance(path.join(__dirname, '../data/'));
+
+// GRAPHQL PORTION
+async function bootstrap() {
+
+    const schema = await buildSchema({
+        resolvers: [
+            GameResolver, 
+            AggGameStatResolver,
+            PlayerResolver,
+            ScheduleResolver
+        ],
+        validate: false,
+        emitSchemaFile: true,
+    });
 
 
 
-//     const server = new GraphQLServer({
-//         schema,
-//     });
+    const server = new GraphQLServer({
+        schema,
+    });
 
-//     server.start(() => console.log("Server is running on http://localhost:4000"));
+    server.start(() => console.log("Server is running on http://localhost:4000"));
 
-// }
+}
 
-// bootstrap();
+bootstrap();
+
+// nflGame.getInstance().searchSchedule({home: 'NYG', year: 2011}).then((result) => {
+//     console.log(result);
+// })
 
 
 // HRM
@@ -43,28 +48,6 @@ import Axios from "axios";
 //     module.hot.accept();
 //     module.hot.dispose(() => console.log('Module disposed. '));
 // }
-
-
-const nflg = new nflGame('C:/working/nflg/data');
-const jc = new jsonCache('C:/working/nflg/data');
-
-
-// nflg.updateSchedule();
-// jc.searchSchedule();
-// nflg.getGame('2012020500');
-async function getweek() {
-    // const response = await Axios.get('https://www.nfl.com/players/profile?id=00-0019596');
-    // const week = await NFLApi.getRoster('NYG');
-    // return week
-    await nflg.mountCache();
-    return await nflg.getPlayer('00-0034346')
-}
-(getweek().then((result) => {
-    // const parsed = NFLApi.rosterParser(result);
-    console.log(result)
-    // console.log(_.last(result))
-}));
-
 
 
 // class Nflgame {

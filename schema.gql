@@ -3,12 +3,76 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type default_1 {
-  eid: Float!
-  qtr: String!
-  redzone: Boolean!
+type AggGameStat {
+  player: Player!
+  playerId: String!
+  name: String
+  category: String!
+  passing_att: Float
+  passing_cmp: Float
+  passing_yds: Float
+  passing_ints: Float
+  passing_twopta: Float
+}
+
+type Game {
+  gameid: ID!
+  wday: String!
+  gsis: String!
+  year: Float!
+  week: Float!
+  month: Float!
+  day: Float!
+  time: String!
+  quarter: String!
+  gameType: String!
+  homeShort: String!
+  homeName: String!
+  homeScore: Float!
+  awayShort: String!
+  awayName: String!
+  awayScore: Float!
+  aggregatedGameStats: [AggGameStat!]!
+}
+
+type Player {
+  playerId: ID!
+  firstName: String!
+  lastName: String!
+  fullName: String!
+  age: Float!
+  college: String!
+  height: Float!
+  number: Float!
+  position: String!
+  gsisId: String!
+  profileId: String!
+  profileUrl: String!
+  birthDate: String!
+  birthCity: String!
+  status: String!
+  team: String!
+  weight: Float!
+  yearsPro: Float!
 }
 
 type Query {
-  getGameById(id: Float!): default_1!
+  getGameById(id: String!): Game!
+  getGameStatsByGameId(id: String!): [AggGameStat!]!
+  Player(id: String!): Player!
+  searchSchedule(year: Float, week: Float, home: String, away: String, season_type: String): [Schedule!]
+}
+
+type Schedule {
+  gameid: String!
+  gamekey: String!
+  game: Game!
+  home: String!
+  away: String!
+  gameType: String!
+  time: String!
+  day: Float!
+  wday: String!
+  week: String!
+  year: Float!
 }

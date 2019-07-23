@@ -1,6 +1,7 @@
 import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
 import Game from "../schemas/Game";
-import { getGameById, getGameStats } from '../nflgame/Game'
+import nflGame from "../nflgame/nflgame";
+// import { getGameById, getGameStats } from '../nflgame/Game'
 
 // @Resolver(of => Game)
 // export default class {
@@ -12,7 +13,7 @@ import { getGameById, getGameStats } from '../nflgame/Game'
 export default class {
     @Query(returns => Game)
     async getGameById(@Arg('id') id: string) {
-        const game = await getGameById(id);
+        const game = await nflGame.getInstance().getGame(id);
         game.eid = id;
         return game
     }
@@ -20,7 +21,7 @@ export default class {
     @FieldResolver()
     async aggregatedGameStats(@Root() game: Game) {
         try {
-            const stats = await getGameStats(game.eid);
+            const stats = await nflGame.getInstance().getAggGameStats(game.gameid);
             return stats
         } catch (err) {
             console.log(err)

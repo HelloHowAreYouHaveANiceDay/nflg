@@ -1,6 +1,7 @@
 import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
 import Player from "../schemas/Player";
-import { getPlayerById } from "../nflgame/nflPlayer";
+import nflGame from "../nflgame/nflgame";
+// import { getPlayerById } from "../nflgame/nflPlayer";
 
 // @Resolver(of => Game)
 // export default class {
@@ -12,7 +13,7 @@ import { getPlayerById } from "../nflgame/nflPlayer";
 export default class {
     @Query(returns => Player)
     async Player(@Arg('id') id: string) {
-        const p = await getPlayerById(id);
+        const p = await nflGame.getInstance().getPlayer(id);
         return p
     }
 

@@ -16,12 +16,12 @@ export default class jsonCache {
     }
 
     // get list of games
-    async getSchedule() {
+    getSchedule() {
         const schedulePath = `${this.folderpath}/s_master.json`
-        const exists = await fs.pathExists(schedulePath);
+        const exists = fs.pathExistsSync(schedulePath);
         if (exists) {
             try {
-                const schedule: Game[] = await fs.readJSON(schedulePath)
+                const schedule: Game[] = fs.readJSONSync(schedulePath)
                 return schedule;
             } catch (err) {
                 // json read unsuccessful
@@ -48,11 +48,11 @@ export default class jsonCache {
     }
 
     // get list of players
-    async getPlayerList() {
+    getPlayerList() {
         const playerPath = `${this.folderpath}/p_master.json`
-        const exists = await fs.pathExists(playerPath);
+        const exists = fs.pathExistsSync(playerPath);
         if (exists) {
-            const players = await fs.readJSON(playerPath);
+            const players = fs.readJSONSync(playerPath);
             return players
         } else {
             return []

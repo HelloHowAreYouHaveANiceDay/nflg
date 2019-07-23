@@ -57,7 +57,7 @@ export interface nflTeamData {
     players: any | null
 }
 
-interface nflPlayerAggGameStat {
+export interface nflPlayerAggGameStat {
     name: string;
     att?: number;
     cmp?: number;
@@ -146,7 +146,7 @@ interface nflPlayPlayerStats {
     [key: string]: nflPlayPlayerStat[]
 }
 
-interface nflPlayPlayerStat {
+export interface nflPlayPlayerStat {
     sequence: number;
     clubcode: string;
     playerName: string;
@@ -154,7 +154,7 @@ interface nflPlayPlayerStat {
     yards: number;
 }
 
-interface nflAggGameStats {
+export interface nflAggGameStats {
     passing: {
         [key: string]: nflPlayerAggGameStat
     },

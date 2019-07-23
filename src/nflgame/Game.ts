@@ -1,25 +1,14 @@
+import { nflApiGame, nflAggGameStats } from "../schemas/nflApiGame";
+import AggGameStat from "../schemas/AggGameStat";
 
-export async function getGameStats(gameid: string) {
-    try {
-        const gameResponse = await getGameById(gameid);
-        const stats = getPlayerStats(gameResponse);
-        return stats
-    } catch (err) {
-        // console.log(err)
-        console.log('stats failed')
-    }
-}
-
-export function getPlayerStats(nflGame: nflGame | null) {
+export function getPlayerStats(nflGame: nflApiGame | null){
     if (nflGame == null) {
         return []
     } else {
         const home = nflGame.home.stats
         const away = nflGame.away.stats
-
         return flattenStats(home).concat(flattenStats(away))
     }
-
 }
 
 function flattenStats(stats: nflAggGameStats) {
