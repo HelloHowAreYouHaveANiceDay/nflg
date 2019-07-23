@@ -6,18 +6,22 @@ export default class Player {
     playerId: string
 
     @Field()
-    first_name: string
+    firstName: string
 
     @Field()
-    last_name: string
+    lastName: string
 
     @Field()
-    full_name: string
+    fullName: string
+
+    @Field()
+    age: number
 
     @Field()
     college: string
 
     @Field()
+    // in inches
     height: number
 
     @Field()
@@ -27,13 +31,22 @@ export default class Player {
     position: string
 
     @Field()
-    profile_id: number
+    gsisId: string;
 
     @Field()
-    profile_url: string
+    profileId: string
 
     @Field()
-    status: string
+    profileUrl: string
+
+    @Field()
+    birthDate: string
+
+    @Field()
+    birthCity: string
+
+    @Field()
+    status?: string
 
     @Field()
     team: string
@@ -42,5 +55,5 @@ export default class Player {
     weight: number
 
     @Field()
-    years_pro: number
+    yearsPro?: number
 }

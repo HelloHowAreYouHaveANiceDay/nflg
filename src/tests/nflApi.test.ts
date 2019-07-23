@@ -1,7 +1,7 @@
 import nflApi from '../nflgame/nflApi';
 import _ from 'lodash'
 
-test('week generator', async () => {
+test.skip('week generator', async () => {
     const w1 = await nflApi.yearPhaseWeek({
         year: 2019,
         stype: 'PRE',

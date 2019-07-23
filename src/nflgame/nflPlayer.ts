@@ -1,53 +1,65 @@
+import cheerio from 'cheerio';
 
-const Players = require('../../data/nflPlayers.json');
-// const Players = JSON.parse('./nflPlayers.json')
+export function parseProfile(html: string) {
+    const $ = cheerio.load(html);
+    // number and postiion only available to active players
+    const numberStrip = $('span.player-number').text()
+    // const playerInfo = $('div.player-info').children()
+    const nameStrip = $('#playerName').attr('content');
+    const playerId = $('#playerId').attr('content');
+    const team = $('#playerTeam').attr('content');
+    const url = $('link[rel=canonical]').attr('href')
+    // const physicalRow = playerInfo.filter((i, e) => i == 2);
+    // regex seems to be the easiest way to get at these specific pieces of data.
+    const gsisId = html.match(/(?:GSIS ID: )\W*(\d+\W+\d+)/)![1]
+    const heightStrip = html.match(/(?:<strong>)(?:Height)(?:<\/strong>)\W\s(\d+\W\d+)/)![1]
+    const weightStrip = html.match(/(?:<strong>)(?:Weight)(?:<\/strong>)\W\s(\d+)/)![1]
+    const ageStrip = html.match(/(?:<strong>)(?:Age)(?:<\/strong>)\W\s(\d+)/)![1]
+    const birthStrip = html.match(/(?:<strong>)(?:Born)(?:<\/strong>)\W+\s+(\d{1,2}\/\d{1,2}\/\d{4})\s+(\b[a-zA-Z\s]+,[ ]?[A-Z]{2}\b)/)
+    const collegeStrip = html.match(/(?:<strong>)(?:College)(?:<\/strong>)\W\s+([\w-\s]+)/)
 
-// export function getIdFromUrl(url: string) {
-//     //@ts-ignore
-//     return url.match(/([0-9]+)/)[0]
-// }
+    // console.log(numberStrip);
 
-// interface nflPlayer {
-//     player_id: string;
-//     number: string;
-//     fullName: string;
-//     firstName: string;
-//     lastName: string;
-//     position: string;
-//     status: string;
-//     height: string;
-//     weight: string;
-//     birthdate: string;
-//     experience: string;
-//     college: string;
-// }
+    // TODO: a lot of redundancy here.
+    const firstName = nameStrip.split(' ')[0].trim()
+    const lastName = nameStrip.split(' ')[1].trim()
+    const fullName = `${firstName} ${lastName}`
+    const number = +numberStrip.match(/(\d+)/)![0]
+    const position = numberStrip.match(/([A-Z]+)/)![0]
+    const birthDate = birthStrip![1]
+    const birthCity = birthStrip![2]
+    const weight = +weightStrip
+    const college = collegeStrip![1]
+    const age = +ageStrip
+    const height = feetInchesToInches(heightStrip)
 
-export function getPlayerById(playerId: string) {
 
-    const p= Players[playerId]
-    if (p) {
-        p.playerId = playerId;
-        return p
-    } else {
-        return null
+
+    return {
+        fullName,
+        playerId,
+        team,
+        firstName,
+        gsisId,
+        lastName,
+        birthCity,
+        birthDate,
+        college,
+        age,
+        profileUrl: url,
+        profileId: profileIdFromUrl(url),
+        number,
+        position,
+        weight,
+        height
     }
-
 }
 
+function profileIdFromUrl(url: string) {
+    return url.match(/([0-9]+)/)![0];
+}
 
-export function updatePlayers() {
-    const gsis_profile_url = 'https://www.nfl.com/players/profile?id='
-    const roster = 'https://www.nfl.com/teams/rostjer?team='
-    // TODO: implement player update before season begins
-    // https://github.com/derek-adair/nflgame/blob/master/nflgame/update_players.py
-
-    //1. Load dictionary mapping GSIS id to a dict of player metadata
-
-    //2. build a reverse map from profile id to gsis id
-
-    //3. find all players who participated in the last week of play
-
-    //4. if player is not in mapping then player is added to update list
-
-    //5. 
+function feetInchesToInches(height: string) {
+    const [feet, inches] = height.split('-')
+    return 12 * +feet + +inches
 }
