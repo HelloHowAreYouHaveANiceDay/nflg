@@ -22,6 +22,7 @@ export default class {
     async aggregatedGameStats(@Root() game: Game) {
         try {
             console.log(game.gameid);
+            // @ts-ignore
             const stats = await nflGame.getInstance().getAggGameStats(game.gameid);
             return stats
         } catch (err) {

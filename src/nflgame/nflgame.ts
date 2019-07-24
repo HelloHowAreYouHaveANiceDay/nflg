@@ -114,12 +114,13 @@ export default class nflGame {
         }
     }
 
-    async getAggGameStats(gameid?: string) {
+    async getAggGameStats(gameid: string) {
         try {
             const game = await this.getGamecenterGame(gameid);
             return getPlayerStats(game);
         } catch (error) {
-            throw error;
+            console.error(error);
+            return [];
         }
     }
 
