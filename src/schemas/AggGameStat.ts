@@ -1,11 +1,23 @@
-import { ObjectType, Field, ID } from "type-graphql";
+import { ObjectType, Field, ID, InputType, ArgsType } from "type-graphql";
 import Player from "./Player";
 import { fromNumber } from "long";
 
+@ArgsType()
+export class AggGameStatArgs {
+    @Field({nullable: true})
+    id?: string
+
+    @Field({nullable: true})
+    playerName?: string
+
+    @Field({nullable: true})
+    category?: string
+}
+
 @ObjectType()
-export default class AggGameStat {
+export class AggGameStat {
     @Field(type => Player)
-    player: Player
+    player?: Player
 
     @Field(type => ID)
     playerId: string
@@ -17,16 +29,16 @@ export default class AggGameStat {
     category: string
 
     @Field({nullable: true})
-    passing_att: number
+    passing_att?: number
 
     @Field({nullable: true})
-    passing_cmp: number
+    passing_cmp?: number
 
     @Field({nullable: true})
-    passing_yds: number
+    passing_yds?: number
 
     @Field({nullable: true})
-    passing_ints: number
+    passing_ints?: number
 
     @Field({nullable: true})
     passing_twopta?: number

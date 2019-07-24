@@ -79,7 +79,7 @@ type Game {
   posteam: String!
   homeShort: String
   awayShort: String
-  aggregatedGameStats: [AggGameStat!]!
+  aggregatedGameStats: [AggGameStat!]
 }
 
 type Player {
@@ -105,7 +105,7 @@ type Player {
 
 type Query {
   getGameById(id: String!): Game!
-  getGameStatsByGameId(id: String!): [AggGameStat!]!
+  getGameStatsByGameId(id: String, playerName: String, category: String): [AggGameStat!]!
   Player(id: String!): Player!
   searchSchedule(year: Float, week: Float, home: String, away: String, season_type: String): [Schedule!]
 }

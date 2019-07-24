@@ -1,15 +1,31 @@
-import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
-import AggGameStat from "../schemas/AggGameStat";
+import { Resolver, Query, Args, FieldResolver, Root } from "type-graphql";
+import { AggGameStat, AggGameStatArgs } from "../schemas/AggGameStat";
 import nflGame from "../nflgame/nflgame";
-// import { getGameStats } from "../nflgame/Game";
-// import { getPlayerById } from "../nflgame/nflPlayer";
+import _ from "lodash";
 
 @Resolver(of => AggGameStat)
-export default class {
+export default class AggGameStatResolver {
     @Query(returns => [AggGameStat])
-    async getGameStatsByGameId(@Arg('id') id: string) {
+    async getGameStatsByGameId(
+        @Args() params: AggGameStatArgs
+    ) {
+        if(!params.id){
+            throw new Error('no id passed')
+        }
         try {
-            const stats = await nflGame.getInstance().getAggGameStats(id);
+            let stats = await nflGame.getInstance().getAggGameStats(params.id);
+            // if (name || category) {
+            //     const filter = {}
+            //     if(name){
+            //         //@ts-ignore
+            //         filter.name = name
+            //     }
+            //     if(category){
+            //         //@ts-ignore
+            //         filter.category = category
+            //     }
+            //     stats = _.filter(stats, filter);
+            // }
             return stats
         } catch (err) {
             console.log(err)
@@ -17,7 +33,7 @@ export default class {
     }
 
     @FieldResolver()
-    async player(@Root() stat: AggGameStat){
+    async player(@Root() stat: AggGameStat) {
         return await nflGame.getInstance().getPlayer(stat.playerId)
     }
 }

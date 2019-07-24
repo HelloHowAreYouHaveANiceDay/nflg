@@ -1,4 +1,6 @@
-import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
+import { Resolver, Query, Arg, Args, FieldResolver, Root } from "type-graphql";
+import { AggGameStatArgs, AggGameStat } from '../schemas/AggGameStat';
+import _ from 'lodash';
 import Game from "../schemas/Game";
 import nflGame from "../nflgame/nflgame";
 // import { getGameById, getGameStats } from '../nflgame/Game'
@@ -23,7 +25,20 @@ export default class {
         try {
             console.log(game.gameid);
             // @ts-ignore
-            const stats = await nflGame.getInstance().getAggGameStats(game.gameid);
+            let stats: AggGameStat[] = await nflGame.getInstance().getAggGameStats(game.gameid);
+            // console.log(params);
+            // if (params.name || params.category) {
+            //     const filter = {}
+            //     if (params.name) {
+            //         //@ts-ignore
+            //         filter.name = params.name
+            //     }
+            //     if (params.category) {
+            //         // @ts-ignore
+            //         filter.category = params.category
+            //     }
+            //     stats = _.filter(stats, filter);
+            // }
             return stats
         } catch (err) {
             console.log(err)

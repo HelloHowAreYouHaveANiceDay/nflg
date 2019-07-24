@@ -1,8 +1,8 @@
 import { nflApiGame, nflAggGameStats } from "../schemas/nflApiGame";
-import AggGameStat from "../schemas/AggGameStat";
+import { AggGameStat } from "../schemas/AggGameStat";
 import Game from "../schemas/Game";
 
-export function getPlayerStats(nflGame: nflApiGame | null){
+export function getPlayerStats(nflGame: nflApiGame | null) {
     if (nflGame == null) {
         return []
     } else {
@@ -15,7 +15,7 @@ export function getPlayerStats(nflGame: nflApiGame | null){
 function flattenStats(stats: nflAggGameStats) {
     // verbose, but clearer. Should refactor
 
-    const playerStats: any[] = []
+    const playerStats: AggGameStat[] = []
 
     Object.keys(stats.passing).forEach((playerId) => {
         const stat = {
@@ -65,22 +65,25 @@ function flattenStats(stats: nflAggGameStats) {
         playerStats.push(stat);
     });
 
-    Object.keys(stats.fumbles).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'fumbles',
-            name: stats.fumbles[playerId].name,
-            fumbles_forced: stats.fumbles[playerId].forced,
-            fumbles_lost: stats.fumbles[playerId].lost,
-            fumbles_notforced: stats.fumbles[playerId].notforced,
-            fumbles_oob: stats.fumbles[playerId].oob,
-            fumbles_rec: stats.fumbles[playerId].rec,
-            fumbles_rec_yds: stats.fumbles[playerId].rec_yds,
-            fumbles_tot: stats.fumbles[playerId].tot,
-            fumbles_rec_tds: stats.fumbles[playerId].rec_tds,
-        }
-        playerStats.push(stat);
-    });
+    if (stats.fumbles) {
+        Object.keys(stats.fumbles).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'fumbles',
+                name: stats.fumbles[playerId].name,
+                fumbles_forced: stats.fumbles[playerId].forced,
+                fumbles_lost: stats.fumbles[playerId].lost,
+                fumbles_notforced: stats.fumbles[playerId].notforced,
+                fumbles_oob: stats.fumbles[playerId].oob,
+                fumbles_rec: stats.fumbles[playerId].rec,
+                fumbles_rec_yds: stats.fumbles[playerId].rec_yds,
+                fumbles_tot: stats.fumbles[playerId].tot,
+                fumbles_rec_tds: stats.fumbles[playerId].rec_tds,
+            }
+            playerStats.push(stat);
+        });
+
+    }
 
     Object.keys(stats.kicking).forEach((playerId) => {
         const stat = {
