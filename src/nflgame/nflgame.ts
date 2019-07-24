@@ -81,15 +81,21 @@ export default class nflGame {
     }
 
     async getGame(gameid: string) {
-        const nflGame = await this.getGamecenterGame(gameid);
-        const game = parseGame(nflGame);
-        game.gameid = gameid;
-        return game;
+        try {
+            const nflGame = await this.getGamecenterGame(gameid);
+            const game = parseGame(nflGame);
+            game.gameid = gameid;
+            return game;
+        } catch (error) {
+            console.error(error);
+            return {}
+            // throw error;
+        }
     }
 
 
     async getGamecenterGame(gameid?: string) {
-        if(!gameid) {
+        if (!gameid) {
             throw new Error('no gameid passed')
         }
         try {
@@ -131,27 +137,39 @@ export default class nflGame {
             const game: nflApiGame = await NFLApi.getGame(gameid)
             return game
         } catch (error) {
-            throw error
+            console.error(error)
+            throw error;
         }
     }
 
     private async fetchPlayer(gsisId: string) {
-        const html = await NFLApi.getPlayerProfile(gsisId)
-        const player = parseProfile(html);
-        this.players[gsisId] = player;
-        await this.cache.savePlayerList(this.players);
-        return player
+        try {
+            const html = await NFLApi.getPlayerProfile(gsisId)
+            const player = parseProfile(html);
+            this.players[gsisId] = player;
+            await this.cache.savePlayerList(this.players);
+            return player
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 
     async getPlayer(gsisId: string) {
-        const match = _.filter(this.players, { gsisId: gsisId });
-        if (match.length < 1) {
-            console.log('player not found... fetching')
-            const player = await this.fetchPlayer(gsisId)
-            return player;
-        } else {
-            console.log('player found')
-            return match[0];
+        try {
+            const match = _.filter(this.players, { gsisId: gsisId });
+            if (match.length < 1) {
+                console.log('player not found... fetching')
+                const player = await this.fetchPlayer(gsisId)
+                console.log(`added ${player.fullName}`)
+                return player;
+            } else {
+                console.log('player found')
+                return match[0];
+            }
+        } catch (err) {
+            console.error(err);
+            return {}
         }
     }
 

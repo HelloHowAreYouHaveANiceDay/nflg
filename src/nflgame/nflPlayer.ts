@@ -39,11 +39,15 @@ export function parseProfile(html: string): Player {
     const age = +ageStrip
     const height = feetInchesToInches(heightStrip)
 
-    if (!numberStrip) {
+    if (numberStrip == null) {
         team = ''
     } else {
-        number = +numberStrip.match(/(\d+)/)![0]
-        position = numberStrip.match(/([A-Z]+)/)![0]
+        const numberPresent = numberStrip.match(/(\d+)/)
+        const positionPresent = numberStrip.match(/([A-Z]+)/)
+        if (numberPresent != null && positionPresent != null ) {
+            number = +numberStrip.match(/(\d+)/)![0]
+            position = numberStrip.match(/([A-Z]+)/)![0]
+        }
     }
 
     return {

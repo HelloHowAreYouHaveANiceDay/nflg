@@ -84,23 +84,23 @@ type Game {
 
 type Player {
   playerId: ID!
-  firstName: String!
-  lastName: String!
-  fullName: String!
-  age: Float!
-  college: String!
-  height: Float!
-  number: Float!
-  position: String!
+  firstName: String
+  lastName: String
+  fullName: String
+  age: Float
+  college: String
+  height: Float
+  number: Float
+  position: String
   gsisId: String!
   profileId: String!
   profileUrl: String!
   birthDate: String!
-  birthCity: String!
-  status: String!
-  team: String!
-  weight: Float!
-  yearsPro: Float!
+  birthCity: String
+  status: String
+  team: String
+  weight: Float
+  yearsPro: Float
 }
 
 type Query {

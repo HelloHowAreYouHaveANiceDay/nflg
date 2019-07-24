@@ -76,7 +76,7 @@ export default class jsonCache {
             const game = await fs.readJSON(`${this.folderpath}/${gameid}.json`)
             return game
         } catch (error) {
-            return false;
+            throw error;
         }
     }
 

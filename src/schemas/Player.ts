@@ -5,29 +5,29 @@ export default class Player {
     @Field(type => ID)
     playerId: string
 
-    @Field()
+    @Field({ nullable: true })
     firstName: string
 
-    @Field()
+    @Field({ nullable: true })
     lastName: string
 
-    @Field()
+    @Field({ nullable: true })
     fullName: string
 
-    @Field()
+    @Field({ nullable: true })
     age: number
 
-    @Field()
+    @Field({ nullable: true })
     college: string
 
-    @Field()
+    @Field({ nullable: true })
     // in inches
     height: number
 
-    @Field()
+    @Field({ nullable: true })
     number: number
 
-    @Field()
+    @Field({ nullable: true })
     position: string
 
     @Field()
@@ -42,18 +42,18 @@ export default class Player {
     @Field()
     birthDate: string
 
-    @Field()
+    @Field({ nullable: true })
     birthCity: string
 
-    @Field()
+    @Field({ nullable: true })
     status?: string
 
-    @Field()
+    @Field({ nullable: true })
     team: string
 
-    @Field()
+    @Field({nullable: true})
     weight: number
 
-    @Field()
+    @Field({nullable: true})
     yearsPro?: number
 }
