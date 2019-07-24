@@ -24,7 +24,9 @@ export default class nflGame {
     cache: jsonCache;
     nflApi: NFLApi;
     schedule: Schedule[];
-    players: Player[];
+    players: {
+        [key: string]: Player
+    };
 
     private constructor(filePath: string) {
         nflGame.filePath = filePath;
@@ -136,8 +138,8 @@ export default class nflGame {
     private async fetchPlayer(gsisId: string) {
         const html = await NFLApi.getPlayerProfile(gsisId)
         const player = parseProfile(html);
-        await this.players.push(player);
-        // await this.cache.savePlayerList(this.players);
+        this.players[gsisId] = player;
+        await this.cache.savePlayerList(this.players);
         return player
     }
 

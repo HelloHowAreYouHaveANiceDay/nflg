@@ -55,12 +55,12 @@ export default class jsonCache {
             const players = fs.readJSONSync(playerPath);
             return players
         } else {
-            return []
+            return {}
         }
     }
 
     // save list of players
-    async savePlayerList(players: Player[]) {
+    async savePlayerList(players: {[key: string]: Player}) {
         const playerPath = `${this.folderpath}/p_master.json`
         try {
             await fs.writeJSON(playerPath, players);
