@@ -1,7 +1,7 @@
 import axios from 'axios'
 import cheerio from 'cheerio'
 import _ from 'lodash';
-import Game from '../schemas/Game';
+import GameDetails from '../schemas/Game';
 import { Schedule } from '../schemas/Schedule';
 
 interface gameWeekArgs {

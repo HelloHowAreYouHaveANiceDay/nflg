@@ -1,11 +1,10 @@
 import "reflect-metadata";
 import { GraphQLServer } from "graphql-yoga";
-// import { ApolloServer } from 'apollo-server';
 import { buildSchema } from "type-graphql";
-import GameResolver from './resolvers/GameResolver';
+import { GameDetailsResolver } from './resolvers/GameDetailResolver';
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
-import ScheduleResolver from './resolvers/scheduleResolver';
+import GameResolver from './resolvers/GameResolver';
 import path from 'path';
 
 import nflGame from './nflgame/nflgame';
@@ -17,10 +16,10 @@ async function bootstrap() {
 
     const schema = await buildSchema({
         resolvers: [
-            GameResolver, 
+            GameDetailsResolver,
             AggGameStatResolver,
             PlayerResolver,
-            ScheduleResolver
+            GameResolver
         ],
         validate: false,
         emitSchemaFile: true,

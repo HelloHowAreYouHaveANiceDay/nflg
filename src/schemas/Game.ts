@@ -3,7 +3,7 @@ import { AggGameStat } from "./AggGameStat";
 
 // ObjectType defines class as a GraphQL type
 @ObjectType()
-export default class Game {
+export default class GameDetails {
     @Field(type => ID)
     gameid?: string;
 

@@ -1,6 +1,6 @@
 import { nflApiGame, nflAggGameStats } from "../schemas/nflApiGame";
 import { AggGameStat } from "../schemas/AggGameStat";
-import Game from "../schemas/Game";
+import GameDetails from "../schemas/Game";
 
 export function getPlayerStats(nflGame: nflApiGame | null) {
     if (nflGame == null) {
@@ -17,53 +17,60 @@ function flattenStats(stats: nflAggGameStats) {
 
     const playerStats: AggGameStat[] = []
 
-    Object.keys(stats.passing).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'passing',
-            name: stats.passing[playerId].name,
-            passing_att: stats.passing[playerId].att,
-            passing_cmp: stats.passing[playerId].cmp,
-            passing_yds: stats.passing[playerId].yds,
-            passing_tds: stats.passing[playerId].tds,
-            passing_ints: stats.passing[playerId].ints,
-            passing_twopta: stats.passing[playerId].twopta,
-            passing_twoptm: stats.passing[playerId].twoptm,
-        }
-        playerStats.push(stat);
-    });
+    if (stats.passing) {
+        Object.keys(stats.passing).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'passing',
+                name: stats.passing[playerId].name,
+                passing_att: stats.passing[playerId].att,
+                passing_cmp: stats.passing[playerId].cmp,
+                passing_yds: stats.passing[playerId].yds,
+                passing_tds: stats.passing[playerId].tds,
+                passing_ints: stats.passing[playerId].ints,
+                passing_twopta: stats.passing[playerId].twopta,
+                passing_twoptm: stats.passing[playerId].twoptm,
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.rushing).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'rushing',
-            name: stats.rushing[playerId].name,
-            rushing_att: stats.rushing[playerId].att,
-            rushing_yds: stats.rushing[playerId].yds,
-            rushing_tds: stats.rushing[playerId].tds,
-            rushing_lng: stats.rushing[playerId].lng,
-            rushing_lngtd: stats.rushing[playerId].lngtd,
-            rushing_twopta: stats.rushing[playerId].twopta,
-            rushing_twoptm: stats.rushing[playerId].twoptm,
-        }
-        playerStats.push(stat);
-    });
+    if (stats.rushing) {
+        Object.keys(stats.rushing).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'rushing',
+                name: stats.rushing[playerId].name,
+                rushing_att: stats.rushing[playerId].att,
+                rushing_yds: stats.rushing[playerId].yds,
+                rushing_tds: stats.rushing[playerId].tds,
+                rushing_lng: stats.rushing[playerId].lng,
+                rushing_lngtd: stats.rushing[playerId].lngtd,
+                rushing_twopta: stats.rushing[playerId].twopta,
+                rushing_twoptm: stats.rushing[playerId].twoptm,
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.receiving).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'receiving',
-            name: stats.receiving[playerId].name,
-            receiving_rec: stats.receiving[playerId].rec,
-            receiving_yds: stats.receiving[playerId].yds,
-            receiving_tds: stats.receiving[playerId].tds,
-            receiving_lng: stats.receiving[playerId].lng,
-            receiving_lngtd: stats.receiving[playerId].lngtd,
-            receiving_twopta: stats.receiving[playerId].twopta,
-            receiving_twoptm: stats.receiving[playerId].twoptm,
-        }
-        playerStats.push(stat);
-    });
+    if (stats.receiving) {
+        Object.keys(stats.receiving).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'receiving',
+                name: stats.receiving[playerId].name,
+                receiving_rec: stats.receiving[playerId].rec,
+                receiving_yds: stats.receiving[playerId].yds,
+                receiving_tds: stats.receiving[playerId].tds,
+                receiving_lng: stats.receiving[playerId].lng,
+                receiving_lngtd: stats.receiving[playerId].lngtd,
+                receiving_twopta: stats.receiving[playerId].twopta,
+                receiving_twoptm: stats.receiving[playerId].twoptm,
+            }
+            playerStats.push(stat);
+        });
+
+    }
 
     if (stats.fumbles) {
         Object.keys(stats.fumbles).forEach((playerId) => {
@@ -85,85 +92,95 @@ function flattenStats(stats: nflAggGameStats) {
 
     }
 
-    Object.keys(stats.kicking).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'kicking',
-            name: stats.kicking[playerId].name,
-            kicking_fgm: stats.kicking[playerId].fgm,
-            kicking_fga: stats.kicking[playerId].fga,
-            kicking_fgyds: stats.kicking[playerId].fgyds,
-            kicking_totpfg: stats.kicking[playerId].totpfg,
-            kicking_xpmade: stats.kicking[playerId].xpmade,
-            kicking_xpa: stats.kicking[playerId].xpa,
-            kicking_xpb: stats.kicking[playerId].xpb,
-            kicking_xptot: stats.kicking[playerId].xptot,
-        }
-        playerStats.push(stat);
-    });
+    if (stats.kicking) {
+        Object.keys(stats.kicking).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'kicking',
+                name: stats.kicking[playerId].name,
+                kicking_fgm: stats.kicking[playerId].fgm,
+                kicking_fga: stats.kicking[playerId].fga,
+                kicking_fgyds: stats.kicking[playerId].fgyds,
+                kicking_totpfg: stats.kicking[playerId].totpfg,
+                kicking_xpmade: stats.kicking[playerId].xpmade,
+                kicking_xpa: stats.kicking[playerId].xpa,
+                kicking_xpb: stats.kicking[playerId].xpb,
+                kicking_xptot: stats.kicking[playerId].xptot,
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.punting).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'punting',
-            name: stats.punting[playerId].name,
-            punting_pts: stats.punting[playerId].pts,
-            punting_yds: stats.punting[playerId].yds,
-            punting_avg: stats.punting[playerId].avg,
-            punting_i20: stats.punting[playerId].i20,
-            punting_lng: stats.punting[playerId].lng
-        }
-        playerStats.push(stat);
-    });
+    if (stats.punting) {
+        Object.keys(stats.punting).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'punting',
+                name: stats.punting[playerId].name,
+                punting_pts: stats.punting[playerId].pts,
+                punting_yds: stats.punting[playerId].yds,
+                punting_avg: stats.punting[playerId].avg,
+                punting_i20: stats.punting[playerId].i20,
+                punting_lng: stats.punting[playerId].lng
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.kickret).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'kickret',
-            name: stats.kickret[playerId].name,
-            kickret_ret: stats.kickret[playerId].ret,
-            kickret_avg: stats.kickret[playerId].avg,
-            kickret_tds: stats.kickret[playerId].tds,
-            kickret_lng: stats.kickret[playerId].lng,
-            kickret_lngtd: stats.kickret[playerId].lngtd
-        }
-        playerStats.push(stat);
-    });
+    if (stats.kickret) {
+        Object.keys(stats.kickret).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'kickret',
+                name: stats.kickret[playerId].name,
+                kickret_ret: stats.kickret[playerId].ret,
+                kickret_avg: stats.kickret[playerId].avg,
+                kickret_tds: stats.kickret[playerId].tds,
+                kickret_lng: stats.kickret[playerId].lng,
+                kickret_lngtd: stats.kickret[playerId].lngtd
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.puntret).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'puntret',
-            name: stats.puntret[playerId].name,
-            puntret_ret: stats.puntret[playerId].ret,
-            puntret_avg: stats.puntret[playerId].avg,
-            puntret_tds: stats.puntret[playerId].tds,
-            puntret_lng: stats.puntret[playerId].lng,
-            puntret_lngtd: stats.puntret[playerId].lngtd
-        }
-        playerStats.push(stat);
-    });
+    if (stats.puntret) {
+        Object.keys(stats.puntret).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'puntret',
+                name: stats.puntret[playerId].name,
+                puntret_ret: stats.puntret[playerId].ret,
+                puntret_avg: stats.puntret[playerId].avg,
+                puntret_tds: stats.puntret[playerId].tds,
+                puntret_lng: stats.puntret[playerId].lng,
+                puntret_lngtd: stats.puntret[playerId].lngtd
+            }
+            playerStats.push(stat);
+        });
+    }
 
-    Object.keys(stats.defense).forEach((playerId) => {
-        const stat = {
-            playerId: playerId,
-            category: 'defense',
-            name: stats.defense[playerId].name,
-            defense_tkl: stats.defense[playerId].tkl,
-            defense_ast: stats.defense[playerId].ast,
-            defense_sk: stats.defense[playerId].sk,
-            defense_int: stats.defense[playerId].int,
-            defense_ffum: stats.defense[playerId].ffum
-        }
-        playerStats.push(stat);
-    });
+    if (stats.defense) {
+        Object.keys(stats.defense).forEach((playerId) => {
+            const stat = {
+                playerId: playerId,
+                category: 'defense',
+                name: stats.defense[playerId].name,
+                defense_tkl: stats.defense[playerId].tkl,
+                defense_ast: stats.defense[playerId].ast,
+                defense_sk: stats.defense[playerId].sk,
+                defense_int: stats.defense[playerId].int,
+                defense_ffum: stats.defense[playerId].ffum
+            }
+            playerStats.push(stat);
+        });
+    }
 
 
     return playerStats;
 }
 
-export function parseGame(g: nflApiGame): Game {
-    const game: Game = {
+export function parseGame(g: nflApiGame): GameDetails {
+    const game: GameDetails = {
         weather: g.weather ? g.weather : '',
         media: g.media ? g.media : '',
         yl: g.yl,
