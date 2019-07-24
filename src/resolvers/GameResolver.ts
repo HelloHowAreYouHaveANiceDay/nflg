@@ -1,30 +1,25 @@
 import "reflect-metadata";
-import { Args, ArgsType, Field, Query, Resolver, FieldResolver, Root } from "type-graphql";
-import {searchScheduleArgs, Schedule} from '../schemas/Schedule';
+import { Args, Query, Resolver, FieldResolver, Root } from "type-graphql";
+
+import { gameSearchArgs, Game, scoreDetails } from "../schemas/Game";
 
 import nflGame from "../nflgame/nflgame";
 
-@Resolver(of => Schedule)
-export default class ScheduleResolver {
-
-    @Query(returns => [Schedule], { nullable: true })
-    async searchSchedule(@Args() input: searchScheduleArgs) {
-        try {
-            const schedule = await nflGame.getInstance().searchSchedule(input);
-            return schedule;
-        } catch (error) {
-            throw error;
-        }
+@Resolver(of => Game)
+export default class GameResolver {
+  @Query(returns => [Game], { nullable: true })
+  async games(@Args() input: gameSearchArgs) {
+    try {
+      const schedule = await nflGame.getInstance().searchSchedule(input);
+      return schedule;
+    } catch (error) {
+      throw error;
     }
+  }
 
-    @FieldResolver()
-    async game(@Root() schedule: Schedule){
-        try {
-            const game = await nflGame.getInstance().getGame(schedule.gameid)
-            return game
-        } catch (error) {
-            return {}
-        }
-    }
+  //   @FieldResolver()
+  //   async homeScoreDetails(@Root() game: Game): Promise<scoreDetails> {
+  //     const gameDetails = await nflGame.getInstance().getGame(game.gameid);
+  //     return gameDetails.home.score;
+  //   }
 }
-

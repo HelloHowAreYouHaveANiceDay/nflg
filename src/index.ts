@@ -1,38 +1,30 @@
 import "reflect-metadata";
 import { GraphQLServer } from "graphql-yoga";
 import { buildSchema } from "type-graphql";
-import { GameDetailsResolver } from './resolvers/GameDetailResolver';
+// import { GameDetailsResolver } from './resolvers/GameDetailResolver';
+// import {GameResolver } from
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
-import GameResolver from './resolvers/GameResolver';
-import path from 'path';
+import GameResolver from "./resolvers/GameResolver";
+import path from "path";
 
-import nflGame from './nflgame/nflgame';
+import nflGame from "./nflgame/nflgame";
 
-nflGame.getInstance(path.join(__dirname, '../data/'));
+nflGame.getInstance(path.join(__dirname, "../data/"));
 
 // // GRAPHQL PORTION
 async function bootstrap() {
+  const schema = await buildSchema({
+    resolvers: [AggGameStatResolver, PlayerResolver, GameResolver],
+    validate: false,
+    emitSchemaFile: true
+  });
 
-    const schema = await buildSchema({
-        resolvers: [
-            GameDetailsResolver,
-            AggGameStatResolver,
-            PlayerResolver,
-            GameResolver
-        ],
-        validate: false,
-        emitSchemaFile: true,
-    });
+  const server = new GraphQLServer({
+    schema
+  });
 
-
-
-    const server = new GraphQLServer({
-        schema,
-    });
-
-    server.start(() => console.log("Server is running on http://localhost:4000"));
-
+  server.start(() => console.log("Server is running on http://localhost:4000"));
 }
 
 bootstrap();
@@ -41,13 +33,11 @@ bootstrap();
 //     console.log(result);
 // })
 
-
 // HRM
-// if (module.hot) {
-//     module.hot.accept();
-//     module.hot.dispose(() => console.log('Module disposed. '));
-// }
-
+if (module.hot) {
+  module.hot.accept();
+  module.hot.dispose(() => console.log("Module disposed. "));
+}
 
 // class Nflgame {
 //     teams = [
@@ -87,4 +77,3 @@ bootstrap();
 //         ['WAS', 'Washington', 'Redskins', 'Washington Redskins', 'WSH'],
 //     ]
 // }
-

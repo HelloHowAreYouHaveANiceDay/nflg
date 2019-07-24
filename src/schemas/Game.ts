@@ -1,51 +1,75 @@
-import { Field, ObjectType, ID } from "type-graphql";
+import "reflect-metadata";
+import { ObjectType, Field, ID, ArgsType } from "type-graphql";
 import { AggGameStat } from "./AggGameStat";
 
-// ObjectType defines class as a GraphQL type
+export interface scoreDetails {
+  "1": number;
+  "2": number;
+  "3": number;
+  "4": number;
+  "T": number;
+}
+
+@ArgsType()
+export class gameSearchArgs {
+  @Field({ nullable: true })
+  year?: number;
+
+  @Field({ nullable: true })
+  week?: number;
+
+  @Field({ nullable: true })
+  home?: string;
+
+  @Field({ nullable: true })
+  away?: string;
+
+  @Field({ nullable: true })
+  seasonType?: string;
+}
+
 @ObjectType()
-export default class GameDetails {
-    @Field(type => ID)
-    gameid?: string;
+export class Game {
+  @Field(type => ID)
+  gameid: string;
 
-    @Field()
-    weather: string;
+  @Field({ nullable: true })
+  wday?: string;
 
-    @Field({ nullable: true })
-    media: string;
+  @Field({ nullable: true })
+  month?: number;
 
-    @Field()
-    yl: string;
+  @Field() quarter?: string;
 
-    @Field()
-    qtr: string;
+  @Field() day?: number;
 
-    @Field({ nullable: true })
-    note: string;
+  @Field() gameType?: string;
 
-    @Field()
-    down: number;
+  @Field() homeShort?: string;
 
-    @Field()
-    togo: number;
+  @Field() homeName?: string;
 
-    @Field()
-    redzone: boolean;
+  @Field() homeScore?: number;
 
-    @Field()
-    clock: string;
+  @Field() awayShort?: string;
 
-    @Field({ nullable: true })
-    stadium: string;
+  @Field() awayName?: string;
 
-    @Field()
-    posteam: string;
+  @Field() awayScore?: number;
 
-    @Field({ nullable: true })
-    homeShort: string
+  @Field() redzone?: boolean;
 
-    @Field({ nullable: true })
-    awayShort: string
+  @Field() weather: string;
 
-    @Field(type => [AggGameStat], {nullable: true})
-    aggregatedGameStats?: AggGameStat[]
+  @Field({ nullable: true })
+  media: string;
+
+  @Field() yl: string;
+
+  //   @Field() homeScoreDetails: scoreDetails;
+
+  //   @Field() awayScoreDetails: scoreDetails;
+
+  @Field(type => [AggGameStat], { nullable: true })
+  aggregatedGameStats?: AggGameStat[];
 }
