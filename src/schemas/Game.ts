@@ -5,34 +5,46 @@ import AggGameStat from "./AggGameStat";
 @ObjectType()
 export default class Game{
     @Field(type => ID)
-    gameid: string;
+    gameid?: string;
 
     @Field()
-    wday: string;
+    weather: string;
+
+    @Field({nullable: true})
+    media: string;
 
     @Field()
-    gsis: string;
+    yl: string;
 
     @Field()
-    year: number;
+    qtr: string;
+
+    @Field({nullable: true})
+    note: string;
 
     @Field()
-    week: number
+    down: number;
 
     @Field()
-    month: number;
+    togo: number;
 
     @Field()
-    day: number;
+    redzone: boolean;
 
     @Field()
-    time: string;
+    clock: string;
+
+    @Field({nullable: true})
+    stadium: string;
 
     @Field()
-    quarter: string;
+    posteam: string;
 
-    @Field()
-    gameType: string;
+    @Field({nullable: true})
+    homeShort: string
+    
+    @Field({nullable: true})
+    awayShort: string
 
     @Field(type => [AggGameStat])
     aggregatedGameStats?: AggGameStat[]

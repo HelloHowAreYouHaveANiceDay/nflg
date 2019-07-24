@@ -79,6 +79,8 @@ export interface nflPlayerAggGameStat {
     forced?: number;
     notforced?: number;
     oob?: number;
+    ret?: number;
+    pts?: number;
     rec_yds?: number;
     rec_tds?: number;
     totpfg: number;

@@ -5,7 +5,7 @@ import { searchScheduleArgs, Schedule } from '../schemas/Schedule';
 import _ from 'lodash';
 import { nflApiGame, nflApiGameResponse } from '../schemas/nflApiGame';
 import { parseProfile } from './nflPlayer';
-import { getPlayerStats } from './Game';
+import { getPlayerStats, parseGame } from './Game';
 
 function transposeArgs(args: searchScheduleArgs) {
     const params: any = {
@@ -78,9 +78,15 @@ export default class nflGame {
         // not needed as players can be fetched on the fly
     }
 
+    async getGame(gameid: string) {
+        const nflGame = await this.getGamecenterGame(gameid);
+        const game = parseGame(nflGame);
+        game.gameid = gameid;
+        return game;
+    }
 
 
-    async getGame(gameid?: string) {
+    async getGamecenterGame(gameid?: string) {
         if(!gameid) {
             throw new Error('no gameid passed')
         }
@@ -108,9 +114,9 @@ export default class nflGame {
         }
     }
 
-    async getAggGameStats(gameid: string) {
+    async getAggGameStats(gameid?: string) {
         try {
-            const game = await this.getGame(gameid);
+            const game = await this.getGamecenterGame(gameid);
             return getPlayerStats(game);
         } catch (error) {
             throw error;

@@ -5,27 +5,80 @@
 
 type AggGameStat {
   player: Player!
-  playerId: String!
-  name: String
+  playerId: ID!
+  name: String!
   category: String!
   passing_att: Float
   passing_cmp: Float
   passing_yds: Float
   passing_ints: Float
   passing_twopta: Float
+  passing_twoptm: Float
+  rushing_att: Float
+  rushing_yds: Float
+  rushing_tds: Float
+  rushing_lng: Float
+  rushing_lngtd: Float
+  rushing_twopta: Float
+  rushing_twoptm: Float
+  receiving_rec: Float
+  receiving_yds: Float
+  receiving_tds: Float
+  receiving_lng: Float
+  receiving_lngtd: Float
+  receiving_twopta: Float
+  receiving_twoptm: Float
+  fumbles_forced: Float
+  fumbles_lost: Float
+  fumbles_notforced: Float
+  fumbles_oob: Float
+  fumbles_rec_yds: Float
+  fumbles_tot: Float
+  fumbles_rec_tds: Float
+  kicking_fgm: Float
+  kicking_fga: Float
+  kicking_fgyds: Float
+  kicking_totpfg: Float
+  kicking_xpmade: Float
+  kicking_xpa: Float
+  kicking_xpb: Float
+  kicking_xptot: Float
+  punting_pts: Float
+  punting_yds: Float
+  punting_avg: Float
+  punting_i20: Float
+  punting_lng: Float
+  kickret_ret: Float
+  kickret_avg: Float
+  kickret_tds: Float
+  kickret_lng: Float
+  kickret_lngtd: Float
+  puntret_ret: Float
+  puntret_avg: Float
+  puntret_tds: Float
+  puntret_lng: Float
+  puntret_lngtd: Float
+  defense_tkl: Float
+  defense_ast: Float
+  defense_int: Float
+  defense_ffum: Float
 }
 
 type Game {
   gameid: ID!
-  wday: String!
-  gsis: String!
-  year: Float!
-  week: Float!
-  month: Float!
-  day: Float!
-  time: String!
-  quarter: String!
-  gameType: String!
+  weather: String!
+  media: String
+  yl: String!
+  qtr: String!
+  note: String
+  down: Float!
+  togo: Float!
+  redzone: Boolean!
+  clock: String!
+  stadium: String
+  posteam: String!
+  homeShort: String
+  awayShort: String
   aggregatedGameStats: [AggGameStat!]!
 }
 

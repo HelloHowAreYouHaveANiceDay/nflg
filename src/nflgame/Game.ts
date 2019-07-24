@@ -1,5 +1,6 @@
 import { nflApiGame, nflAggGameStats } from "../schemas/nflApiGame";
 import AggGameStat from "../schemas/AggGameStat";
+import Game from "../schemas/Game";
 
 export function getPlayerStats(nflGame: nflApiGame | null){
     if (nflGame == null) {
@@ -81,7 +82,101 @@ function flattenStats(stats: nflAggGameStats) {
         playerStats.push(stat);
     });
 
+    Object.keys(stats.kicking).forEach((playerId) => {
+        const stat = {
+            playerId: playerId,
+            category: 'kicking',
+            name: stats.kicking[playerId].name,
+            kicking_fgm: stats.kicking[playerId].fgm,
+            kicking_fga: stats.kicking[playerId].fga,
+            kicking_fgyds: stats.kicking[playerId].fgyds,
+            kicking_totpfg: stats.kicking[playerId].totpfg,
+            kicking_xpmade: stats.kicking[playerId].xpmade,
+            kicking_xpa: stats.kicking[playerId].xpa,
+            kicking_xpb: stats.kicking[playerId].xpb,
+            kicking_xptot: stats.kicking[playerId].xptot,
+        }
+        playerStats.push(stat);
+    });
+
+    Object.keys(stats.punting).forEach((playerId) => {
+        const stat = {
+            playerId: playerId,
+            category: 'punting',
+            name: stats.punting[playerId].name,
+            punting_pts: stats.punting[playerId].pts,
+            punting_yds: stats.punting[playerId].yds,
+            punting_avg: stats.punting[playerId].avg,
+            punting_i20: stats.punting[playerId].i20,
+            punting_lng: stats.punting[playerId].lng
+        }
+        playerStats.push(stat);
+    });
+
+    Object.keys(stats.kickret).forEach((playerId) => {
+        const stat = {
+            playerId: playerId,
+            category: 'kickret',
+            name: stats.kickret[playerId].name,
+            kickret_ret: stats.kickret[playerId].ret,
+            kickret_avg: stats.kickret[playerId].avg,
+            kickret_tds: stats.kickret[playerId].tds,
+            kickret_lng: stats.kickret[playerId].lng,
+            kickret_lngtd: stats.kickret[playerId].lngtd
+        }
+        playerStats.push(stat);
+    });
+
+    Object.keys(stats.puntret).forEach((playerId) => {
+        const stat = {
+            playerId: playerId,
+            category: 'puntret',
+            name: stats.puntret[playerId].name,
+            puntret_ret: stats.puntret[playerId].ret,
+            puntret_avg: stats.puntret[playerId].avg,
+            puntret_tds: stats.puntret[playerId].tds,
+            puntret_lng: stats.puntret[playerId].lng,
+            puntret_lngtd: stats.puntret[playerId].lngtd
+        }
+        playerStats.push(stat);
+    });
+
+    Object.keys(stats.defense).forEach((playerId) => {
+        const stat = {
+            playerId: playerId,
+            category: 'defense',
+            name: stats.defense[playerId].name,
+            defense_tkl: stats.defense[playerId].tkl,
+            defense_ast: stats.defense[playerId].ast,
+            defense_sk: stats.defense[playerId].sk,
+            defense_int: stats.defense[playerId].int,
+            defense_ffum: stats.defense[playerId].ffum
+        }
+        playerStats.push(stat);
+    });
+
+
     return playerStats;
+}
+
+export function parseGame(g: nflApiGame): Game {
+    const game: Game = {
+        weather: g.weather ? g.weather : '',
+        media: g.media ? g.media : '',
+        yl: g.yl,
+        qtr: g.qtr,
+        note: g.note ? g.note : '',
+        down: g.down,
+        togo: g.togo,
+        redzone: g.redzone,
+        clock: g.clock,
+        posteam: g.posteam,
+        stadium: g.stadium ? g.stadium : '',
+        homeShort: g.home.abbr,
+        awayShort: g.away.abbr
+    }
+
+    return game;
 }
 
 export function gamesGen(year: number, week?: number, home?: string, away?: string, kind = 'REG', started = false) {

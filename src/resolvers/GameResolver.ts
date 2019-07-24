@@ -13,7 +13,7 @@ import nflGame from "../nflgame/nflgame";
 export default class {
     @Query(returns => Game)
     async getGameById(@Arg('id') id: string) {
-        const game = await nflGame.getInstance().getGame(id);
+        const game = await nflGame.getInstance().getGamecenterGame(id);
         game.eid = id;
         return game
     }
