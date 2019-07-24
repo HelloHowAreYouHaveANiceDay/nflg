@@ -27,8 +27,13 @@ export function parseProfile(html: string): Player {
     const firstName = nameStrip.split(' ')[0].trim()
     const lastName = nameStrip.split(' ')[1].trim()
     const fullName = `${firstName} ${lastName}`
-    const birthDate = birthStrip![1]
-    const birthCity = birthStrip![2]
+
+    let birthDate = '';
+    let birthCity = '';
+    if (birthStrip != null) {
+        birthDate = birthStrip![1]
+        birthCity = birthStrip![2]
+    }
     const weight = +weightStrip
     const college = collegeStrip![1]
     const age = +ageStrip

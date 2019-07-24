@@ -137,15 +137,18 @@ export default class nflGame {
         const html = await NFLApi.getPlayerProfile(gsisId)
         const player = parseProfile(html);
         await this.players.push(player);
-        await this.cache.savePlayerList(this.players);
+        // await this.cache.savePlayerList(this.players);
         return player
     }
 
     async getPlayer(gsisId: string) {
         const match = _.filter(this.players, { gsisId: gsisId });
-        if (match.length == 0) {
-            return await this.fetchPlayer(gsisId)
+        if (match.length < 1) {
+            console.log('player not found... fetching')
+            const player = await this.fetchPlayer(gsisId)
+            return player;
         } else {
+            console.log('player found')
             return match[0];
         }
     }
