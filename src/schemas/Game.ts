@@ -7,7 +7,7 @@ export interface scoreDetails {
   "2": number;
   "3": number;
   "4": number;
-  "T": number;
+  T: number;
 }
 
 @ArgsType()
@@ -59,17 +59,33 @@ export class Game {
 
   @Field() redzone?: boolean;
 
-  @Field() weather: string;
+  @Field({ nullable: true })
+  weather: string;
 
   @Field({ nullable: true })
   media: string;
 
+  @Field()
+  clock: string;
+
   @Field() yl: string;
 
-  //   @Field() homeScoreDetails: scoreDetails;
+  @Field() homeScore_q1: number;
 
-  //   @Field() awayScoreDetails: scoreDetails;
+  @Field() homeScore_q2: number;
 
-  @Field(type => [AggGameStat], { nullable: true })
+  @Field() homeScore_q3: number;
+
+  @Field() homeScore_q4: number;
+
+  @Field() awayScore_q1: number;
+
+  @Field() awayScore_q2: number;
+
+  @Field() awayScore_q3: number;
+
+  @Field() awayScore_q4: number;
+
+  @Field(type => [AggGameStat])
   aggregatedGameStats?: AggGameStat[];
 }

@@ -1,5 +1,5 @@
 import "reflect-metadata";
-import { Args, Query, Resolver, FieldResolver, Root } from "type-graphql";
+import { Arg, Args, Query, Resolver, FieldResolver, Root } from "type-graphql";
 
 import { gameSearchArgs, Game, scoreDetails } from "../schemas/Game";
 
@@ -17,9 +17,25 @@ export default class GameResolver {
     }
   }
 
-  //   @FieldResolver()
-  //   async homeScoreDetails(@Root() game: Game): Promise<scoreDetails> {
-  //     const gameDetails = await nflGame.getInstance().getGame(game.gameid);
-  //     return gameDetails.home.score;
-  //   }
+  @Query(returns => Game, { nullable: true })
+  async game(@Arg("gameid") gameid: string) {
+    try {
+      const game = await nflGame.getInstance().getSingleGame(gameid);
+      return game;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @FieldResolver()
+  async aggregatedGameStats(@Root() game: Game) {
+    try {
+      const gameDetails = await nflGame
+        .getInstance()
+        .getAggGameStats(game.gameid);
+      return gameDetails;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

@@ -6,7 +6,7 @@ import _ from "lodash";
 import { nflApiGame, nflApiGameResponse } from "../schemas/nflApiGame";
 import { parseProfile } from "./nflPlayer";
 import { getPlayerStats } from "./Game";
-import { gameSearchArgs } from "../schemas/Game";
+import { gameSearchArgs, Game } from "../schemas/Game";
 
 function transposeArgs(args: gameSearchArgs) {
   const params: any = {
@@ -63,33 +63,77 @@ export default class nflGame {
     }
   }
 
+  mountGameDetails = async (scheduleGame: scheduleGame) => {
+    const gameDetails = await this.getGame(scheduleGame.gameid);
+    const game: Game = {
+      gameid: scheduleGame.gameid,
+      wday: scheduleGame.wday,
+      month: scheduleGame.month,
+      quarter: scheduleGame.quarter,
+      day: scheduleGame.day,
+      gameType: scheduleGame.gameType,
+      homeShort: scheduleGame.homeShort,
+      homeName: scheduleGame.homeName,
+      homeScore: gameDetails.home.score.T,
+      awayShort: scheduleGame.awayShort,
+      awayName: scheduleGame.awayName,
+      awayScore: gameDetails.away.score.T,
+      redzone: gameDetails.redzone,
+      yl: gameDetails.yl,
+      media: gameDetails.media ? gameDetails.media : "",
+      clock: gameDetails.clock,
+      weather: gameDetails.weather ? gameDetails.weather : "",
+      homeScore_q1: gameDetails.home.score["1"],
+      homeScore_q2: gameDetails.home.score["2"],
+      homeScore_q3: gameDetails.home.score["3"],
+      homeScore_q4: gameDetails.home.score["4"],
+      awayScore_q1: gameDetails.away.score["1"],
+      awayScore_q2: gameDetails.away.score["2"],
+      awayScore_q3: gameDetails.away.score["3"],
+      awayScore_q4: gameDetails.away.score["4"]
+    };
+    return game;
+  };
+
   async searchSchedule(args: gameSearchArgs) {
     // console.log(transposeArgs(args));
+    let games: scheduleGame[] = [];
     try {
       if (this.schedule.length < 1) {
         await this.regenerateSchedule();
-        return _.filter(this.schedule, transposeArgs(args));
+        // TODO: figure out why this is producing a type error
+        //@ts-ignore
+        games = _.filter(this.schedule, transposeArgs(args));
       } else {
-        return _.filter(this.schedule, transposeArgs(args));
+        //@ts-ignore
+        games = _.filter(this.schedule, transposeArgs(args));
+      }
+      const mountedGames = await games.map(this.mountGameDetails);
+      return mountedGames;
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  async getSingleGame(gameid: string) {
+    try {
+      const game = _.find(this.schedule, { gameid: gameid });
+      if (game) {
+        return await this.mountGameDetails(game);
+      } else {
+        return null;
       }
     } catch (err) {
       throw err;
     }
   }
 
-  async updatePlayers() {
-    // not needed as players can be fetched on the fly
-  }
-
   async getGame(gameid: string): Promise<nflApiGame> {
     try {
       const nflGame = await this.getGamecenterGame(gameid);
-      // const game = parseGame(nflGame);
-      // game.gameid = gameid;
       return nflGame;
     } catch (error) {
-      console.error(error);
-      //   return {};
+      // console.error(error);
       throw error;
     }
   }
@@ -100,10 +144,18 @@ export default class nflGame {
     }
     try {
       const cacheGame = await this.cache.getGame(gameid);
-      if (!cacheGame) {
-        console.log("game is not found in cache, pulling from nfl.com");
-        // if cached game is not found,
-        // we fetch the game from NFL.com
+      // if (!cacheGame) {
+      // if cached game is not found,
+      // we fetch the game from NFL.com
+      // } else {
+      // if the game is found in cache that is returned instead.
+      console.log("game found in cache");
+      cacheGame.gameid = gameid;
+      return cacheGame;
+      // }
+    } catch (err) {
+      console.log("game is not found in cache, pulling from nfl.com");
+      try {
         const gameResponse = await this.fetchGame(gameid);
         // and save it to cache
         await this.cache.saveGame(gameid, gameResponse);
@@ -111,14 +163,9 @@ export default class nflGame {
         // @ts-ignore
         gameResponse.gameid = gameid;
         return gameResponse;
-      } else {
-        // if the game is found in cache that is returned instead.
-        console.log("game found in cache");
-        cacheGame.gameid = gameid;
-        return cacheGame;
+      } catch (error) {
+        throw error;
       }
-    } catch (err) {
-      throw err;
     }
   }
 

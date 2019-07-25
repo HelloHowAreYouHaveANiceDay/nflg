@@ -78,10 +78,19 @@ type Game {
   awayName: String!
   awayScore: Float!
   redzone: Boolean!
-  weather: String!
+  weather: String
   media: String
+  clock: String!
   yl: String!
-  aggregatedGameStats: [AggGameStat!]
+  homeScore_q1: Float!
+  homeScore_q2: Float!
+  homeScore_q3: Float!
+  homeScore_q4: Float!
+  awayScore_q1: Float!
+  awayScore_q2: Float!
+  awayScore_q3: Float!
+  awayScore_q4: Float!
+  aggregatedGameStats: [AggGameStat!]!
 }
 
 type Player {
@@ -109,4 +118,5 @@ type Query {
   getGameStatsByGameId(id: String, playerName: String, category: String): [AggGameStat!]!
   Player(id: String!): Player!
   games(year: Float, week: Float, home: String, away: String, seasonType: String): [Game!]
+  game(gameid: String!): Game
 }
