@@ -1,7 +1,6 @@
 import jsonCache from "./jsonCache";
 import Player from "../schemas/Player";
 import NFLApi, { scheduleGame } from "./nflApi";
-// import { searchScheduleArgs, Schedule } from "../schemas/Schedule";
 import _ from "lodash";
 import { nflApiGame, nflApiGameResponse } from "../schemas/nflApiGame";
 import { parseProfile } from "./nflPlayer";

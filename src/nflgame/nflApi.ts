@@ -1,8 +1,6 @@
-import axios from "axios";
+import axios from "./api";
 import cheerio from "cheerio";
 import _ from "lodash";
-import GameDetails from "../schemas/GameDetails";
-// import { Schedule } from "../schemas/Schedule";
 
 interface gameWeekArgs {
   year: number;
@@ -212,7 +210,11 @@ export default class NFLApi {
             player.number = $(e).text();
             break;
           case 1:
-            const name = $(e).children().first().text().trim();
+            const name = $(e)
+              .children()
+              .first()
+              .text()
+              .trim();
             if (name.includes(",")) {
               player.lastName = name.split(",")[0];
               player.firstName = name.split(",")[1];
@@ -220,7 +222,10 @@ export default class NFLApi {
               player.lastName = name;
               player.firstName = "";
             }
-            player.profileUrl = $(e).children().first().attr("href");
+            player.profileUrl = $(e)
+              .children()
+              .first()
+              .attr("href");
             player.playerid = profileIdFromUrl(player.profileUrl);
             break;
           case 2:

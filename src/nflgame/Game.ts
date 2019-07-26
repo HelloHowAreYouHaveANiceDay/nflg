@@ -1,6 +1,5 @@
 import { nflApiGame, nflAggGameStats } from "../schemas/nflApiGame";
 import { AggGameStat } from "../schemas/AggGameStat";
-import GameDetails from "../schemas/GameDetails";
 
 export function getPlayerStats(nflGame: nflApiGame | null) {
   if (nflGame == null) {
