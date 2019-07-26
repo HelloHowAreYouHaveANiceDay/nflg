@@ -13,4 +13,3 @@ yarn build
 
 yarn start
 ```
-s
