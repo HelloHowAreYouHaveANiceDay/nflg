@@ -1,3 +1,4 @@
+require("dotenv").config();
 import "reflect-metadata";
 import { GraphQLServer } from "graphql-yoga";
 import { buildSchema } from "type-graphql";
@@ -10,7 +11,7 @@ import path from "path";
 
 import nflGame from "./nflgame/nflgame";
 
-nflGame.getInstance(path.join(__dirname, "../data/"));
+nflGame.getInstance(process.env.CACHE_PATH);
 
 // // GRAPHQL PORTION
 async function bootstrap() {
