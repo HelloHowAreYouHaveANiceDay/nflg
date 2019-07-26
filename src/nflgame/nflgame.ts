@@ -144,22 +144,14 @@ export default class nflGame {
     }
     try {
       const cacheGame = await this.cache.getGame(gameid);
-      // if (!cacheGame) {
-      // if cached game is not found,
-      // we fetch the game from NFL.com
-      // } else {
-      // if the game is found in cache that is returned instead.
       console.log("game found in cache");
       cacheGame.gameid = gameid;
       return cacheGame;
-      // }
     } catch (err) {
       console.log("game is not found in cache, pulling from nfl.com");
       try {
         const gameResponse = await this.fetchGame(gameid);
-        // and save it to cache
         await this.cache.saveGame(gameid, gameResponse);
-        // before returning it to the user
         // @ts-ignore
         gameResponse.gameid = gameid;
         return gameResponse;
@@ -197,7 +189,7 @@ export default class nflGame {
       await this.cache.savePlayerList(this.players);
       return player;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       throw error;
     }
   }
@@ -219,10 +211,4 @@ export default class nflGame {
       return {};
     }
   }
-
-  //   async getGamesBySchedule(params: searchScheduleArgs) {
-  //     const match = params;
-  //     // console.log(match)
-  //     return _.filter(this.schedule, match);
-  //   }
 }
