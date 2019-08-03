@@ -29,10 +29,10 @@ export interface scheduleGame {
 }
 
 const nflCurrentSchedule = "http://www.nfl.com/liveupdate/scorestrip/ss.xml";
-const nflCurrentSchedulePostSeason =
-  "http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml";
+// const nflCurrentSchedulePostSeason =
+// "http://www.nfl.com/liveupdate/scorestrip/postseason/ss.xml";
 const nflRosterUrl = "http://www.nfl.com/teams/roster?team=";
-const nflProfileUrl = "http://www.nfl.com/players/profile?id=";
+// const nflProfileUrl = "http://www.nfl.com/players/profile?id=";
 
 export default class NFLApi {
   static async yearPhaseWeek(week?: gameWeekArgs) {

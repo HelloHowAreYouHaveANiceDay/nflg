@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, ManyToMany, ManyToOne } from "typeorm";
+import Play from "./Play";
+import Player from "./Player";
 
 @Entity()
 export default class PlayPlayer {
@@ -191,4 +193,10 @@ export default class PlayPlayer {
   rushing_twoptmissed: number;
   @Column()
   rushing_yds: number;
+
+  @ManyToOne(type => Play, play => play.play_players)
+  play: Play;
+
+  @ManyToOne(type => Player, player => player.play_players)
+  player: Player;
 }

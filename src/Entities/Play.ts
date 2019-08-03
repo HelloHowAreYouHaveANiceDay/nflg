@@ -1,4 +1,6 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
+import Player from "./Player";
+import PlayPlayer from "./PlayPlayer";
 
 @Entity()
 export default class Play {
@@ -55,4 +57,7 @@ export default class Play {
   timeout: number;
   @Column()
   xp_aborted: number;
+
+  @OneToMany(type => PlayPlayer, playplayer => playplayer.play)
+  play_players: PlayPlayer[];
 }

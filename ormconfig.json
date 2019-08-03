@@ -1,4 +1,5 @@
 {
   "type": "sqlite",
-  "database": "./nfldb.db"
+  "database": "./nfldb.db",
+  "entities": ["src/Entities/*.ts"]
 }

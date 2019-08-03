@@ -1,5 +1,7 @@
 import { ObjectType, Field, ID } from "type-graphql";
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
+import Team from "./Team";
+import PlayPlayer from "./PlayPlayer";
 
 @ObjectType()
 @Entity()
@@ -67,13 +69,16 @@ export default class Player {
 
   @Field({ nullable: true })
   @Column()
-  team: string;
-
-  @Field({ nullable: true })
-  @Column()
   weight: number;
 
   @Field({ nullable: true })
   @Column()
   yearsPro?: number;
+
+  @Field(type => Team)
+  @ManyToOne(type => Team, team => team.players)
+  team: Team;
+
+  @ManyToOne(type => PlayPlayer, playplayer => playplayer.player)
+  play_players: PlayPlayer[];
 }
