@@ -2,37 +2,39 @@ require("dotenv").config();
 import "reflect-metadata";
 import { GraphQLServer } from "graphql-yoga";
 import { buildSchema } from "type-graphql";
-// import { GameDetailsResolver } from './resolvers/GameDetailResolver';
-// import {GameResolver } from
 import AggGameStatResolver from "./resolvers/AggGameStatResolver";
 import PlayerResolver from "./resolvers/PlayerResolver";
 import GameResolver from "./resolvers/GameResolver";
 import path from "path";
 
 import nflGame from "./nflgame/nflgame";
+import { createConnection } from "typeorm";
 
 nflGame.getInstance(process.env.CACHE_PATH);
 
-// // GRAPHQL PORTION
-async function bootstrap() {
-  const schema = await buildSchema({
-    resolvers: [AggGameStatResolver, PlayerResolver, GameResolver],
-    validate: false,
-    emitSchemaFile: true
-  });
+// GRAPHQL PORTION
+// async function bootstrap() {
+//   const schema = await buildSchema({
+//     resolvers: [AggGameStatResolver, PlayerResolver, GameResolver],
+//     validate: false,
+//     emitSchemaFile: true
+//   });
 
-  const server = new GraphQLServer({
-    schema
-  });
+//   const server = new GraphQLServer({
+//     schema
+//   });
 
-  server.start(() => console.log("Server is running on http://localhost:4000"));
+//   server.start(() => console.log("Server is running on http://localhost:4000"));
+// }
+
+// bootstrap();
+
+async function connect() {
+  const connection = await createConnection();
+  console.log(connection);
 }
 
-bootstrap();
-
-// nflGame.getInstance().searchSchedule({home: 'NYG', year: 2011}).then((result) => {
-//     console.log(result);
-// })
+connect();
 
 // HRM
 if (module.hot) {

@@ -1,6 +1,6 @@
 import "reflect-metadata";
 import { Resolver, Query, Args, FieldResolver, Root } from "type-graphql";
-import { AggGameStat, AggGameStatArgs } from "../schemas/AggGameStat";
+import { AggGameStat, AggGameStatArgs } from "../Entities/AggGameStat";
 import nflGame from "../nflgame/nflgame";
 import _ from "lodash";
 

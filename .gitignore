@@ -8,6 +8,9 @@ yarn-error.log*
 /dist/
 .cache
 
+# local sqlite db
+nfldb.db
+
 # Runtime data
 pids
 *.pid

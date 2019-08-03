@@ -1,11 +1,11 @@
 import jsonCache from "./jsonCache";
-import Player from "../schemas/Player";
+import Player from "../Entities/Player";
 import NFLApi, { scheduleGame } from "./nflApi";
 import _ from "lodash";
-import { nflApiGame, nflApiGameResponse } from "../schemas/nflApiGame";
+import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
 import { parseProfile } from "./nflPlayer";
 import { getPlayerStats } from "./Game";
-import { gameSearchArgs, Game } from "../schemas/Game";
+import { gameSearchArgs, Game } from "../Entities/Game";
 
 function transposeArgs(args: gameSearchArgs) {
   const params: any = {
@@ -64,7 +64,7 @@ export default class nflGame {
 
   mountGameDetails = async (scheduleGame: scheduleGame) => {
     const gameDetails = await this.getGame(scheduleGame.gameid);
-    const game: Game = {
+    const game = {
       gameid: scheduleGame.gameid,
       wday: scheduleGame.wday,
       month: scheduleGame.month,
@@ -184,6 +184,7 @@ export default class nflGame {
     try {
       const html = await NFLApi.getPlayerProfile(gsisId);
       const player = parseProfile(html);
+      //@ts-ignore
       this.players[gsisId] = player;
       await this.cache.savePlayerList(this.players);
       return player;

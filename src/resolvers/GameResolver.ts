@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import { Arg, Args, Query, Resolver, FieldResolver, Root } from "type-graphql";
 
-import { gameSearchArgs, Game } from "../schemas/Game";
+import { gameSearchArgs, Game } from "../Entities/Game";
 
 import nflGame from "../nflgame/nflgame";
 

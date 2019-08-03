@@ -1,5 +1,5 @@
 import { Resolver, Query, Arg, FieldResolver, Root } from "type-graphql";
-import Player from "../schemas/Player";
+import Player from "../Entities/Player";
 import nflGame from "../nflgame/nflgame";
 
 @Resolver(of => Player)
