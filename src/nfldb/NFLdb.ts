@@ -63,31 +63,32 @@ export class NFLdb {
     game: nflApiGame,
     scheduleGame: scheduleGame
   ) {
-    // const nflGame: Game = {
-    //   gameid: gameid,
-    //   wday: scheduleGame.wday,
-    //   season_type: scheduleGame.gameType,
-    //   finished: scheduleGame.quarter == "Final",
-    //   home_score: scheduleGame.homeScore,
-    //   home_score_q1: game.home.score["1"],
-    //   home_score_q2: game.home.score["2"],
-    //   home_score_q3: game.home.score["3"],
-    //   home_score_q4: game.home.score["4"],
-    //   home_score_q5: game.home.score["5"],
-    //   away_score: scheduleGame.awayScore,
-    //   away_score_q1: game.away.score["1"],
-    //   away_score_q2: game.away.score["2"],
-    //   away_score_q3: game.away.score["3"],
-    //   away_score_q4: game.away.score["4"],
-    //   away_score_q5: game.away.score["5"],
-    //   home_turnovers: game.home.to,
-    //   away_turnovers: game.away.to
-    // };
-    // await this.connection
-    //   .createQueryBuilder()
-    //   .insert()
-    //   .into(Game)
-    //   .values(nflGame)
-    //   .execute();
-  }
+//     const nflGame: Game = {
+//       gameid: gameid,
+//       wday: scheduleGame.wday,
+//       season_type: scheduleGame.gameType,
+//       finished: scheduleGame.quarter == "Final",
+//       home_score: scheduleGame.homeScore,
+//       home_score_q1: game.home.score["1"],
+//       home_score_q2: game.home.score["2"],
+//       home_score_q3: game.home.score["3"],
+//       home_score_q4: game.home.score["4"],
+//       home_score_q5: game.home.score["5"],
+//       away_score: scheduleGame.awayScore,
+//       away_score_q1: game.away.score["1"],
+//       away_score_q2: game.away.score["2"],
+//       away_score_q3: game.away.score["3"],
+//       away_score_q4: game.away.score["4"],
+//       away_score_q5: game.away.score["5"],
+//       home_turnovers: game.home.to,
+//       away_turnovers: game.away.to
+//     };
+
+//     await this.connection
+//       .createQueryBuilder()
+//       .insert()
+//       .into(Game)
+//       .values(nflGame)
+//       .execute();
+//   }
 }
