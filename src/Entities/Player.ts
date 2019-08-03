@@ -1,6 +1,6 @@
 import { ObjectType, Field, ID } from "type-graphql";
 import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import Team from "./Team";
+import { Team } from "./Team";
 import PlayPlayer from "./PlayPlayer";
 
 @ObjectType()

@@ -9,6 +9,7 @@ import path from "path";
 
 import nflGame from "./nflgame/nflgame";
 import { createConnection } from "typeorm";
+import { NFLdb } from "./nfldb/NFLdb";
 
 nflGame.getInstance(process.env.CACHE_PATH);
 
@@ -30,8 +31,12 @@ nflGame.getInstance(process.env.CACHE_PATH);
 // bootstrap();
 
 async function connect() {
-  const connection = await createConnection();
-  console.log(connection);
+  const nfldb = new NFLdb();
+  await nfldb.setup();
+  await nfldb.connection.synchronize();
+  await nfldb.setupTeams();
+  // const connection = await createConnection();
+  // console.log(connection);
 }
 
 connect();
