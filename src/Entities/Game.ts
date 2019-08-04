@@ -4,10 +4,12 @@ import { AggGameStat } from "./AggGameStat";
 import {
   Entity,
   PrimaryColumn,
+  ManyToOne,
   Column,
   UpdateDateColumn,
   CreateDateColumn
 } from "typeorm";
+import { Team } from "./Team";
 
 export interface scoreDetails {
   "1": number;
@@ -56,8 +58,8 @@ export class Game {
   finished: boolean;
 
   @Field()
-  @Column()
-  home_team: string;
+  @ManyToOne(type => Team, team => team.games)
+  home_team: Team;
 
   @Field()
   @Column()
@@ -88,8 +90,8 @@ export class Game {
   home_turnovers: number;
 
   @Field()
-  @Column()
-  away_team: string;
+  @ManyToOne(type => Team, team => team.games)
+  away_team: Team;
 
   @Field()
   @Column()

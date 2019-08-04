@@ -118,9 +118,8 @@ export default class nflGame {
     try {
       const game = _.find(this.schedule, { gameid: gameid });
       if (game) {
-        return await this.mountGameDetails(game);
-      } else {
-        return null;
+        // return await this.mountGameDetails(game);
+        return game;
       }
     } catch (err) {
       throw err;

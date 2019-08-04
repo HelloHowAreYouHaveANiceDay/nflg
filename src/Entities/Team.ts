@@ -1,6 +1,7 @@
 import "reflect-metadata";
 import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
 import Player from "./Player";
+import { Game } from "./Game";
 
 @Entity()
 export class Team {
@@ -14,7 +15,11 @@ export class Team {
   name: string;
 
   @OneToMany(type => Player, player => player.team)
-  players: Player[];
+  players?: Player[];
+
+  @OneToMany(type => Game, game => game.home_team)
+  @OneToMany(type => Game, game => game.away_team)
+  games?: Game[];
 }
 
 // NFL teams changeup all the time. need to figure out a team update function.

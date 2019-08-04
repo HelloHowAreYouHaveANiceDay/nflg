@@ -91,37 +91,57 @@ export class NFLdb {
     }
   }
 
-  // async insertGame(
-  //   gameid: string,
-  //   game: nflApiGame,
-  //   scheduleGame: scheduleGame
-  // ) {
-  //   const nflGame: Game = {
-  //     gameid: gameid,
-  //     wday: scheduleGame.wday,
-  //     season_type: scheduleGame.gameType,
-  //     finished: scheduleGame.quarter == "Final",
-  //     home_score: scheduleGame.homeScore,
-  //     home_score_q1: game.home.score["1"],
-  //     home_score_q2: game.home.score["2"],
-  //     home_score_q3: game.home.score["3"],
-  //     home_score_q4: game.home.score["4"],
-  //     home_score_q5: game.home.score["5"],
-  //     away_score: scheduleGame.awayScore,
-  //     away_score_q1: game.away.score["1"],
-  //     away_score_q2: game.away.score["2"],
-  //     away_score_q3: game.away.score["3"],
-  //     away_score_q4: game.away.score["4"],
-  //     away_score_q5: game.away.score["5"],
-  //     home_turnovers: game.home.to,
-  //     away_turnovers: game.away.to
-  //   };
+  async _insertGame(gameid: string) {
+    const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
+    const game = await nflGame.getInstance().getGame(gameid);
+    return await this.insertGame(game, scheduleGame);
+  }
 
-  //   await this.connection
-  //     .createQueryBuilder()
-  //     .insert()
-  //     .into(Game)
-  //     .values(nflGame)
-  //     .execute();
-  // }
+  async insertDrives(game: nflApiGame) {}
+
+  async insertGame(game: nflApiGame, scheduleGame?: scheduleGame) {
+    try {
+      if (!scheduleGame) {
+        throw new Error("scheduled game not found");
+      }
+
+      const nflGame: Game = {
+        gameid: scheduleGame.gameid,
+        wday: scheduleGame.wday,
+        season_type: scheduleGame.gameType,
+        finished: scheduleGame.quarter == "F",
+        home_score: scheduleGame.homeScore,
+        home_score_q1: game.home.score["1"],
+        home_score_q2: game.home.score["2"],
+        home_score_q3: game.home.score["3"],
+        home_score_q4: game.home.score["4"],
+        home_score_q5: game.home.score["5"],
+        away_score: scheduleGame.awayScore,
+        away_score_q1: game.away.score["1"],
+        away_score_q2: game.away.score["2"],
+        away_score_q3: game.away.score["3"],
+        away_score_q4: game.away.score["4"],
+        away_score_q5: game.away.score["5"],
+        home_turnovers: game.home.to,
+        away_turnovers: game.away.to,
+        home_team: await this.findTeam(game.home.abbr),
+        away_team: await this.findTeam(game.away.abbr)
+      };
+
+      await this.connection
+        .createQueryBuilder()
+        .insert()
+        .into(Game)
+        .values(nflGame)
+        .execute();
+
+      console.log(
+        `inserted ${scheduleGame.year}-week${scheduleGame.week}-${
+          scheduleGame.gameid
+        }`
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
 }

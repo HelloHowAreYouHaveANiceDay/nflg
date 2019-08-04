@@ -36,6 +36,7 @@ async function connect() {
   await nfldb.connection.synchronize();
   // await nfldb.setupTeams();
   const team = await nfldb.findTeam("Giants");
+  const insert = await nfldb._insertGame("2019010600");
   console.log(team);
   // const connection = await createConnection();
   // console.log(connection);
