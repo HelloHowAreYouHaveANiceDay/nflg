@@ -7,7 +7,8 @@ import {
   ManyToOne,
   Column,
   UpdateDateColumn,
-  CreateDateColumn
+  CreateDateColumn,
+  BaseEntity
 } from "typeorm";
 import { Team } from "./Team";
 
@@ -57,7 +58,7 @@ export class Game {
   @Column()
   finished: boolean;
 
-  @Field()
+  @Field(type => Team)
   @ManyToOne(type => Team, team => team.games)
   home_team: Team;
 
@@ -89,7 +90,7 @@ export class Game {
   @Column()
   home_turnovers: number;
 
-  @Field()
+  @Field(type => Team)
   @ManyToOne(type => Team, team => team.games)
   away_team: Team;
 

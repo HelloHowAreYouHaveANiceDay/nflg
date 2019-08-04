@@ -128,12 +128,18 @@ export class NFLdb {
         away_team: await this.findTeam(game.away.abbr)
       };
 
-      await this.connection
-        .createQueryBuilder()
-        .insert()
-        .into(Game)
-        .values(nflGame)
-        .execute();
+      const gameUpdate = await this.connection.manager.preload(Game, nflGame);
+
+      await this.connection.manager.save(gameUpdate);
+      // .createQueryBuilder()
+      // .update()
+      // .set(nflGame)
+      // .where("gameid = :id", { id: scheduleGame.gameid })
+      // .execute();
+      // .insert()
+      // .into(Game)
+      // .values(nflGame)
+      // .execute();
 
       console.log(
         `inserted ${scheduleGame.year}-week${scheduleGame.week}-${
