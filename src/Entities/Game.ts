@@ -1,7 +1,13 @@
 import "reflect-metadata";
 import { ObjectType, Field, ID, ArgsType } from "type-graphql";
 import { AggGameStat } from "./AggGameStat";
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  UpdateDateColumn,
+  CreateDateColumn
+} from "typeorm";
 
 export interface scoreDetails {
   "1": number;
@@ -40,13 +46,6 @@ export class Game {
   @Column()
   // nfldb day_of_week
   wday?: string;
-
-  // @Field({ nullable: true })
-  // month?: number;
-
-  // @Field() quarter?: string;
-
-  // @Field() day?: number;
 
   @Field()
   @Column()
@@ -121,10 +120,10 @@ export class Game {
   away_turnovers: number;
 
   @Field()
-  @Column()
-  time_inserted: string;
+  @CreateDateColumn()
+  time_inserted?: string;
 
   @Field()
-  @Column()
-  time_updated: string;
+  @UpdateDateColumn()
+  time_updated?: string;
 }

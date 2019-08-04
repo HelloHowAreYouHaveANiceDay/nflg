@@ -1,3 +1,4 @@
+import "reflect-metadata";
 import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
 import Player from "./Player";
 

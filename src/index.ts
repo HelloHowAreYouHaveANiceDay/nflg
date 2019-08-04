@@ -34,7 +34,9 @@ async function connect() {
   const nfldb = new NFLdb();
   await nfldb.setup();
   await nfldb.connection.synchronize();
-  await nfldb.setupTeams();
+  // await nfldb.setupTeams();
+  const team = await nfldb.findTeam("Giants");
+  console.log(team);
   // const connection = await createConnection();
   // console.log(connection);
 }
