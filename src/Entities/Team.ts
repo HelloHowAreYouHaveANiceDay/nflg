@@ -44,7 +44,15 @@ export const teamLookup = {
   OAK: ["Oakland", "Raiders", "Oakland Raiders"],
   PHI: ["Philadelphia", "Eagles", "Philadelphia Eagles"],
   PIT: ["Pittsburgh", "Steelers", "Pittsburgh Steelers"],
-  SD: ["San Diego", "Chargers", "San Diego Chargers", "S.D.", "SDG"],
+  LAC: [
+    "Los Angeles",
+    "Chargers",
+    "Los Angeles Chargers",
+    "San Diego",
+    "San Diego Chargers",
+    "S.D.",
+    "SDG"
+  ],
   SEA: ["Seattle", "Seahawks", "Seattle Seahawks"],
   SF: ["San Francisco", "49ers", "San Francisco 49ers", "S.F.", "SFO"],
   LA: [
