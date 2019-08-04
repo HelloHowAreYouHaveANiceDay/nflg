@@ -10,6 +10,7 @@ import { Game } from "../Entities/Game";
 import { scheduleGame } from "../nflgame/nflApi";
 import { teamLookup, Team } from "../Entities/Team";
 import _ from "lodash";
+import { Drive } from "../Entities/Drive";
 
 export class NFLdb {
   connection: Connection;
@@ -94,10 +95,68 @@ export class NFLdb {
   async _insertGame(gameid: string) {
     const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
     const game = await nflGame.getInstance().getGame(gameid);
-    return await this.insertGame(game, scheduleGame);
+    // await this.insertGame(game, scheduleGame);
+    await this.insertDrives(game, scheduleGame);
   }
 
-  async insertDrives(game: nflApiGame) {}
+  async insertDrives(game: nflApiGame, scheduleGame?: scheduleGame) {
+    if (!scheduleGame) {
+      throw new Error("scheduled game not found");
+    }
+    const drivesRaw = game.drives;
+    const drives: Drive[] = [];
+    _.forIn(drivesRaw, (value, key) => {
+      if (value.start) {
+        // console.log(value.start);
+        const drive = new Drive();
+
+        drive.gsis_id = scheduleGame.gameid;
+        drive.drive_id = key;
+        drive.start_field = this.positionToOffset(
+          value.posteam,
+          value.start.yrdln
+        );
+        drive.end_field = this.positionToOffset(value.posteam, value.end.yrdln);
+        drive.first_downs = value.fds;
+        drive.pos_team = value.posteam;
+        drive.pos_time = value.postime;
+        drive.play_count = value.numplays;
+        drive.result = value.result;
+        drive.penalty_yards = value.penyds;
+        drive.yards_gained = value.ydsgained;
+        drive.start_qtr = value.start.qtr;
+        drive.start_time = value.start.time;
+        drive.end_qtr = value.end.qtr;
+        drive.end_time = value.end.time;
+        drives.push(drive);
+      }
+    });
+
+    // const loadedDrives = await Promise.all(
+    //   drives.map(d => {
+    //     return this.connection.manager.preload(Drive, d);
+    //   })
+    // );
+
+    await this.connection.manager.save(drives);
+  }
+
+  positionToOffset(own: string, yrdln: string) {
+    // Uses a varied offset technique than burntsushi/nfldb
+    // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
+    // Don't have to fiddle with embedded names
+    if (yrdln == "50") {
+      return 0;
+    }
+    const [team, yard] = yrdln.split(" ");
+    return team == own ? +yard - 50 : 50 - +yard;
+  }
+
+  offsetToPosition(own: string, opp: string, offset: number) {
+    const pos = offset > 0 ? opp : own;
+    const yds = offset > 0 ? 50 - offset : offset + 50;
+    return `${pos} ${yds}`;
+  }
 
   async insertGame(game: nflApiGame, scheduleGame?: scheduleGame) {
     try {
@@ -129,20 +188,9 @@ export class NFLdb {
       };
 
       const gameUpdate = await this.connection.manager.preload(Game, nflGame);
-
       await this.connection.manager.save(gameUpdate);
-      // .createQueryBuilder()
-      // .update()
-      // .set(nflGame)
-      // .where("gameid = :id", { id: scheduleGame.gameid })
-      // .execute();
-      // .insert()
-      // .into(Game)
-      // .values(nflGame)
-      // .execute();
-
       console.log(
-        `inserted ${scheduleGame.year}-week${scheduleGame.week}-${
+        `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${
           scheduleGame.gameid
         }`
       );

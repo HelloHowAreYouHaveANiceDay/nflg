@@ -1,4 +1,10 @@
-import { Entity, PrimaryColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn
+} from "typeorm";
 
 @Entity()
 export class Drive {
@@ -8,11 +14,24 @@ export class Drive {
   @PrimaryColumn()
   drive_id: string;
 
-  @Column()
-  start_field: string;
+  @Column({
+    nullable: true
+  })
+  start_field: number;
+
+  @Column({
+    nullable: true
+  })
+  end_field: number;
 
   @Column()
   start_time: string;
+
+  @Column()
+  start_qtr: number;
+
+  @Column()
+  end_qtr: number;
 
   @Column()
   end_time: string;
@@ -24,23 +43,23 @@ export class Drive {
   pos_time: string;
 
   @Column()
-  first_downs: string;
+  first_downs: number;
 
   @Column()
   result: string;
 
   @Column()
-  penalty_yards: string;
+  penalty_yards: number;
 
   @Column()
-  yards_gaind: string;
+  yards_gained: number;
 
   @Column()
-  play_count: string;
+  play_count: number;
 
-  @Column()
-  time_inserted: string;
+  @CreateDateColumn()
+  time_inserted?: string;
 
-  @Column()
-  time_updated: string;
+  @UpdateDateColumn()
+  time_updated?: string;
 }

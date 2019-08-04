@@ -97,8 +97,8 @@ export interface nflPlayerAggGameStat {
 }
 
 interface nflDrives {
-  [key: string]: nflDrive | number;
-  crntdrv: number;
+  [key: string]: nflDrive;
+  // crntdrv: number;
 }
 
 interface nflDrive {
