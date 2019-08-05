@@ -16,183 +16,183 @@ export default class PlayPlayer {
 
   @Column()
   team: string;
-  @Column()
+  @Column({ nullable: true })
   defense_ast: number;
-  @Column()
+  @Column({ nullable: true })
   defense_ffum: number;
-  @Column()
+  @Column({ nullable: true })
   defense_fgblk: number;
-  @Column()
+  @Column({ nullable: true })
   defense_frec: number;
-  @Column()
+  @Column({ nullable: true })
   defense_frec_tds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_frec_yds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_int: number;
-  @Column()
+  @Column({ nullable: true })
   defense_tds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_yds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_pass_def: number;
-  @Column()
+  @Column({ nullable: true })
   defense_puntblk: number;
-  @Column()
+  @Column({ nullable: true })
   defense_qbhit: number;
-  @Column()
+  @Column({ nullable: true })
   defense_safe: number;
-  @Column()
+  @Column({ nullable: true })
   defense_sk: number;
-  @Column()
+  @Column({ nullable: true })
   defense_sk_yds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_tkl: number;
-  @Column()
+  @Column({ nullable: true })
   defense_tkl_loss: number;
-  @Column()
+  @Column({ nullable: true })
   defense_tkl_loss_yds: number;
-  @Column()
+  @Column({ nullable: true })
   defense_tkl_primary: number;
-  @Column()
+  @Column({ nullable: true })
   defense_xpblk: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_forced: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_notforced: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_lost: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_oob: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_rec: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_rec_tds: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_rec_yds: number;
-  @Column()
+  @Column({ nullable: true })
   fumbles_tot: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_all_yds: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_downed: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_fga: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_fgm: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_fgm_yds: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_fgmissed: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_fgmissed_yds: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_i20: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_rec: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_tot: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_rec_tds: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_touchback: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_xpa: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_xpmade: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_xpmissed: number;
-  @Column()
+  @Column({ nullable: true })
   kicking_yds: number;
-  @Column()
+  @Column({ nullable: true })
   kickret_fair: number;
-  @Column()
+  @Column({ nullable: true })
   kickret_tds: number;
-  @Column()
+  @Column({ nullable: true })
   kickret_touchback: number;
-  @Column()
+  @Column({ nullable: true })
   kickret_yds: number;
-  @Column()
+  @Column({ nullable: true })
   passing_att: number;
-  @Column()
+  @Column({ nullable: true })
   passing_cmp: number;
-  @Column()
+  @Column({ nullable: true })
   passing_cmp_air_yds: number;
-  @Column()
+  @Column({ nullable: true })
   passing_incmp: number;
-  @Column()
+  @Column({ nullable: true })
   passing_incmp_air_yds: number;
-  @Column()
+  @Column({ nullable: true })
   passing_int: number;
-  @Column()
+  @Column({ nullable: true })
   passing_sk: number;
-  @Column()
+  @Column({ nullable: true })
   passing_sk_yds: number;
-  @Column()
+  @Column({ nullable: true })
   passing_tds: number;
-  @Column()
+  @Column({ nullable: true })
   passing_twopta: number;
-  @Column()
+  @Column({ nullable: true })
   passing_twoptm: number;
-  @Column()
+  @Column({ nullable: true })
   passing_twoptmissed: number;
-  @Column()
+  @Column({ nullable: true })
   passing_yds: number;
-  @Column()
+  @Column({ nullable: true })
   punting_blk: number;
-  @Column()
+  @Column({ nullable: true })
   punting_i20: number;
-  @Column()
+  @Column({ nullable: true })
   punting_tot: number;
-  @Column()
+  @Column({ nullable: true })
   punting_touchback: number;
-  @Column()
+  @Column({ nullable: true })
   punting_yds: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_downed: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_fair: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_tds: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_oob: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_tot: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_touchback: number;
-  @Column()
+  @Column({ nullable: true })
   puntret_yds: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_rec: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_tar: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_tds: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_twopta: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_twoptm: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_twoptmissed: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_yac_yds: number;
-  @Column()
+  @Column({ nullable: true })
   receiving_yds: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_att: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_loss: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_loss_yds: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_tds: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_twopta: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_twoptm: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_twoptmissed: number;
-  @Column()
+  @Column({ nullable: true })
   rushing_yds: number;
 
   @ManyToOne(type => Play, play => play.play_players)

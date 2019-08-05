@@ -11,6 +11,8 @@ import { scheduleGame } from "../nflgame/nflApi";
 import { teamLookup, Team } from "../Entities/Team";
 import _ from "lodash";
 import { Drive } from "../Entities/Drive";
+import PlayPlayer from "../Entities/PlayPlayer";
+import { statsDict } from "../nflgame/Stats";
 
 export class NFLdb {
   connection: Connection;
@@ -96,18 +98,65 @@ export class NFLdb {
     const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
     const game = await nflGame.getInstance().getGame(gameid);
     // await this.insertGame(game, scheduleGame);
-    await this.insertDrives(game, scheduleGame);
+    // await this.insertDrives(game, scheduleGame);
+    await this.insertPlayPlayers(game, scheduleGame);
+  }
+
+  async insertPlayPlayers(game: nflApiGame, scheduleGame?: scheduleGame) {
+    if (!scheduleGame) {
+      throw new Error("scheduled game not found");
+    }
+
+    const drivesRaw = game.drives;
+
+    const playPlayers: PlayPlayer[] = [];
+
+    _.forIn(drivesRaw, (drive, driveId) => {
+      _.forIn(drive.plays, (play, playId) => {
+        _.forIn(play.players, (sequence, playerId) => {
+          const playPlayer = new PlayPlayer();
+          playPlayer.gsis_id = scheduleGame.gameid;
+          playPlayer.drive_id = driveId;
+          playPlayer.play_id = playId;
+          playPlayer.player_id = playerId;
+
+          sequence.forEach(stat => {
+            // TODO: add relational
+            playPlayer.team = stat.clubcode;
+
+            const statdef = statsDict[`${stat.statId}`];
+
+            statdef.fields.forEach(field => {
+              const val = statdef.value ? statdef.value : 1;
+              //@ts-ignore
+              playPlayer[field] = val;
+            });
+
+            if (statdef.yds.length > 0) {
+              //@ts-ignore
+              playPlayer[statdef.yds] = stat.yards;
+            }
+          });
+
+          playPlayers.push(playPlayer);
+        });
+      });
+    });
+
+    await Promise.all(playPlayers.map(pp => this.connection.manager.save(pp)));
   }
 
   async insertDrives(game: nflApiGame, scheduleGame?: scheduleGame) {
     if (!scheduleGame) {
       throw new Error("scheduled game not found");
     }
+
     const drivesRaw = game.drives;
+
     const drives: Drive[] = [];
+
     _.forIn(drivesRaw, (value, key) => {
       if (value.start) {
-        // console.log(value.start);
         const drive = new Drive();
 
         drive.gsis_id = scheduleGame.gameid;
@@ -132,12 +181,6 @@ export class NFLdb {
       }
     });
 
-    // const loadedDrives = await Promise.all(
-    //   drives.map(d => {
-    //     return this.connection.manager.preload(Drive, d);
-    //   })
-    // );
-
     await this.connection.manager.save(drives);
   }
 
@@ -145,6 +188,8 @@ export class NFLdb {
     // Uses a varied offset technique than burntsushi/nfldb
     // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
     // Don't have to fiddle with embedded names
+
+    // if yrdln is 50 there isn't a team string
     if (yrdln == "50") {
       return 0;
     }
