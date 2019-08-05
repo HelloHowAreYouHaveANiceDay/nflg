@@ -13,6 +13,7 @@ import _ from "lodash";
 import { Drive } from "../Entities/Drive";
 import PlayPlayer from "../Entities/PlayPlayer";
 import { statsDict } from "../nflgame/Stats";
+import Player from "../Entities/Player";
 
 export class NFLdb {
   connection: Connection;
@@ -99,7 +100,18 @@ export class NFLdb {
     const game = await nflGame.getInstance().getGame(gameid);
     // await this.insertGame(game, scheduleGame);
     // await this.insertDrives(game, scheduleGame);
-    await this.insertPlayPlayers(game, scheduleGame);
+    return await this.insertPlayPlayers(game, scheduleGame);
+  }
+
+  async insertPlayer(playerid: string) {
+    const player = await nflGame.getInstance().getPlayer(playerid);
+    console.log(player);
+    const pPlayer = await this.connection.manager.preload(Player, player);
+    if (pPlayer) {
+      return await this.connection.manager.save(pPlayer);
+    }
+    const nPlayer = await this.connection.manager.create(Player, player);
+    return await this.connection.manager.save(nPlayer);
   }
 
   async insertPlayPlayers(game: nflApiGame, scheduleGame?: scheduleGame) {
@@ -111,6 +123,8 @@ export class NFLdb {
 
     const playPlayers: PlayPlayer[] = [];
 
+    const playerIds: string[] = [];
+
     _.forIn(drivesRaw, (drive, driveId) => {
       _.forIn(drive.plays, (play, playId) => {
         _.forIn(play.players, (sequence, playerId) => {
@@ -119,6 +133,7 @@ export class NFLdb {
           playPlayer.drive_id = driveId;
           playPlayer.play_id = playId;
           playPlayer.player_id = playerId;
+          playerIds.push(playerId);
 
           sequence.forEach(stat => {
             // TODO: add relational
@@ -143,6 +158,10 @@ export class NFLdb {
       });
     });
 
+    const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
+    // console.log(uniqueIds);
+    await uniqueIds.map(p => this.insertPlayer(p));
+    // await this.insertPlayer(uniqueIds[0]);
     await Promise.all(playPlayers.map(pp => this.connection.manager.save(pp)));
   }
 

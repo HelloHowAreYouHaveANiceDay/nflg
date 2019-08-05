@@ -1,7 +1,7 @@
 import cheerio from "cheerio";
 import Player from "../Entities/Player";
 
-export function parseProfile(html: string) {
+export function parseProfile(html: string): Player {
   const $ = cheerio.load(html);
   // number and postiion only available to active players
   const numberStrip = $("span.player-number").text();
@@ -60,17 +60,15 @@ export function parseProfile(html: string) {
 
   return {
     fullName,
-    playerId,
-    team,
+    player_id: gsisId,
     firstName,
-    gsisId,
+    gsisId: playerId,
     lastName,
-    birthCity,
-    birthDate,
+    birthcity: birthCity,
+    birthdate: birthDate,
     college,
-    age,
-    profileUrl: url,
-    profileId: profileIdFromUrl(url),
+    profile_url: url,
+    profile_id: profileIdFromUrl(url),
     number,
     position,
     weight,

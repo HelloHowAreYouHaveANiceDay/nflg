@@ -22,25 +22,22 @@ export default class Player {
   @Column()
   fullName: string;
 
-  //   @Field({ nullable: true })
-  //   age: number;
-
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   college: string;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   // in inches
   height: number;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   // nfldb: uniform_number
   number: number;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   position: string;
 
   @Field()
@@ -48,37 +45,37 @@ export default class Player {
   gsisId: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   profile_id: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   profile_url: string;
 
-  @Field()
+  @Field({ nullable: true })
   @Column()
   birthdate: string;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   birthcity: string;
 
   @Field({ nullable: true })
-  @Column()
+  @Column({ nullable: true })
   status?: string;
 
   @Field({ nullable: true })
   @Column()
   weight: number;
 
-  @Field({ nullable: true })
-  @Column()
-  yearsPro?: number;
+  // @Field({ nullable: true })
+  // @Column()
+  // yearsPro?: number;
 
   @Field(type => Team)
   @ManyToOne(type => Team, team => team.players)
-  team: Team;
+  team?: Team;
 
   @ManyToOne(type => PlayPlayer, playplayer => playplayer.player)
-  play_players: PlayPlayer[];
+  play_players?: PlayPlayer[];
 }
