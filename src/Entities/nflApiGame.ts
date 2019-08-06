@@ -26,11 +26,11 @@ export interface nflApiGame {
   stadium: string | null;
 }
 
-interface nflScoringPlays {
+export interface nflScoringPlays {
   [key: string]: nflScoringPlay;
 }
 
-interface nflScoringPlay {
+export interface nflScoringPlay {
   type: string;
   desc: string;
   qtr: number;
@@ -96,12 +96,12 @@ export interface nflPlayerAggGameStat {
   ffum?: number;
 }
 
-interface nflDrives {
+export interface nflDrives {
   [key: string]: nflDrive;
   // crntdrv: number;
 }
 
-interface nflDrive {
+export interface nflDrive {
   sp: number;
   posteam: string;
   qtr: number;
@@ -129,7 +129,7 @@ interface nflDrive {
   };
 }
 
-interface nflPlay {
+export interface nflPlay {
   sp: number;
   qtr: number;
   down: number;
@@ -143,7 +143,7 @@ interface nflPlay {
   players: nflPlayPlayerStats;
 }
 
-interface nflPlayPlayerStats {
+export interface nflPlayPlayerStats {
   [key: string]: nflPlayPlayerStat[];
 }
 

@@ -1,9 +1,14 @@
+require("dotenv").config();
 import { NFLdb } from "../nfldb/NFLdb";
 import { getConnectionOptions } from "typeorm";
 import path from "path";
+import nflGame from "../nflgame/nflgame";
+import { Game } from "../Entities/Game";
+import { Drive } from "../Entities/Drive";
 
 // let nfldb: NFLdb;
 const nfldb = new NFLdb();
+nflGame.getInstance(process.env.CACHE_PATH);
 
 beforeAll(async () => {
   // const options = await getConnectionOptions();
@@ -36,11 +41,40 @@ test("get Texans from database", async () => {
 });
 
 test("get Cowboys from database", async () => {
-  await nfldb.setupTeams();
   const team = await nfldb.findTeam("DAL");
   expect(team).toEqual({
     team_id: "DAL",
     city: "Dallas",
     name: "Cowboys"
   });
+});
+
+test("add single game to database", async () => {
+  const testId = "2012020500";
+  const game = await nfldb.insertSingleGame(testId);
+
+  // check game insertion
+  const dbGame = await nfldb.connection
+    .createQueryBuilder()
+    .select("game")
+    .from(Game, "game")
+    .where("game.gameid = :id", { id: testId })
+    .getRawOne();
+
+  // console.log(dbGame);
+  expect(dbGame.game_homeTeamTeamId).toEqual("NE");
+  expect(dbGame.game_awayTeamTeamId).toEqual("NYG");
+
+  const dbDrives = await nfldb.connection
+    .createQueryBuilder()
+    .select("drive")
+    .from(Drive, "drive")
+    .where("drive.drive_id = :did", { did: "17" })
+    .andWhere("drive.gsis_id = :gid", { gid: testId })
+    .getRawOne();
+
+  expect(dbDrives.drive_play_count).toEqual(12);
+  expect(dbDrives.drive_result).toEqual("Touchdown");
+
+  console.log(dbDrives);
 });

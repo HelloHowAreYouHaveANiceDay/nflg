@@ -3,7 +3,6 @@ import "reflect-metadata";
 
 import nflGame from "./nflgame/nflgame";
 import { NFLdb } from "./nfldb/NFLdb";
-import { getConnectionOptions } from "typeorm";
 
 nflGame.getInstance(process.env.CACHE_PATH);
 

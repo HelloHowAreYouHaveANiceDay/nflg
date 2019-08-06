@@ -2,20 +2,19 @@ import {
   Connection,
   createConnections,
   ConnectionOptions,
-  getConnection,
   getConnectionManager
 } from "typeorm";
-import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
+import _ from "lodash";
+import { nflApiGame, nflPlay } from "../Entities/nflApiGame";
 import nflGame from "../nflgame/nflgame";
 import { Game } from "../Entities/Game";
 import { scheduleGame } from "../nflgame/nflApi";
-// import { Team } from "../Entities/Team";
 import { teamLookup, Team } from "../Entities/Team";
-import _ from "lodash";
 import { Drive } from "../Entities/Drive";
 import PlayPlayer from "../Entities/PlayPlayer";
 import { statsDict } from "../nflgame/Stats";
 import Player from "../Entities/Player";
+import Play from "../Entities/Play";
 
 export class NFLdb {
   connection: Connection;
@@ -86,12 +85,17 @@ export class NFLdb {
     }
   }
 
-  async _insertGame(gameid: string) {
-    const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
-    const game = await nflGame.getInstance().getGame(gameid);
-    await this.insertGame(game, scheduleGame);
-    await this.insertDrives(game, scheduleGame);
-    return await this.insertPlayPlayers(game, scheduleGame);
+  async insertSingleGame(gameid: string) {
+    try {
+      const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
+      const game = await nflGame.getInstance().getGame(gameid);
+      await this.insertGame(game, scheduleGame);
+      await this.insertDrives(game, scheduleGame);
+      await this.insertPlayPlayers(game, scheduleGame);
+      return true;
+    } catch (error) {
+      throw error;
+    }
   }
 
   async insertPlayer(playerid: string) {
@@ -105,6 +109,11 @@ export class NFLdb {
     return await this.connection.manager.save(nPlayer);
   }
 
+  /**
+   * parses and inserts each play
+   * @param game
+   * @param scheduleGame
+   */
   async insertPlayPlayers(game: nflApiGame, scheduleGame?: scheduleGame) {
     if (!scheduleGame) {
       throw new Error("scheduled game not found");
@@ -116,8 +125,11 @@ export class NFLdb {
 
     const playerIds: string[] = [];
 
+    const plays: [string, string, string, nflPlay][] = [];
+
     _.forIn(drivesRaw, (drive, driveId) => {
       _.forIn(drive.plays, (play, playId) => {
+        plays.push([scheduleGame.gameid, driveId, playId, play]);
         _.forIn(play.players, (sequence, playerId) => {
           const playPlayer = new PlayPlayer();
           playPlayer.gsis_id = scheduleGame.gameid;
@@ -152,10 +164,41 @@ export class NFLdb {
     const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
     // console.log(uniqueIds);
     await uniqueIds.map(p => this.insertPlayer(p));
-    // await this.insertPlayer(uniqueIds[0]);
+
+    await Promise.all(plays.map(p => this.insertPlay));
+
     await Promise.all(playPlayers.map(pp => this.connection.manager.save(pp)));
   }
 
+  async insertPlay([game_id, drive_id, play_id, play]: [
+    string,
+    string,
+    string,
+    nflPlay
+  ]) {
+    // if (!scheduleGame) {
+    //   throw new Error("scheduled game not found");
+    // }
+    const nPlay = new Play();
+    nPlay.game_id = game_id;
+    nPlay.drive_id = drive_id;
+    nPlay.play_id = play_id;
+    nPlay.time = play.time;
+    nPlay.pos_team = play.posteam;
+    nPlay.yardline = this.positionToOffset(play.posteam, play.yrdln);
+    nPlay.down = play.down;
+    nPlay.yards_to_go = play.ydstogo;
+    nPlay.description = play.desc;
+    nPlay.note = play.note;
+
+    return await this.connection.manager.save(nPlay);
+  }
+
+  /**
+   * inserts each drive
+   * @param game
+   * @param scheduleGame
+   */
   async insertDrives(game: nflApiGame, scheduleGame?: scheduleGame) {
     if (!scheduleGame) {
       throw new Error("scheduled game not found");
@@ -194,6 +237,13 @@ export class NFLdb {
     await this.connection.manager.save(drives);
   }
 
+  /**
+   * positional offset parser so play yardage is
+   * stored agnostically
+   *
+   * @param own
+   * @param yrdln
+   */
   positionToOffset(own: string, yrdln: string) {
     // Uses a varied offset technique than burntsushi/nfldb
     // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
@@ -207,6 +257,13 @@ export class NFLdb {
     return team == own ? +yard - 50 : 50 - +yard;
   }
 
+  /**
+   * converts the offset back with given team names
+   *
+   * @param own
+   * @param opp
+   * @param offset
+   */
   offsetToPosition(own: string, opp: string, offset: number) {
     const pos = offset > 0 ? opp : own;
     const yds = offset > 0 ? 50 - offset : offset + 50;
@@ -219,31 +276,32 @@ export class NFLdb {
         throw new Error("scheduled game not found");
       }
 
-      const nflGame: Game = {
-        gameid: scheduleGame.gameid,
-        wday: scheduleGame.wday,
-        season_type: scheduleGame.gameType,
-        finished: scheduleGame.quarter == "F",
-        home_score: scheduleGame.homeScore,
-        home_score_q1: game.home.score["1"],
-        home_score_q2: game.home.score["2"],
-        home_score_q3: game.home.score["3"],
-        home_score_q4: game.home.score["4"],
-        home_score_q5: game.home.score["5"],
-        away_score: scheduleGame.awayScore,
-        away_score_q1: game.away.score["1"],
-        away_score_q2: game.away.score["2"],
-        away_score_q3: game.away.score["3"],
-        away_score_q4: game.away.score["4"],
-        away_score_q5: game.away.score["5"],
-        home_turnovers: game.home.to,
-        away_turnovers: game.away.to,
-        home_team: await this.findTeam(game.home.abbr),
-        away_team: await this.findTeam(game.away.abbr)
-      };
+      // const nflGame: Game = {
+      const nflGame = new Game();
+      nflGame.gameid = scheduleGame.gameid;
+      nflGame.wday = scheduleGame.wday;
+      nflGame.season_type = scheduleGame.gameType;
+      nflGame.finished = scheduleGame.quarter == "F";
+      nflGame.home_score = scheduleGame.homeScore;
+      nflGame.home_score_q1 = game.home.score["1"];
+      nflGame.home_score_q2 = game.home.score["2"];
+      nflGame.home_score_q3 = game.home.score["3"];
+      nflGame.home_score_q4 = game.home.score["4"];
+      nflGame.home_score_q5 = game.home.score["5"];
+      nflGame.away_score = scheduleGame.awayScore;
+      nflGame.away_score_q1 = game.away.score["1"];
+      nflGame.away_score_q2 = game.away.score["2"];
+      nflGame.away_score_q3 = game.away.score["3"];
+      nflGame.away_score_q4 = game.away.score["4"];
+      nflGame.away_score_q5 = game.away.score["5"];
+      nflGame.home_turnovers = game.home.to;
+      nflGame.away_turnovers = game.away.to;
+      nflGame.home_team = await this.findTeam(game.home.abbr);
+      nflGame.away_team = await this.findTeam(game.away.abbr);
+      // };
 
-      const gameUpdate = await this.connection.manager.preload(Game, nflGame);
-      await this.connection.manager.save(gameUpdate);
+      // const gameUpdate = await this.connection.manager.preload(Game, nflGame);
+      await this.connection.manager.save(nflGame);
       console.log(
         `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${
           scheduleGame.gameid

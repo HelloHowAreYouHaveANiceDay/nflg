@@ -1,11 +1,17 @@
-import { Entity, PrimaryColumn, Column, OneToMany } from "typeorm";
-import Player from "./Player";
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  OneToMany,
+  UpdateDateColumn,
+  CreateDateColumn
+} from "typeorm";
 import PlayPlayer from "./PlayPlayer";
 
 @Entity()
 export default class Play {
   @PrimaryColumn()
-  gsis_id: string;
+  game_id: string;
   @PrimaryColumn()
   drive_id: string;
   @PrimaryColumn()
@@ -16,7 +22,7 @@ export default class Play {
   @Column()
   pos_team: string;
   @Column()
-  yardline: string;
+  yardline: number;
   @Column()
   down: number;
   @Column()
@@ -25,38 +31,38 @@ export default class Play {
   description: string;
   @Column()
   note: string;
-  @Column()
+  @CreateDateColumn()
   time_inserted: string;
-  @Column()
+  @UpdateDateColumn()
   time_updated: string;
-  @Column()
-  first_down: number;
-  @Column()
-  fourth_down_att: number;
-  @Column()
-  fourth_down_conv: number;
-  @Column()
-  fourth_down_failed: number;
-  @Column()
-  passing_first_down: number;
-  @Column()
-  penalty: number;
-  @Column()
-  penalty_first_down: number;
-  @Column()
-  penalty_yds: number;
-  @Column()
-  rushing_first_down: number;
-  @Column()
-  third_down_att: number;
-  @Column()
-  third_down_conv: number;
-  @Column()
-  third_down_failed: number;
-  @Column()
-  timeout: number;
-  @Column()
-  xp_aborted: number;
+  // @Column()
+  // first_down: number;
+  // @Column()
+  // fourth_down_att: number;
+  // @Column()
+  // fourth_down_conv: number;
+  // @Column()
+  // fourth_down_failed: number;
+  // @Column()
+  // passing_first_down: number;
+  // @Column()
+  // penalty: number;
+  // @Column()
+  // penalty_first_down: number;
+  // @Column()
+  // penalty_yds: number;
+  // @Column()
+  // rushing_first_down: number;
+  // @Column()
+  // third_down_att: number;
+  // @Column()
+  // third_down_conv: number;
+  // @Column()
+  // third_down_failed: number;
+  // @Column()
+  // timeout: number;
+  // @Column()
+  // xp_aborted: number;
 
   @OneToMany(type => PlayPlayer, playplayer => playplayer.play)
   play_players: PlayPlayer[];
