@@ -4,7 +4,7 @@ import NFLApi, { scheduleGame } from "./nflApi";
 import _ from "lodash";
 import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
 import { parseProfile } from "./nflPlayer";
-import { getPlayerStats } from "./Game";
+// import { getPlayerStats } from "../temp/Game";
 import { gameSearchArgs, Game } from "../Entities/Game";
 
 function transposeArgs(args: gameSearchArgs) {
@@ -159,15 +159,15 @@ export default class nflGame {
     }
   }
 
-  async getAggGameStats(gameid: string) {
-    try {
-      const game = await this.getGamecenterGame(gameid);
-      return getPlayerStats(game);
-    } catch (error) {
-      console.error(error);
-      return [];
-    }
-  }
+  // async getAggGameStats(gameid: string) {
+  //   try {
+  //     const game = await this.getGamecenterGame(gameid);
+  //     return getPlayerStats(game);
+  //   } catch (error) {
+  //     console.error(error);
+  //     return [];
+  //   }
+  // }
 
   private async fetchGame(gameid: string) {
     try {

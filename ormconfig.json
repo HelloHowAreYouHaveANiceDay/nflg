@@ -1,5 +1,15 @@
-{
-  "type": "sqlite",
-  "database": "./nfldb.db",
-  "entities": ["src/Entities/*.ts"]
-}
+[
+  {
+    "name": "development",
+    "type": "sqlite",
+    "database": "./nfldb.db",
+    "entities": ["src/Entities/*.ts"]
+  },
+  {
+    "name": "test",
+    "type": "sqlite",
+    "database": "./testdb.db",
+    "logging": false,
+    "entities": ["src/Entities/*.ts"]
+  }
+]

@@ -1,13 +1,15 @@
 import {
   Connection,
-  createConnection,
+  createConnections,
   ConnectionOptions,
-  getConnection
+  getConnection,
+  getConnectionManager
 } from "typeorm";
 import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
 import nflGame from "../nflgame/nflgame";
 import { Game } from "../Entities/Game";
 import { scheduleGame } from "../nflgame/nflApi";
+// import { Team } from "../Entities/Team";
 import { teamLookup, Team } from "../Entities/Team";
 import _ from "lodash";
 import { Drive } from "../Entities/Drive";
@@ -20,55 +22,44 @@ export class NFLdb {
 
   constructor() {}
 
-  async setup(config?: ConnectionOptions) {
+  async setup(config?: ConnectionOptions[]) {
     if (config) {
-      this.connection = await createConnection(config);
+      console.log("nfldb initiated with configuration");
+      await createConnections(config);
+      this.connection = getConnectionManager().get(process.env.NODE_ENV);
     } else {
-      this.connection = await createConnection();
+      console.log("nfldb initiated with configuration file");
+      await createConnections();
+      this.connection = getConnectionManager().get(process.env.NODE_ENV);
     }
-  }
-
-  async update() {
-    //ge
-  }
-
-  // add a game and its data to the database
-  async addGame(gameid: string) {
-    // get game from nflgame
-    // insert Game
-    // insert Plays
-    // insert PlayPlayers
-    // insert Players
   }
 
   async setupTeams() {
     const teams = teamLookup;
-    const t: Team[] = [];
-    _.forIn(teams, (versions, key) => {
-      const team: Team = {
-        name: versions[1],
-        team_id: key,
-        city: versions[0],
-        players: []
-      };
-      t.push(team);
-    });
+    // const t: Team[] = [];
 
-    await getConnection()
-      .createQueryBuilder()
-      .insert()
-      .into(Team)
-      .values(t)
-      .execute();
+    await _.forIn(teams, async (versions, key) => {
+      const team = new Team();
+      team.name = versions[1];
+      team.team_id = key;
+      team.city = versions[0];
+      team.players = [];
+
+      await this.connection.manager.save(team);
+    });
   }
 
   async findTeam(team_id: string) {
+    // console.log(`looking for: ${team_id}`);
+
     let team = await this.connection
-      .createQueryBuilder()
-      .select("team")
-      .from(Team, "team")
+      .getRepository(Team)
+      .createQueryBuilder("team")
       .where("team.team_id = :id", { id: team_id })
       .getOne();
+
+    // console.log(`find by id result:${team}`);
+
     if (team) {
       return team;
     }
@@ -98,8 +89,8 @@ export class NFLdb {
   async _insertGame(gameid: string) {
     const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
     const game = await nflGame.getInstance().getGame(gameid);
-    // await this.insertGame(game, scheduleGame);
-    // await this.insertDrives(game, scheduleGame);
+    await this.insertGame(game, scheduleGame);
+    await this.insertDrives(game, scheduleGame);
     return await this.insertPlayPlayers(game, scheduleGame);
   }
 

@@ -1,14 +1,13 @@
 import "reflect-metadata";
 import { ObjectType, Field, ID, ArgsType } from "type-graphql";
-import { AggGameStat } from "./AggGameStat";
+
 import {
   Entity,
   PrimaryColumn,
   ManyToOne,
   Column,
   UpdateDateColumn,
-  CreateDateColumn,
-  BaseEntity
+  CreateDateColumn
 } from "typeorm";
 import { Team } from "./Team";
 
