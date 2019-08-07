@@ -17,6 +17,7 @@ import Play from "../Entities/Play";
 import nflGame from "../nflgame/nflgame";
 import { statsDict } from "../nflgame/Stats";
 import { scheduleGame } from "../nflgame/nflApi";
+import { scheduleSearchArgs } from "../nflgame/Schedule";
 
 export class NFLdb {
   connection: Connection;
@@ -103,6 +104,19 @@ export class NFLdb {
     }
   }
 
+  async insertGameBySchedule(params: scheduleSearchArgs) {
+    try {
+      const games = await nflGame.getInstance().searchSchedule(params);
+
+      for (var i = 0; i < games.length; i++) {
+        await this.insertSingleGame(games[i].gameid);
+        i++;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async insertSingleGame(game_id: string) {
     try {
       // get scheduled game from nfl
@@ -126,14 +140,19 @@ export class NFLdb {
   }
 
   async insertPlayer(playerid: string) {
-    const existingPlayer = await this.playerExistsInDb(playerid);
+    try {
+      const existingPlayer = await this.playerExistsInDb(playerid);
 
-    if (existingPlayer) {
-      return existingPlayer;
+      if (existingPlayer) {
+        return existingPlayer;
+      }
+
+      const player = await nflGame.getInstance().getPlayer(playerid);
+      const nPlayer = await this.connection.manager.create(Player, player);
+      return await this.connection.manager.save(nPlayer);
+    } catch (error) {
+      throw error;
     }
-    const player = await nflGame.getInstance().getPlayer(playerid);
-    const nPlayer = await this.connection.manager.create(Player, player);
-    return await this.connection.manager.save(nPlayer);
   }
 
   private playerExistsInDb = async (player_id: string) => {

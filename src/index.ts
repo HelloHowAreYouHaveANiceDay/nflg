@@ -28,12 +28,9 @@ async function connect() {
   // const options = await getConnectionOptions(process.env.NODE_ENV);
   await nfldb.setup();
   await nfldb.connection.synchronize();
-  // await nfldb.setupTeams();
-  const team = await nfldb.findTeam("DAL");
-  // const insert = await nfldb._insertGame("2019010600");
-  console.log(team);
-  // const connection = await createConnection();
-  // console.log(connection);
+  await nfldb.setupTeams();
+  const teams = await nfldb.insertGameBySchedule({ year: 2011 });
+  console.log(teams);
 }
 
 connect();

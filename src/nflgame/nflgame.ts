@@ -107,8 +107,9 @@ export default class nflGame {
         //@ts-ignore
         games = _.filter(this.schedule, transposeArgs(args));
       }
-      const mountedGames = await games.map(this.mountGameDetails);
-      return mountedGames;
+      // const mountedGames = await games.map(this.mountGameDetails);
+      return games;
+      // return mountedGames;
     } catch (err) {
       throw err;
     }

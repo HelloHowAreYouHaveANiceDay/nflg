@@ -53,6 +53,7 @@ export const teamLookup = {
   LAC: [
     "Los Angeles",
     "Chargers",
+    "SD",
     "Los Angeles Chargers",
     "San Diego",
     "San Diego Chargers",
@@ -68,6 +69,7 @@ export const teamLookup = {
     "L.A.",
     "St. Louis",
     "St. Louis Rams",
+    "STL",
     "S.T.L."
   ],
   TB: ["Tampa Bay", "Buccaneers", "Tampa Bay Buccaneers", "T.B.", "TAM"],

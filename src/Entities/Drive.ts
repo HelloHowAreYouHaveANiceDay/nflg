@@ -14,7 +14,9 @@ export class Drive {
   @PrimaryColumn()
   drive_id: string;
 
-  @Column()
+  @Column({
+    nullable: true
+  })
   start_field: number;
 
   // end of game drive sometimes has no end position
