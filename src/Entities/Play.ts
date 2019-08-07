@@ -21,7 +21,7 @@ export default class Play {
   time: string;
   @Column()
   pos_team: string;
-  @Column()
+  @Column({ nullable: true })
   yardline: number;
   @Column()
   down: number;
@@ -29,7 +29,7 @@ export default class Play {
   yards_to_go: number;
   @Column()
   description: string;
-  @Column()
+  @Column({ nullable: true })
   note: string;
   @CreateDateColumn()
   time_inserted: string;

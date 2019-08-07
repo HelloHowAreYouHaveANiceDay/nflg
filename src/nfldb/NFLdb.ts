@@ -165,34 +165,35 @@ export class NFLdb {
     // console.log(uniqueIds);
     await uniqueIds.map(p => this.insertPlayer(p));
 
-    await Promise.all(plays.map(p => this.insertPlay));
+    await Promise.all(plays.map(this.insertPlay));
 
     await Promise.all(playPlayers.map(pp => this.connection.manager.save(pp)));
   }
 
-  async insertPlay([game_id, drive_id, play_id, play]: [
+  insertPlay = async ([game_id, drive_id, play_id, play]: [
     string,
     string,
     string,
     nflPlay
-  ]) {
-    // if (!scheduleGame) {
-    //   throw new Error("scheduled game not found");
-    // }
-    const nPlay = new Play();
-    nPlay.game_id = game_id;
-    nPlay.drive_id = drive_id;
-    nPlay.play_id = play_id;
-    nPlay.time = play.time;
-    nPlay.pos_team = play.posteam;
-    nPlay.yardline = this.positionToOffset(play.posteam, play.yrdln);
-    nPlay.down = play.down;
-    nPlay.yards_to_go = play.ydstogo;
-    nPlay.description = play.desc;
-    nPlay.note = play.note;
-
-    return await this.connection.manager.save(nPlay);
-  }
+  ]) => {
+    try {
+      const nPlay = new Play();
+      nPlay.game_id = game_id;
+      nPlay.drive_id = drive_id;
+      nPlay.play_id = play_id;
+      nPlay.time = play.time;
+      nPlay.pos_team = play.posteam;
+      nPlay.yardline = this.positionToOffset(play.posteam, play.yrdln);
+      nPlay.down = play.down;
+      nPlay.yards_to_go = play.ydstogo;
+      nPlay.description = play.desc;
+      nPlay.note = play.note;
+      // console.log(nPlay);
+      return await this.connection.manager.save(nPlay);
+    } catch (error) {
+      throw error;
+    }
+  };
 
   /**
    * inserts each drive

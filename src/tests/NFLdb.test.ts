@@ -5,6 +5,7 @@ import path from "path";
 import nflGame from "../nflgame/nflgame";
 import { Game } from "../Entities/Game";
 import { Drive } from "../Entities/Drive";
+import Play from "../Entities/Play";
 
 // let nfldb: NFLdb;
 const nfldb = new NFLdb();
@@ -76,5 +77,16 @@ test("add single game to database", async () => {
   expect(dbDrives.drive_play_count).toEqual(12);
   expect(dbDrives.drive_result).toEqual("Touchdown");
 
-  console.log(dbDrives);
+  const dbPlay = await nfldb.connection
+    .createQueryBuilder()
+    .select("play")
+    .from(Play, "play")
+    .where("play.game_id = game_id", { game_id: testId })
+    .andWhere("play.drive_id = drive_id", { drive_id: "17" })
+    .andWhere("Play.play_id = play_id", { play_id: "500" })
+    .getRawOne();
+
+  // console.log(dbPlay);
+  expect(dbPlay.play_down).toEqual(2);
+  expect(dbPlay.play_yardline).toEqual(8);
 });
