@@ -152,7 +152,7 @@ export class NFLdb {
 
         _.forIn(play.players, (sequence, playerId) => {
           const playPlayer = new PlayPlayer();
-          playPlayer.gsis_id = scheduleGame.gameid;
+          playPlayer.game_id = scheduleGame.gameid;
           playPlayer.drive_id = driveId;
           playPlayer.play_id = playId;
           playPlayer.player_id = playerId;
@@ -316,7 +316,7 @@ export class NFLdb {
 
       // const nflGame: Game = {
       const nflGame = new Game();
-      nflGame.game_id = scheduleGame.gameid;
+      nflGame.gameid = scheduleGame.gameid;
       nflGame.wday = scheduleGame.wday;
       nflGame.season_type = scheduleGame.gameType;
       nflGame.finished = scheduleGame.quarter == "F";

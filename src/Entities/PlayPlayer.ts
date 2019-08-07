@@ -6,7 +6,7 @@ import Player from "./Player";
 @Entity()
 export default class PlayPlayer {
   @PrimaryColumn()
-  gsis_id: string;
+  game_id: string;
   @PrimaryColumn()
   drive_id: string;
   @PrimaryColumn()

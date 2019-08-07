@@ -19,7 +19,7 @@ export function parseProfile(html: string): Player {
   const weightStrip = html.match(
     /(?:<strong>)(?:Weight)(?:<\/strong>)\W\s(\d+)/
   )![1];
-  const ageStrip = html.match(/(?:<strong>)(?:Age)(?:<\/strong>)\W\s(\d+)/)![1];
+  // const ageStrip = html.match(/(?:<strong>)(?:Age)(?:<\/strong>)\W\s(\d+)/)![1];
   const birthStrip = html.match(
     /(?:<strong>)(?:Born)(?:<\/strong>)\W+\s+(\d{1,2}\/\d{1,2}\/\d{4})\s+(\b[a-zA-Z\s]+,[ ]?[A-Z]{2}\b)/
   );
@@ -44,7 +44,7 @@ export function parseProfile(html: string): Player {
   }
   const weight = +weightStrip;
   const college = collegeStrip![1];
-  const age = +ageStrip;
+  // const age = +ageStrip;
   const height = feetInchesToInches(heightStrip);
 
   if (numberStrip == null) {

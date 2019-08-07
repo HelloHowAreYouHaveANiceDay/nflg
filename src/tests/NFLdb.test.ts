@@ -59,34 +59,34 @@ test("add single game to database", async () => {
     .createQueryBuilder()
     .select("game")
     .from(Game, "game")
-    .where("game.game_id = :id", { id: testId })
+    .where("game.gameid = :id", { id: testId })
     .getRawOne();
 
   // console.log(dbGame);
   expect(dbGame.game_homeTeamTeamId).toEqual("NE");
   expect(dbGame.game_awayTeamTeamId).toEqual("NYG");
 
-  // const dbDrives = await nfldb.connection
-  //   .createQueryBuilder()
-  //   .select("drive")
-  //   .from(Drive, "drive")
-  //   .where("drive.drive_id = :did", { did: "17" })
-  //   .andWhere("drive.game_id = :gid", { gid: testId })
-  //   .getRawOne();
+  const dbDrives = await nfldb.connection
+    .createQueryBuilder()
+    .select("drive")
+    .from(Drive, "drive")
+    .where("drive.drive_id = :did", { did: "17" })
+    .andWhere("drive.game_id = :gid", { gid: testId })
+    .getRawOne();
 
-  // expect(dbDrives.drive_play_count).toEqual(12);
-  // expect(dbDrives.drive_result).toEqual("Touchdown");
+  expect(dbDrives.drive_play_count).toEqual(12);
+  expect(dbDrives.drive_result).toEqual("Touchdown");
 
-  // const dbPlay = await nfldb.connection
-  //   .createQueryBuilder()
-  //   .select("play")
-  //   .from(Play, "play")
-  //   .where("play.game_id = :game_id", { game_id: testId })
-  //   .andWhere("play.drive_id = :drive_id", { drive_id: "3" })
-  //   .andWhere("Play.play_id = :play_id", { play_id: "500" })
-  //   .getRawOne();
+  const dbPlay = await nfldb.connection
+    .createQueryBuilder()
+    .select("play")
+    .from(Play, "play")
+    .where("play.game_id = :game_id", { game_id: testId })
+    .andWhere("play.drive_id = :drive_id", { drive_id: "3" })
+    .andWhere("Play.play_id = :play_id", { play_id: "500" })
+    .getRawOne();
 
-  // // console.log(dbPlay);
-  // expect(dbPlay.play_down).toEqual(2);
-  // expect(dbPlay.play_yards_to_go).toEqual(8);
-});
+  // console.log(dbPlay);
+  expect(dbPlay.play_down).toEqual(2);
+  expect(dbPlay.play_yards_to_go).toEqual(8);
+}, 50000);
