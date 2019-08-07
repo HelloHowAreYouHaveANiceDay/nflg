@@ -27,15 +27,15 @@ export default class GameResolver {
     }
   }
 
-  @FieldResolver()
-  async aggregatedGameStats(@Root() game: Game) {
-    try {
-      const gameDetails = await nflGame
-        .getInstance()
-        .getAggGameStats(game.gameid);
-      return gameDetails;
-    } catch (error) {
-      throw error;
-    }
-  }
+  // @FieldResolver()
+  // async aggregatedGameStats(@Root() game: Game) {
+  //   try {
+  //     const gameDetails = await nflGame
+  //       .getInstance()
+  //       .getAggGameStats(game.game_id);
+  //     return gameDetails;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }

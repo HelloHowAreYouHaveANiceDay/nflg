@@ -6,7 +6,7 @@ import {
 } from "typeorm";
 import _ from "lodash";
 
-import { nflApiGame, nflPlay } from "../Entities/nflApiGame";
+import { nflApiGame, nflPlay, nflDrive } from "../Entities/nflApiGame";
 import { Game } from "../Entities/Game";
 import { teamLookup, Team } from "../Entities/Team";
 import { Drive } from "../Entities/Drive";
@@ -23,6 +23,12 @@ export class NFLdb {
 
   constructor() {}
 
+  /**
+   * sets up connection with sqlite
+   * must run this first
+   *
+   * @param config
+   */
   async setup(config?: ConnectionOptions[]) {
     if (config) {
       console.log("nfldb initiated with configuration");
@@ -35,6 +41,9 @@ export class NFLdb {
     }
   }
 
+  /**
+   * Prefills the team table with hard coded teams
+   */
   async setupTeams() {
     const teams = teamLookup;
 
@@ -63,6 +72,17 @@ export class NFLdb {
     }
   }
 
+  private lookupTeamId(teamString: string) {
+    const ids = Object.keys(teamLookup);
+    for (var i = 0; i < ids.length; i++) {
+      //@ts-ignore
+      if (_.includes(teamLookup[ids[i]], teamString)) {
+        return ids[i];
+      }
+    }
+    throw new Error(`team id: ${teamString} not found in teams library`);
+  }
+
   async findTeam(team_id: string) {
     // look for team in database first
     let team = await this.findTeamInDb(team_id);
@@ -71,20 +91,10 @@ export class NFLdb {
       return team;
     }
 
-    let id;
-    await _.forIn(teamLookup, async (value, key) => {
-      const is = _.includes(value, team_id);
-      if (is) {
-        id = key;
-      }
-    });
+    // check for team name against known versions
+    const id = this.lookupTeamId(team_id);
 
-    team = await this.connection
-      .createQueryBuilder()
-      .select("team")
-      .from(Team, "team")
-      .where("team.team_id = :id", { id: id })
-      .getOne();
+    team = await this.findTeamInDb(id);
 
     if (team) {
       return team;
@@ -93,10 +103,10 @@ export class NFLdb {
     }
   }
 
-  async insertSingleGame(gameid: string) {
+  async insertSingleGame(game_id: string) {
     try {
-      const scheduleGame = await nflGame.getInstance().getSingleGame(gameid);
-      const game = await nflGame.getInstance().getGame(gameid);
+      const scheduleGame = await nflGame.getInstance().getSingleGame(game_id);
+      const game = await nflGame.getInstance().getGame(game_id);
       await this.insertGame(game, scheduleGame);
       await this.insertDrives(game, scheduleGame);
       await this.insertPlayPlayers(game, scheduleGame);
@@ -118,7 +128,8 @@ export class NFLdb {
   }
 
   /**
-   * parses and inserts each play
+   * parses and inserts each playPlayer
+   *
    * @param game
    * @param scheduleGame
    */
@@ -138,6 +149,7 @@ export class NFLdb {
     _.forIn(drivesRaw, (drive, driveId) => {
       _.forIn(drive.plays, (play, playId) => {
         plays.push([scheduleGame.gameid, driveId, playId, play]);
+
         _.forIn(play.players, (sequence, playerId) => {
           const playPlayer = new PlayPlayer();
           playPlayer.gsis_id = scheduleGame.gameid;
@@ -171,7 +183,7 @@ export class NFLdb {
 
     const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
     // console.log(uniqueIds);
-    await uniqueIds.map(p => this.insertPlayer(p));
+    await Promise.all(uniqueIds.map(p => this.insertPlayer(p)));
 
     await Promise.all(plays.map(this.insertPlay));
 
@@ -203,6 +215,40 @@ export class NFLdb {
     }
   };
 
+  private driveRawToEntity = (game_id: string) => (
+    rawDrive: nflDrive,
+    drive_id: string
+  ) => {
+    if (rawDrive.start) {
+      const drive = new Drive();
+
+      drive.game_id = game_id;
+      drive.drive_id = drive_id;
+      drive.start_field = this.positionToOffset(
+        rawDrive.posteam,
+        rawDrive.start.yrdln
+      );
+      drive.end_field = this.positionToOffset(
+        rawDrive.posteam,
+        rawDrive.end.yrdln
+      );
+      drive.first_downs = rawDrive.fds;
+      drive.pos_team = rawDrive.posteam;
+      drive.pos_time = rawDrive.postime;
+      drive.play_count = rawDrive.numplays;
+      drive.result = rawDrive.result;
+      drive.penalty_yards = rawDrive.penyds;
+      drive.yards_gained = rawDrive.ydsgained;
+      drive.start_qtr = rawDrive.start.qtr;
+      drive.start_time = rawDrive.start.time;
+      drive.end_qtr = rawDrive.end.qtr;
+      drive.end_time = rawDrive.end.time;
+
+      return drive;
+    }
+    return false;
+  };
+
   /**
    * inserts each drive
    * @param game
@@ -215,33 +261,16 @@ export class NFLdb {
 
     const drivesRaw = game.drives;
 
-    const drives: Drive[] = [];
-
-    _.forIn(drivesRaw, (value, key) => {
-      if (value.start) {
-        const drive = new Drive();
-
-        drive.game_id = scheduleGame.gameid;
-        drive.drive_id = key;
-        drive.start_field = this.positionToOffset(
-          value.posteam,
-          value.start.yrdln
-        );
-        drive.end_field = this.positionToOffset(value.posteam, value.end.yrdln);
-        drive.first_downs = value.fds;
-        drive.pos_team = value.posteam;
-        drive.pos_time = value.postime;
-        drive.play_count = value.numplays;
-        drive.result = value.result;
-        drive.penalty_yards = value.penyds;
-        drive.yards_gained = value.ydsgained;
-        drive.start_qtr = value.start.qtr;
-        drive.start_time = value.start.time;
-        drive.end_qtr = value.end.qtr;
-        drive.end_time = value.end.time;
-        drives.push(drive);
-      }
-    });
+    const drives = _.transform(
+      drivesRaw,
+      (r: Drive[], v, k) => {
+        const d = this.driveRawToEntity(scheduleGame.gameid)(v, k);
+        if (d) {
+          r.push(d);
+        }
+      },
+      []
+    );
 
     await this.connection.manager.save(drives);
   }
@@ -287,7 +316,7 @@ export class NFLdb {
 
       // const nflGame: Game = {
       const nflGame = new Game();
-      nflGame.gameid = scheduleGame.gameid;
+      nflGame.game_id = scheduleGame.gameid;
       nflGame.wday = scheduleGame.wday;
       nflGame.season_type = scheduleGame.gameType;
       nflGame.finished = scheduleGame.quarter == "F";
@@ -307,6 +336,8 @@ export class NFLdb {
       nflGame.away_turnovers = game.away.to;
       nflGame.home_team = await this.findTeam(game.home.abbr);
       nflGame.away_team = await this.findTeam(game.away.abbr);
+
+      // console.log(nflGame);
 
       await this.connection.manager.save(nflGame);
       console.log(

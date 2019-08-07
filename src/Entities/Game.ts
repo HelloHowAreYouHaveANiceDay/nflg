@@ -42,7 +42,7 @@ export class gameSearchArgs {
 export class Game {
   @Field(type => ID)
   @PrimaryColumn()
-  gameid: string;
+  game_id: string;
 
   @Field({ nullable: true })
   @Column()

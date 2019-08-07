@@ -1,6 +1,6 @@
 // JSON structure returned from nflGame endpoint.
 export interface nflApiGameResponse {
-  // key is gameid
+  // key is game_id
   [key: string]: nflApiGame | number;
   nextupdate: number;
 }
