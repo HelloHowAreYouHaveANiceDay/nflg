@@ -71,7 +71,7 @@ test("add single game to database", async () => {
     .select("drive")
     .from(Drive, "drive")
     .where("drive.drive_id = :did", { did: "17" })
-    .andWhere("drive.gsis_id = :gid", { gid: testId })
+    .andWhere("drive.game_id = :gid", { gid: testId })
     .getRawOne();
 
   expect(dbDrives.drive_play_count).toEqual(12);
@@ -81,12 +81,12 @@ test("add single game to database", async () => {
     .createQueryBuilder()
     .select("play")
     .from(Play, "play")
-    .where("play.game_id = game_id", { game_id: testId })
-    .andWhere("play.drive_id = drive_id", { drive_id: "17" })
-    .andWhere("Play.play_id = play_id", { play_id: "500" })
+    .where("play.game_id = :game_id", { game_id: testId })
+    .andWhere("play.drive_id = :drive_id", { drive_id: "3" })
+    .andWhere("Play.play_id = :play_id", { play_id: "500" })
     .getRawOne();
 
   // console.log(dbPlay);
   expect(dbPlay.play_down).toEqual(2);
-  expect(dbPlay.play_yardline).toEqual(8);
+  expect(dbPlay.play_yards_to_go).toEqual(8);
 });

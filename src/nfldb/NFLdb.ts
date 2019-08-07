@@ -5,16 +5,18 @@ import {
   getConnectionManager
 } from "typeorm";
 import _ from "lodash";
+
 import { nflApiGame, nflPlay } from "../Entities/nflApiGame";
-import nflGame from "../nflgame/nflgame";
 import { Game } from "../Entities/Game";
-import { scheduleGame } from "../nflgame/nflApi";
 import { teamLookup, Team } from "../Entities/Team";
 import { Drive } from "../Entities/Drive";
 import PlayPlayer from "../Entities/PlayPlayer";
-import { statsDict } from "../nflgame/Stats";
 import Player from "../Entities/Player";
 import Play from "../Entities/Play";
+
+import nflGame from "../nflgame/nflgame";
+import { statsDict } from "../nflgame/Stats";
+import { scheduleGame } from "../nflgame/nflApi";
 
 export class NFLdb {
   connection: Connection;
@@ -35,7 +37,6 @@ export class NFLdb {
 
   async setupTeams() {
     const teams = teamLookup;
-    // const t: Team[] = [];
 
     await _.forIn(teams, async (versions, key) => {
       const team = new Team();
@@ -48,16 +49,23 @@ export class NFLdb {
     });
   }
 
+  private async findTeamInDb(team_id: string) {
+    try {
+      let team = await this.connection
+        .getRepository(Team)
+        .createQueryBuilder("team")
+        .where("team.team_id = :id", { id: team_id })
+        .getOne();
+
+      return team;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async findTeam(team_id: string) {
-    // console.log(`looking for: ${team_id}`);
-
-    let team = await this.connection
-      .getRepository(Team)
-      .createQueryBuilder("team")
-      .where("team.team_id = :id", { id: team_id })
-      .getOne();
-
-    // console.log(`find by id result:${team}`);
+    // look for team in database first
+    let team = await this.findTeamInDb(team_id);
 
     if (team) {
       return team;
@@ -213,7 +221,7 @@ export class NFLdb {
       if (value.start) {
         const drive = new Drive();
 
-        drive.gsis_id = scheduleGame.gameid;
+        drive.game_id = scheduleGame.gameid;
         drive.drive_id = key;
         drive.start_field = this.positionToOffset(
           value.posteam,
@@ -299,9 +307,7 @@ export class NFLdb {
       nflGame.away_turnovers = game.away.to;
       nflGame.home_team = await this.findTeam(game.home.abbr);
       nflGame.away_team = await this.findTeam(game.away.abbr);
-      // };
 
-      // const gameUpdate = await this.connection.manager.preload(Game, nflGame);
       await this.connection.manager.save(nflGame);
       console.log(
         `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${

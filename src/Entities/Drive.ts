@@ -9,7 +9,7 @@ import {
 @Entity()
 export class Drive {
   @PrimaryColumn()
-  gsis_id: string;
+  game_id: string;
 
   @PrimaryColumn()
   drive_id: string;
