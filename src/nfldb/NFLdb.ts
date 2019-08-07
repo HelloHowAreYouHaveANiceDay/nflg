@@ -117,15 +117,34 @@ export class NFLdb {
   }
 
   async insertPlayer(playerid: string) {
-    const player = await nflGame.getInstance().getPlayer(playerid);
-    console.log(player);
-    const pPlayer = await this.connection.manager.preload(Player, player);
-    if (pPlayer) {
-      return await this.connection.manager.save(pPlayer);
+    const existingPlayer = await this.playerExistsInDb(playerid);
+
+    if (existingPlayer) {
+      return existingPlayer;
     }
+    const player = await nflGame.getInstance().getPlayer(playerid);
+    // console.log(player);
+    // const pPlayer = await this.connection.manager.preload(Player, player);
+    // if (pPlayer) {
+    //   return await this.connection.manager.save(pPlayer);
+    // }
     const nPlayer = await this.connection.manager.create(Player, player);
     return await this.connection.manager.save(nPlayer);
   }
+
+  private playerExistsInDb = async (player_id: string) => {
+    try {
+      const player = await this.connection
+        .getRepository(Player)
+        .createQueryBuilder("player")
+        .where("player.player_id = :id", { id: player_id })
+        .getOne();
+
+      return player ? player : false;
+    } catch (error) {
+      throw error;
+    }
+  };
 
   /**
    * parses and inserts each playPlayer
