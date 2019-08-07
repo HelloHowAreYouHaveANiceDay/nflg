@@ -105,10 +105,19 @@ export class NFLdb {
 
   async insertSingleGame(game_id: string) {
     try {
+      // get scheduled game from nfl
       const scheduleGame = await nflGame.getInstance().getSingleGame(game_id);
+
+      // get the detailed game info
       const game = await nflGame.getInstance().getGame(game_id);
+
+      // insert game into database
       await this.insertGame(game, scheduleGame);
+
+      // insert game's drives in to the database
       await this.insertDrives(game, scheduleGame);
+
+      // insert plays, players, and the combination of play players into the database
       await this.insertPlayPlayers(game, scheduleGame);
       return true;
     } catch (error) {
@@ -123,11 +132,6 @@ export class NFLdb {
       return existingPlayer;
     }
     const player = await nflGame.getInstance().getPlayer(playerid);
-    // console.log(player);
-    // const pPlayer = await this.connection.manager.preload(Player, player);
-    // if (pPlayer) {
-    //   return await this.connection.manager.save(pPlayer);
-    // }
     const nPlayer = await this.connection.manager.create(Player, player);
     return await this.connection.manager.save(nPlayer);
   }

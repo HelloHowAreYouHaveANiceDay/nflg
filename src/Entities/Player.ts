@@ -68,10 +68,6 @@ export default class Player {
   @Column()
   weight: number;
 
-  // @Field({ nullable: true })
-  // @Column()
-  // yearsPro?: number;
-
   @Field(type => Team)
   @ManyToOne(type => Team, team => team.players)
   team?: Team;

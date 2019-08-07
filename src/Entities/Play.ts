@@ -35,6 +35,7 @@ export default class Play {
   time_inserted: string;
   @UpdateDateColumn()
   time_updated: string;
+
   // @Column()
   // first_down: number;
   // @Column()
