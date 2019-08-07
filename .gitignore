@@ -9,7 +9,7 @@ dist
 .cache
 
 # local sqlite db
-nfldb.db
+# nfldb.db
 
 # Runtime data
 pids
