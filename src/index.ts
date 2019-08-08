@@ -24,13 +24,19 @@ nflGame.getInstance(process.env.CACHE_PATH);
 // bootstrap();
 
 async function connect() {
-  const nfldb = new NFLdb();
-  // const options = await getConnectionOptions(process.env.NODE_ENV);
-  await nfldb.setup();
-  await nfldb.connection.synchronize();
-  await nfldb.setupTeams();
-  const teams = await nfldb.insertGameBySchedule({ year: 2018 });
-  console.log(teams);
+  try {
+    // await nflGame.getInstance().regenerateSchedule();
+    const nfldb = new NFLdb();
+    // const options = await getConnectionOptions(process.env.NODE_ENV);
+    await nfldb.setup();
+    await nfldb.connection.synchronize();
+    await nfldb.setupTeams();
+    // const teams = await nfldb.insertGameBySchedule({ week: 4, year: 2018 });
+    const teams = await nfldb.updateGamesBySchedule({ week: 4, year: 2018 });
+    console.log(teams);
+  } catch (error) {
+    throw error;
+  }
 }
 
 connect();

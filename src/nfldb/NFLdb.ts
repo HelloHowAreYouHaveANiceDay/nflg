@@ -117,6 +117,19 @@ export class NFLdb {
     }
   }
 
+  async updateGamesBySchedule(params: scheduleSearchArgs) {
+    try {
+      const games = await nflGame.getInstance().searchSchedule(params);
+      for (var i = 0; i < games.length; i++) {
+        const game = await nflGame.getInstance().getGame(games[i].gameid);
+        await this.insertGame(game, games[i]);
+        i++;
+      }
+    } catch (err) {
+      throw err;
+    }
+  }
+
   async insertSingleGame(game_id: string) {
     try {
       // get scheduled game from nfl
@@ -364,12 +377,12 @@ export class NFLdb {
         throw new Error("scheduled game not found");
       }
 
-      // const nflGame: Game = {
       const nflGame = new Game();
       nflGame.gameid = scheduleGame.gameid;
       nflGame.wday = scheduleGame.wday;
-      nflGame.season_type = scheduleGame.gameType;
-      nflGame.finished = scheduleGame.quarter == "F";
+      nflGame.season_type = scheduleGame.seasonType;
+      nflGame.finished =
+        scheduleGame.quarter == "F" || scheduleGame.quarter == "final overtime";
       nflGame.home_score = scheduleGame.homeScore;
       nflGame.year = scheduleGame.year;
       nflGame.week = scheduleGame.week;
@@ -390,7 +403,7 @@ export class NFLdb {
       nflGame.home_team = await this.findTeam(game.home.abbr);
       nflGame.away_team = await this.findTeam(game.away.abbr);
 
-      // console.log(nflGame);
+      console.log(nflGame);
 
       await this.connection.manager.save(nflGame);
       console.log(

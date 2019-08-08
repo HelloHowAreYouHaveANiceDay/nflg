@@ -16,6 +16,7 @@ export interface scheduleGame {
   year: number;
   month: number;
   day: number;
+  seasonType: string;
   gameType: string;
   week: number;
   // meridiem: null | string;
@@ -124,7 +125,7 @@ export default class NFLApi {
     return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`;
   }
 
-  static async getWeekSchedule(params: gameWeekArgs) {
+  static getWeekSchedule = async (params: gameWeekArgs) => {
     const url = NFLApi.getScheduleUrl(params.year, params.stype, params.week);
 
     try {
@@ -145,7 +146,8 @@ export default class NFLApi {
           day: +gid.slice(6, 8),
           time: $(e).attr("t"),
           quarter: $(e).attr("q"),
-          gameType: params.stype,
+          gameType: $(e).attr("gt"),
+          seasonType: tToType($("gms").attr("t"), $(e).attr("gt")),
           week: params.week,
           homeShort: $(e).attr("h"),
           homeName: $(e).attr("hnn"),
@@ -160,7 +162,7 @@ export default class NFLApi {
     } catch (err) {
       throw err;
     }
-  }
+  };
 
   static async currentYearPhaseWeek() {
     const currentSchedule = await axios.get(nflCurrentSchedule);
@@ -282,3 +284,12 @@ export default class NFLApi {
 function profileIdFromUrl(url: string) {
   return url.match(/([0-9]+)/)![0];
 }
+
+const tToType = (t: string, gt: string) => {
+  if (t == "P" && gt == "PRE") {
+    return "PRE";
+  } else if (t == "R" && gt == "REG") {
+    return "REG";
+  }
+  return "POST";
+};

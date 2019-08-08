@@ -54,15 +54,15 @@ export class Game {
   season_type: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   game_type: string;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   year: number;
 
   @Field()
-  @Column()
+  @Column({ nullable: true })
   week: number;
 
   @Field()
