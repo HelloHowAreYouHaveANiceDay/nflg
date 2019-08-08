@@ -55,6 +55,18 @@ export class Game {
 
   @Field()
   @Column()
+  game_type: string;
+
+  @Field()
+  @Column()
+  year: number;
+
+  @Field()
+  @Column()
+  week: number;
+
+  @Field()
+  @Column()
   finished: boolean;
 
   @Field(type => Team)

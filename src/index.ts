@@ -29,7 +29,7 @@ async function connect() {
   await nfldb.setup();
   await nfldb.connection.synchronize();
   await nfldb.setupTeams();
-  const teams = await nfldb.insertGameBySchedule({ year: 2011 });
+  const teams = await nfldb.insertGameBySchedule({ year: 2018 });
   console.log(teams);
 }
 

@@ -180,56 +180,64 @@ export class NFLdb {
       throw new Error("scheduled game not found");
     }
 
-    const drivesRaw = game.drives;
+    try {
+      const drivesRaw = game.drives;
 
-    const playPlayers: PlayPlayer[] = [];
+      const playPlayers: PlayPlayer[] = [];
 
-    const playerIds: string[] = [];
+      const playerIds: string[] = [];
 
-    const plays: [string, string, string, nflPlay][] = [];
+      const plays: [string, string, string, nflPlay][] = [];
 
-    _.forIn(drivesRaw, (drive, driveId) => {
-      _.forIn(drive.plays, (play, playId) => {
-        plays.push([scheduleGame.gameid, driveId, playId, play]);
+      _.forIn(drivesRaw, (drive, driveId) => {
+        _.forIn(drive.plays, (play, playId) => {
+          plays.push([scheduleGame.gameid, driveId, playId, play]);
 
-        _.forIn(play.players, (sequence, playerId) => {
-          const playPlayer = new PlayPlayer();
-          playPlayer.game_id = scheduleGame.gameid;
-          playPlayer.drive_id = driveId;
-          playPlayer.play_id = playId;
-          playPlayer.player_id = playerId;
-          playerIds.push(playerId);
+          _.forIn(play.players, (sequence, playerId) => {
+            const playPlayer = new PlayPlayer();
+            playPlayer.game_id = scheduleGame.gameid;
+            playPlayer.drive_id = driveId;
+            playPlayer.play_id = playId;
+            playPlayer.player_id = playerId;
+            playerIds.push(playerId);
 
-          sequence.forEach(stat => {
-            // TODO: add relational
-            playPlayer.team = stat.clubcode;
+            sequence.forEach(stat => {
+              // TODO: add relational
+              playPlayer.team = stat.clubcode;
 
-            const statdef = statsDict[`${stat.statId}`];
+              const statdef = statsDict[`${stat.statId}`];
 
-            statdef.fields.forEach(field => {
-              const val = statdef.value ? statdef.value : 1;
-              //@ts-ignore
-              playPlayer[field] = val;
+              if (statdef) {
+                statdef.fields.forEach(field => {
+                  const val = statdef.value ? statdef.value : 1;
+                  //@ts-ignore
+                  playPlayer[field] = val;
+                });
+
+                if (statdef.yds.length > 0) {
+                  //@ts-ignore
+                  playPlayer[statdef.yds] = stat.yards;
+                }
+              }
             });
 
-            if (statdef.yds.length > 0) {
-              //@ts-ignore
-              playPlayer[statdef.yds] = stat.yards;
-            }
+            playPlayers.push(playPlayer);
           });
-
-          playPlayers.push(playPlayer);
         });
       });
-    });
 
-    const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
-    // console.log(uniqueIds);
-    await Promise.all(uniqueIds.map(p => this.insertPlayer(p)));
+      const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
+      // console.log(uniqueIds);
+      await Promise.all(uniqueIds.map(p => this.insertPlayer(p)));
 
-    await Promise.all(plays.map(this.insertPlay));
+      await Promise.all(plays.map(this.insertPlay));
 
-    await Promise.all(playPlayers.map(pp => this.connection.manager.save(pp)));
+      await Promise.all(
+        playPlayers.map(pp => this.connection.manager.save(pp))
+      );
+    } catch (error) {
+      throw error;
+    }
   }
 
   insertPlay = async ([game_id, drive_id, play_id, play]: [
@@ -363,6 +371,9 @@ export class NFLdb {
       nflGame.season_type = scheduleGame.gameType;
       nflGame.finished = scheduleGame.quarter == "F";
       nflGame.home_score = scheduleGame.homeScore;
+      nflGame.year = scheduleGame.year;
+      nflGame.week = scheduleGame.week;
+      nflGame.game_type = scheduleGame.gameType;
       nflGame.home_score_q1 = game.home.score["1"];
       nflGame.home_score_q2 = game.home.score["2"];
       nflGame.home_score_q3 = game.home.score["3"];
