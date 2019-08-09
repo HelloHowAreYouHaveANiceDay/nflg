@@ -160,16 +160,6 @@ export default class nflGame {
     }
   }
 
-  // async getAggGameStats(gameid: string) {
-  //   try {
-  //     const game = await this.getGamecenterGame(gameid);
-  //     return getPlayerStats(game);
-  //   } catch (error) {
-  //     console.error(error);
-  //     return [];
-  //   }
-  // }
-
   private async fetchGame(gameid: string) {
     try {
       const game: nflApiGame = await NFLApi.getGame(gameid);
@@ -184,7 +174,7 @@ export default class nflGame {
     try {
       const html = await NFLApi.getPlayerProfile(gsisId);
       const player = parseProfile(html);
-      //@ts-ignore
+      player.player_id = gsisId;
       this.players[gsisId] = player;
       await this.cache.savePlayerList(this.players);
       return player;
@@ -195,10 +185,29 @@ export default class nflGame {
   }
 
   async getPlayer(gsisId: string) {
+    if (gsisId == "XX-0000001") {
+      return {
+        fullName: "Not a Player",
+        player_id: "XX-0000001",
+        firstName: "NAP",
+        gsisId: "XX-0000001",
+        lastName: "NAP",
+        birthcity: "",
+        birthdate: "",
+        college: "",
+        profile_url: "",
+        profile_id: "",
+        number: 0,
+        position: "",
+        weight: 0,
+        height: 0
+      };
+    }
+
     try {
       const match = _.filter(this.players, { gsisId: gsisId });
       if (match.length < 1) {
-        console.log("player not found... fetching");
+        console.log(`${gsisId} player not found... fetching`);
         const player = await this.fetchPlayer(gsisId);
         console.log(`added ${player.fullName}`);
         return player;

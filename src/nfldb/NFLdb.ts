@@ -403,7 +403,7 @@ export class NFLdb {
       nflGame.home_team = await this.findTeam(game.home.abbr);
       nflGame.away_team = await this.findTeam(game.away.abbr);
 
-      console.log(nflGame);
+      // console.log(nflGame);
 
       await this.connection.manager.save(nflGame);
       console.log(
