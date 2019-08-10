@@ -1,8 +1,7 @@
 require("dotenv").config();
 import "reflect-metadata";
-
-import nflGame from "./nflgame/nflgame";
 import { NFLdb } from "./nfldb/NFLdb";
+import nflGame from "./nflgame/nflgame";
 
 nflGame.getInstance(process.env.CACHE_PATH);
 

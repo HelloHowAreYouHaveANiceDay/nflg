@@ -1,9 +1,10 @@
 import jsonCache from "./jsonCache";
 import Player from "../Entities/Player";
-import NFLApi, { scheduleGame } from "./nflApi";
+import NFLApi from "../apis/nflApi";
+import { scheduleGame } from "../apis/schedule/scheduleGame";
 import _ from "lodash";
 import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
-import { parseProfile } from "./nflPlayer";
+import { parseProfile } from "../apis/nflPlayer";
 // import { getPlayerStats } from "../temp/Game";
 import { gameSearchArgs, Game } from "../Entities/Game";
 
@@ -63,19 +64,19 @@ export default class nflGame {
   }
 
   mountGameDetails = async (scheduleGame: scheduleGame) => {
-    const gameDetails = await this.getGame(scheduleGame.gameid);
+    const gameDetails = await this.getGame(scheduleGame.game_id);
     const game = {
-      gameid: scheduleGame.gameid,
-      wday: scheduleGame.wday,
+      gameid: scheduleGame.game_id,
+      wday: scheduleGame.weekday,
       month: scheduleGame.month,
       quarter: scheduleGame.quarter,
       day: scheduleGame.day,
-      gameType: scheduleGame.gameType,
-      homeShort: scheduleGame.homeShort,
-      homeName: scheduleGame.homeName,
+      gameType: scheduleGame.game_type,
+      homeShort: scheduleGame.home_short,
+      homeName: scheduleGame.home_name,
       homeScore: gameDetails.home.score.T,
-      awayShort: scheduleGame.awayShort,
-      awayName: scheduleGame.awayName,
+      awayShort: scheduleGame.away_short,
+      awayName: scheduleGame.away_name,
       awayScore: gameDetails.away.score.T,
       redzone: gameDetails.redzone,
       yl: gameDetails.yl,
@@ -117,7 +118,7 @@ export default class nflGame {
 
   async getSingleGame(gameid: string) {
     try {
-      const game = _.find(this.schedule, { gameid: gameid });
+      const game = _.find(this.schedule, { game_id: gameid });
       if (game) {
         // return await this.mountGameDetails(game);
         return game;

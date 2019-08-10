@@ -1,7 +1,7 @@
 import fs from "fs-extra";
 import { nflApiGame, nflApiGameResponse } from "../Entities/nflApiGame";
 import Player from "../Entities/Player";
-import Schedule from "./Schedule";
+import Schedule from "../apis/schedule/Schedule";
 
 export default class jsonCache {
   folderpath: string;

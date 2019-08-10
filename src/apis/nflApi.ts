@@ -1,33 +1,8 @@
-import axios from "./api";
+import axios from "../nflgame/api";
 import cheerio from "cheerio";
 import _ from "lodash";
-
-interface gameWeekArgs {
-  year: number;
-  stype: string;
-  week: number;
-}
-
-export interface scheduleGame {
-  gameid: string;
-  // gsis: string;
-  wday: string;
-  time: string;
-  year: number;
-  month: number;
-  day: number;
-  seasonType: string;
-  gameType: string;
-  week: number;
-  // meridiem: null | string;
-  quarter: string;
-  homeShort: string;
-  homeName: string;
-  homeScore: number;
-  awayShort: string;
-  awayName: string;
-  awayScore: number;
-}
+import { gameWeekArgs } from "./schedule/gameWeekArgs";
+import { scheduleGame } from "./schedule/scheduleGame";
 
 const nflCurrentSchedule = "http://www.nfl.com/liveupdate/scorestrip/ss.xml";
 // const nflCurrentSchedulePostSeason =
@@ -88,7 +63,7 @@ export default class NFLApi {
           return {
             year: y,
             week: +w[1],
-            stype: w[0].toString()
+            season_type: w[0].toString()
           };
         })
     );
@@ -104,7 +79,7 @@ export default class NFLApi {
       if (
         allWeeks[i].year == currentWeek.year &&
         allWeeks[i].week == currentWeek.week &&
-        allWeeks[i].stype == currentWeek.stype
+        allWeeks[i].season_type == currentWeek.season_type
       ) {
         i = allWeeks.length;
       }
@@ -126,7 +101,11 @@ export default class NFLApi {
   }
 
   static getWeekSchedule = async (params: gameWeekArgs) => {
-    const url = NFLApi.getScheduleUrl(params.year, params.stype, params.week);
+    const url = NFLApi.getScheduleUrl(
+      params.year,
+      params.season_type,
+      params.week
+    );
 
     try {
       const response = await axios.get(url);
@@ -138,23 +117,23 @@ export default class NFLApi {
       $("g").each((i, e) => {
         const gid = $(e).attr("eid");
         games[i] = {
-          gameid: gid,
-          wday: $(e).attr("d"),
+          game_id: gid,
+          weekday: $(e).attr("d"),
           // gsis: +$(e).attr("gsis"),
           year: params.year,
           month: +gid.slice(4, 6),
           day: +gid.slice(6, 8),
           time: $(e).attr("t"),
           quarter: $(e).attr("q"),
-          gameType: $(e).attr("gt"),
-          seasonType: tToType($("gms").attr("t"), $(e).attr("gt")),
+          game_type: $(e).attr("gt"),
+          season_type: tToType($("gms").attr("t"), $(e).attr("gt")),
           week: params.week,
-          homeShort: $(e).attr("h"),
-          homeName: $(e).attr("hnn"),
-          homeScore: +$(e).attr("hs"),
-          awayShort: $(e).attr("v"),
-          awayName: $(e).attr("vnn"),
-          awayScore: +$(e).attr("vs")
+          home_short: $(e).attr("h"),
+          home_name: $(e).attr("hnn"),
+          home_score: +$(e).attr("hs"),
+          away_short: $(e).attr("v"),
+          away_name: $(e).attr("vnn"),
+          away_score: +$(e).attr("vs")
         };
       });
       // console.log(games)
@@ -170,14 +149,14 @@ export default class NFLApi {
     const week: gameWeekArgs = {
       week: +$("gms").attr("w"),
       year: +$("gms").attr("y"),
-      stype: "REG"
+      season_type: "REG"
     };
     const p = $("gms").attr("t");
 
     if (p == "P") {
-      week.stype = "PRE";
+      week.season_type = "PRE";
     } else if (p == "POST" || p == "PRO") {
-      week.stype = "POST";
+      week.season_type = "POST";
       week.week -= 17;
     } else {
       // phase is REG

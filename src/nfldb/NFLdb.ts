@@ -16,8 +16,8 @@ import Play from "../Entities/Play";
 
 import nflGame from "../nflgame/nflgame";
 import { statsDict } from "../nflgame/Stats";
-import { scheduleGame } from "../nflgame/nflApi";
-import { scheduleSearchArgs } from "../nflgame/Schedule";
+import { scheduleGame } from "../apis/schedule/scheduleGame";
+import { scheduleSearchArgs } from "../apis/schedule/scheduleSearchArgs";
 
 export class NFLdb {
   connection: Connection;
@@ -109,7 +109,7 @@ export class NFLdb {
       const games = await nflGame.getInstance().searchSchedule(params);
 
       for (var i = 0; i < games.length; i++) {
-        await this.insertSingleGame(games[i].gameid);
+        await this.insertSingleGame(games[i].game_id);
         i++;
       }
     } catch (err) {
@@ -121,7 +121,7 @@ export class NFLdb {
     try {
       const games = await nflGame.getInstance().searchSchedule(params);
       for (var i = 0; i < games.length; i++) {
-        const game = await nflGame.getInstance().getGame(games[i].gameid);
+        const game = await nflGame.getInstance().getGame(games[i].game_id);
         await this.insertGame(game, games[i]);
         i++;
       }
@@ -204,11 +204,11 @@ export class NFLdb {
 
       _.forIn(drivesRaw, (drive, driveId) => {
         _.forIn(drive.plays, (play, playId) => {
-          plays.push([scheduleGame.gameid, driveId, playId, play]);
+          plays.push([scheduleGame.game_id, driveId, playId, play]);
 
           _.forIn(play.players, (sequence, playerId) => {
             const playPlayer = new PlayPlayer();
-            playPlayer.game_id = scheduleGame.gameid;
+            playPlayer.game_id = scheduleGame.game_id;
             playPlayer.drive_id = driveId;
             playPlayer.play_id = playId;
             playPlayer.player_id = playerId;
@@ -327,7 +327,7 @@ export class NFLdb {
     const drives = _.transform(
       drivesRaw,
       (r: Drive[], v, k) => {
-        const d = this.driveRawToEntity(scheduleGame.gameid)(v, k);
+        const d = this.driveRawToEntity(scheduleGame.game_id)(v, k);
         if (d) {
           r.push(d);
         }
@@ -378,21 +378,21 @@ export class NFLdb {
       }
 
       const nflGame = new Game();
-      nflGame.gameid = scheduleGame.gameid;
-      nflGame.wday = scheduleGame.wday;
-      nflGame.season_type = scheduleGame.seasonType;
+      nflGame.gameid = scheduleGame.game_id;
+      nflGame.wday = scheduleGame.weekday;
+      nflGame.season_type = scheduleGame.season_type;
       nflGame.finished =
         scheduleGame.quarter == "F" || scheduleGame.quarter == "final overtime";
-      nflGame.home_score = scheduleGame.homeScore;
+      nflGame.home_score = scheduleGame.home_score;
       nflGame.year = scheduleGame.year;
       nflGame.week = scheduleGame.week;
-      nflGame.game_type = scheduleGame.gameType;
+      nflGame.game_type = scheduleGame.game_type;
       nflGame.home_score_q1 = game.home.score["1"];
       nflGame.home_score_q2 = game.home.score["2"];
       nflGame.home_score_q3 = game.home.score["3"];
       nflGame.home_score_q4 = game.home.score["4"];
       nflGame.home_score_q5 = game.home.score["5"];
-      nflGame.away_score = scheduleGame.awayScore;
+      nflGame.away_score = scheduleGame.away_score;
       nflGame.away_score_q1 = game.away.score["1"];
       nflGame.away_score_q2 = game.away.score["2"];
       nflGame.away_score_q3 = game.away.score["3"];
@@ -408,7 +408,7 @@ export class NFLdb {
       await this.connection.manager.save(nflGame);
       console.log(
         `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${
-          scheduleGame.gameid
+          scheduleGame.game_id
         }`
       );
     } catch (error) {
