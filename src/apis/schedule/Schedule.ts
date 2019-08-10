@@ -20,6 +20,15 @@ export default class Schedule {
     return `${baseUrl}season=${year}&seasonType=${stype}&week=${week}`;
   }
 
+  static async getHistoricWeek(
+    year: number,
+    season_type: string,
+    week: number
+  ) {
+    const url = this.getScheduleUrl(year, season_type, week);
+    const response = await api.get(url);
+  }
+
   static calculateWeeks(year: number, season_type: "PRE" | "POST" | "REG") {
     const weekArgs = (year: number, season_type: string, week: number) => {
       return {
