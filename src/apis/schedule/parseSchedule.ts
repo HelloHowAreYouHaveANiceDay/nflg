@@ -45,3 +45,18 @@ const tToType = (t: string, gt: string) => {
   }
   return "POST";
 };
+
+export function getWeekFromScheduleResponse(xml: string) {
+  const $ = cheerio.load(xml);
+  const gameWeek = {
+    week: +$("gms").attr("w"),
+    year: +$("gms").attr("y"),
+    season_type: tToType(
+      $("gms").attr("t"),
+      $("g")
+        .first()
+        .attr("gt")
+    )
+  };
+  return gameWeek;
+}

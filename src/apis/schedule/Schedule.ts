@@ -1,13 +1,22 @@
 import _ from "lodash";
 import api from "../api";
-import { parseScheduleResponse } from "./parseSchedule";
+import {
+  parseScheduleResponse,
+  getWeekFromScheduleResponse
+} from "./parseSchedule";
+import LocalCache from "../../cache/LocalCache";
 
 const nflCurrentSchedule = "http://www.nfl.com/liveupdate/scorestrip/ss.xml";
 
 export default class Schedule {
   // games: scheduleGame[];
+  cache: LocalCache | null = null;
 
-  // constructor(games?: scheduleGame[]) {}
+  constructor(cache?: LocalCache) {
+    if (cache) {
+      this.cache = cache;
+    }
+  }
   private static getScheduleUrl(year: number, stype: string, week: number) {
     // Returns the NFL.com XML schedule URL.
     const baseUrl = "https://www.nfl.com/ajax/scorestrip?";
@@ -53,11 +62,10 @@ export default class Schedule {
     }
   }
 
-  static async getCurrentWeek() {
+  async getCurrentWeek() {
     try {
       const response = await api.get(nflCurrentSchedule);
-      const weeks = parseScheduleResponse(response.data);
-      // console.log(weeks);
+      const weeks = getWeekFromScheduleResponse(response.data);
       return weeks;
     } catch (error) {
       throw error;
