@@ -23,7 +23,7 @@ afterAll(async done => {
   done();
 });
 
-test("get Giants from database", async () => {
+test.skip("get Giants from database", async () => {
   const team = await nfldb.findTeam("NYG");
   expect(team).toEqual({
     team_id: "NYG",
@@ -32,7 +32,7 @@ test("get Giants from database", async () => {
   });
 });
 
-test("get Texans from database", async () => {
+test.skip("get Texans from database", async () => {
   const team = await nfldb.findTeam("Texans");
   expect(team).toEqual({
     team_id: "HOU",
@@ -41,7 +41,7 @@ test("get Texans from database", async () => {
   });
 });
 
-test("get Cowboys from database", async () => {
+test.skip("get Cowboys from database", async () => {
   const team = await nfldb.findTeam("DAL");
   expect(team).toEqual({
     team_id: "DAL",
@@ -50,7 +50,7 @@ test("get Cowboys from database", async () => {
   });
 });
 
-test("add single game to database", async () => {
+test.skip("add single game to database", async () => {
   const testId = "2012020500";
   const game = await nfldb.insertSingleGame(testId);
 

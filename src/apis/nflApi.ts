@@ -1,4 +1,4 @@
-import axios from "../nflgame/api";
+import axios from "./api";
 import cheerio from "cheerio";
 import _ from "lodash";
 import { gameWeekArgs } from "./schedule/gameWeekArgs";
@@ -115,26 +115,7 @@ export default class NFLApi {
       // game schedule is returned from the score strip as xml
       // each <g> represents a game.
       $("g").each((i, e) => {
-        const gid = $(e).attr("eid");
-        games[i] = {
-          game_id: gid,
-          weekday: $(e).attr("d"),
-          // gsis: +$(e).attr("gsis"),
-          year: params.year,
-          month: +gid.slice(4, 6),
-          day: +gid.slice(6, 8),
-          time: $(e).attr("t"),
-          quarter: $(e).attr("q"),
-          game_type: $(e).attr("gt"),
-          season_type: tToType($("gms").attr("t"), $(e).attr("gt")),
-          week: params.week,
-          home_short: $(e).attr("h"),
-          home_name: $(e).attr("hnn"),
-          home_score: +$(e).attr("hs"),
-          away_short: $(e).attr("v"),
-          away_name: $(e).attr("vnn"),
-          away_score: +$(e).attr("vs")
-        };
+        parseScheduleGame($, e, games, i, params);
       });
       // console.log(games)
       return games;
@@ -258,6 +239,35 @@ export default class NFLApi {
     );
     return response.data;
   }
+}
+
+function parseScheduleGame(
+  $: CheerioStatic,
+  e: CheerioElement,
+  games: scheduleGame[],
+  i: number,
+  params: gameWeekArgs
+) {
+  const gid = $(e).attr("eid");
+  games[i] = {
+    game_id: gid,
+    weekday: $(e).attr("d"),
+    // gsis: +$(e).attr("gsis"),
+    year: params.year,
+    month: +gid.slice(4, 6),
+    day: +gid.slice(6, 8),
+    time: $(e).attr("t"),
+    quarter: $(e).attr("q"),
+    game_type: $(e).attr("gt"),
+    season_type: tToType($("gms").attr("t"), $(e).attr("gt")),
+    week: params.week,
+    home_short: $(e).attr("h"),
+    home_name: $(e).attr("hnn"),
+    home_score: +$(e).attr("hs"),
+    away_short: $(e).attr("v"),
+    away_name: $(e).attr("vnn"),
+    away_score: +$(e).attr("vs")
+  };
 }
 
 function profileIdFromUrl(url: string) {

@@ -1,4 +1,4 @@
-import jsonCache from "./jsonCache";
+import jsonCache from "../cache/jsonCache";
 import Player from "../Entities/Player";
 import NFLApi from "../apis/nflApi";
 import { scheduleGame } from "../apis/schedule/scheduleGame";

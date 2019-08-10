@@ -1,22 +1,32 @@
 require("dotenv").config();
-import nflGame from "../nflgame/nflgame";
+import Schedule from "../apis/schedule/Schedule";
 
-nflGame.getInstance(process.env.CACHE_PATH);
+// test("scheduler", async () => {
+//   const homeWeeks = await nflGame
+//     .getInstance()
+//     .searchSchedule({ year: 2018, seasonType: "REG", home: "NYG" });
+//   const awayWeeks = await nflGame
+//     .getInstance()
+//     .searchSchedule({ year: 2018, seasonType: "REG", away: "NYG" });
 
-test("scheduler", async () => {
-  const homeWeeks = await nflGame
-    .getInstance()
-    .searchSchedule({ year: 2018, seasonType: "REG", home: "NYG" });
-  const awayWeeks = await nflGame
-    .getInstance()
-    .searchSchedule({ year: 2018, seasonType: "REG", away: "NYG" });
+//   // there should be 16 games
+//   expect(homeWeeks.length + awayWeeks.length).toEqual(16);
+// });
 
-  // there should be 16 games
-  expect(homeWeeks.length + awayWeeks.length).toEqual(16);
+test("get current schedule", async () => {
+  const currentWeek = await Schedule.getCurrentWeek();
+  expect(currentWeek).toBeTruthy();
 });
 
-test("schdule", async () => {
-  const allGames = await nflGame.getInstance().searchSchedule({ year: 2017 });
+test("calculate a year's nfl schedule", async () => {
+  const preseasonGames = Schedule.calculateWeeks(2018, "PRE");
+  const regularGames = Schedule.calculateWeeks(2017, "REG");
+  const postGames = Schedule.calculateWeeks(2016, "POST");
 
-  console.log(allGames.length);
+  // 4 weeks of preseason
+  expect(preseasonGames.length).toEqual(4);
+  // 17 weeks of regular season
+  expect(regularGames.length).toEqual(17);
+  // 4 weeks of post season
+  expect(postGames.length).toEqual(4);
 });

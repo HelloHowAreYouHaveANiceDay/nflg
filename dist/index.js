@@ -13,8 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 require("dotenv").config();
 require("reflect-metadata");
-const nflgame_1 = __importDefault(require("./nflgame/nflgame"));
 const NFLdb_1 = require("./nfldb/NFLdb");
+const nflgame_1 = __importDefault(require("./nflgame/nflgame"));
 nflgame_1.default.getInstance(process.env.CACHE_PATH);
 // GRAPHQL PORTION
 // async function bootstrap() {
@@ -31,15 +31,20 @@ nflgame_1.default.getInstance(process.env.CACHE_PATH);
 // bootstrap();
 function connect() {
     return __awaiter(this, void 0, void 0, function* () {
-        const nfldb = new NFLdb_1.NFLdb();
-        yield nfldb.setup();
-        yield nfldb.connection.synchronize();
-        // await nfldb.setupTeams();
-        const team = yield nfldb.findTeam("Giants");
-        const insert = yield nfldb._insertGame("2019010600");
-        console.log(team);
-        // const connection = await createConnection();
-        // console.log(connection);
+        try {
+            // await nflGame.getInstance().regenerateSchedule();
+            const nfldb = new NFLdb_1.NFLdb();
+            // const options = await getConnectionOptions(process.env.NODE_ENV);
+            yield nfldb.setup();
+            yield nfldb.connection.synchronize();
+            yield nfldb.setupTeams();
+            const teams = yield nfldb.insertGameBySchedule({ year: 2018 });
+            // const teams = await nfldb.updateGamesBySchedule({ week: 4, year: 2018 });
+            console.log(teams);
+        }
+        catch (error) {
+            throw error;
+        }
     });
 }
 connect();
