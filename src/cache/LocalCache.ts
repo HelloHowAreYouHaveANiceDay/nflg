@@ -103,4 +103,41 @@ export default class LocalCache {
       throw error;
     }
   }
+
+  // playerProfileHandler
+  async hasPlayerProfile(player_id: string) {
+    try {
+      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      return await fs.pathExists(p);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async savePlayerProfile(player_id: string, page: string) {
+    try {
+      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      await fs.outputFile(p, page);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async readPlayerProfile(player_id: string) {
+    try {
+      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      return await fs.readFile(p, "utf-8");
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deletePlayerProfile(player_id: string) {
+    try {
+      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      return await fs.remove(p);
+    } catch (error) {
+      throw error;
+    }
+  }
 }
