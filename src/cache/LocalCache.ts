@@ -67,11 +67,38 @@ export default class LocalCache {
       throw error;
     }
   }
-
+  // Game Handlers
   async hasGame(game_id: string) {
     try {
       const p = `${this.cachePath}/games/${game_id}.json`;
       return await fs.pathExists(p);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async saveGame(game_id: string, data: string) {
+    try {
+      const p = `${this.cachePath}/games/${game_id}.json`;
+      await fs.outputFile(p, data);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async readGame(game_id: string) {
+    try {
+      const p = `${this.cachePath}/games/${game_id}.json`;
+      return await fs.readFile(p, "utf-8");
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async deleteGame(game_id: string) {
+    try {
+      const p = `${this.cachePath}/games/${game_id}.json`;
+      return await fs.remove(p);
     } catch (error) {
       throw error;
     }

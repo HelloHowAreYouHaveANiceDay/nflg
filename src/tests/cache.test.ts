@@ -36,12 +36,36 @@ describe("schedule tests", () => {
   });
 });
 
-test.skip("error id will not exist", async () => {
-  const t = await cache.hasGame("somenonsense");
-  expect(t).toEqual(false);
-});
+describe("game tests", () => {
+  const game_id = "2012020500";
+  test("error id will not exist", async () => {
+    const t = await cache.hasGame("somenonsense");
+    expect(t).toEqual(false);
+  });
 
-test.skip("game exists", async () => {
-  const t = await cache.hasGame("2018093007");
-  expect(t).toEqual(true);
+  test("save game", async () => {
+    // const game_id = "2012020500";
+    const g = await fs.readFile(
+      path.resolve(__dirname, "./apiResponses/gameResponse.json"),
+      "utf-8"
+    );
+    await cache.saveGame(game_id, g);
+    const t = await cache.hasGame(game_id);
+    expect(t).toEqual(true);
+  });
+
+  test("read game", async () => {
+    const g = await fs.readFile(
+      path.resolve(__dirname, "./apiResponses/gameResponse.json"),
+      "utf-8"
+    );
+    const t = await cache.readGame(game_id);
+    expect(t).toEqual(g);
+  });
+
+  test("delete game", async () => {
+    await cache.deleteGame(game_id);
+    const t = await cache.hasGame(game_id);
+    expect(t).toEqual(false);
+  });
 });
