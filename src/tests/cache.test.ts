@@ -69,3 +69,28 @@ describe("game tests", () => {
     expect(t).toEqual(false);
   });
 });
+
+describe("playerProfile tests", () => {
+  const player_id = "00-0034346";
+  const testFile = fs.readFileSync(
+    path.resolve(__dirname, "./apiResponses/profilePage.html"),
+    "utf-8"
+  );
+
+  test("profileExists", async () => {
+    const t = await cache.hasPlayerProfile(player_id);
+    expect(t).toEqual(false);
+  });
+
+  test("save profile", async () => {
+    await cache.savePlayerProfile(player_id, testFile);
+    const t = await cache.hasPlayerProfile(player_id);
+    expect(t).toEqual(true);
+  });
+
+  test("delete game", async () => {
+    await cache.deletePlayerProfile(player_id);
+    const t = await cache.hasPlayerProfile(player_id);
+    expect(t).toEqual(false);
+  });
+});
