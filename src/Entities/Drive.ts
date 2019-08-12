@@ -50,10 +50,10 @@ export class Drive {
   result: string;
 
   @Column()
-  penalty_yards: number;
+  penalty_yds: number;
 
   @Column()
-  yards_gained: number;
+  yds_gained: number;
 
   @Column()
   play_count: number;

@@ -307,8 +307,8 @@ export class NFLdb {
       drive.pos_time = rawDrive.postime;
       drive.play_count = rawDrive.numplays;
       drive.result = rawDrive.result;
-      drive.penalty_yards = rawDrive.penyds;
-      drive.yards_gained = rawDrive.ydsgained;
+      drive.penalty_yds = rawDrive.penyds;
+      drive.yds_gained = rawDrive.ydsgained;
       drive.start_qtr = rawDrive.start.qtr;
       drive.start_time = rawDrive.start.time;
       drive.end_qtr = rawDrive.end.qtr;
