@@ -9,6 +9,8 @@ import {
 import { Drive } from "../../Entities/Drive";
 import _ from "lodash";
 import Play from "../../Entities/Play";
+import { statsDict } from "../../nflgame/Stats";
+import PlayPlayer from "../../Entities/PlayPlayer";
 
 export default class GameWrapper {
   cache: LocalCache | null = null;
@@ -54,7 +56,7 @@ export default class GameWrapper {
       return _.transform(
         drives,
         (result: Drive[], rawDrive, drive_id) => {
-          const d = driveRawToEntity(game_id, rawDrive, drive_id);
+          const d = mapDriveProperties(game_id, rawDrive, drive_id);
           if (d) {
             result.push(d);
           }
@@ -73,7 +75,7 @@ export default class GameWrapper {
       const drives = game.drives;
       const plays: rawPlay[] = [];
       _.forEach(drives, (drive, drive_id) => {
-        return _.forEach(drive.plays, (play, play_id) => {
+        _.forEach(drive.plays, (play, play_id) => {
           const p = {
             game_id,
             drive_id,
@@ -84,6 +86,56 @@ export default class GameWrapper {
         });
       });
       return plays.map(mapPlayProperties);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  parsePlayPlayers(response: nflApiGameResponse) {
+    try {
+      const game_id = extractGameId(response);
+      const game = response[game_id] as nflApiGame;
+      const drives = game.drives;
+      const playPlayers: PlayPlayer[] = [];
+      _.forEach(drives, (drive, drive_id) => {
+        _.forEach(drive.plays, (play, play_id) => {
+          _.forEach(play.players, (sequence, player_id) => {
+            const p: PlayPlayer = {
+              player_id,
+              game_id,
+              drive_id,
+              play_id
+            };
+
+            sequence.forEach(stat => {
+              // TODO: add relational
+              p.team = stat.clubcode;
+              p.player_short = stat.playerName;
+              if (player_id == "0") {
+                p.player_id = stat.clubcode;
+              }
+
+              const statdef = statsDict[`${stat.statId}`];
+
+              if (statdef) {
+                statdef.fields.forEach(field => {
+                  const val = statdef.value ? statdef.value : 1;
+                  //@ts-ignore
+                  p[field] = val;
+                });
+
+                if (statdef.yds.length > 0) {
+                  //@ts-ignore
+                  p[statdef.yds] = stat.yards;
+                }
+              }
+            });
+
+            playPlayers.push(p);
+          });
+        });
+      });
+      return playPlayers;
     } catch (error) {
       throw error;
     }
@@ -137,32 +189,29 @@ function extractGameId(response: nflApiGameResponse) {
   throw new Error("invalid response");
 }
 
-const driveRawToEntity = (
+const mapDriveProperties = (
   game_id: string,
   rawDrive: nflDrive,
   drive_id: string
 ) => {
   if (rawDrive.start) {
-    const drive = new Drive();
-
-    drive.game_id = game_id;
-    drive.drive_id = drive_id;
-    drive.start_field = positionToOffset(
-      rawDrive.posteam,
-      rawDrive.start.yrdln
-    );
-    drive.end_field = positionToOffset(rawDrive.posteam, rawDrive.end.yrdln);
-    drive.first_downs = rawDrive.fds;
-    drive.pos_team = rawDrive.posteam;
-    drive.pos_time = rawDrive.postime;
-    drive.play_count = rawDrive.numplays;
-    drive.result = rawDrive.result;
-    drive.penalty_yds = rawDrive.penyds;
-    drive.yds_gained = rawDrive.ydsgained;
-    drive.start_qtr = rawDrive.start.qtr;
-    drive.start_time = rawDrive.start.time;
-    drive.end_qtr = rawDrive.end.qtr;
-    drive.end_time = rawDrive.end.time;
+    const drive: Drive = {
+      game_id: game_id,
+      drive_id: drive_id,
+      start_field: positionToOffset(rawDrive.posteam, rawDrive.start.yrdln),
+      end_field: positionToOffset(rawDrive.posteam, rawDrive.end.yrdln),
+      first_downs: rawDrive.fds,
+      pos_team: rawDrive.posteam,
+      pos_time: rawDrive.postime,
+      play_count: rawDrive.numplays,
+      result: rawDrive.result,
+      penalty_yds: rawDrive.penyds,
+      yds_gained: rawDrive.ydsgained,
+      start_qtr: rawDrive.start.qtr,
+      start_time: rawDrive.start.time,
+      end_qtr: rawDrive.end.qtr,
+      end_time: rawDrive.end.time
+    };
 
     return drive;
   }

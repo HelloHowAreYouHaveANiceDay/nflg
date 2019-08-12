@@ -31,5 +31,11 @@ describe("game tests", () => {
     expect(plays).toBeInstanceOf(Array);
     expect(plays).toBeTruthy();
   });
+  // parse game's playPlayers
+  test("parse playPlayers", () => {
+    const pp = game.parsePlayPlayers(nflGame);
+    // console.log(_.filter(pp, { player_id: "NYG" }));
+    expect(pp).toBeInstanceOf(Array);
+  });
   // parse game's players
 });
