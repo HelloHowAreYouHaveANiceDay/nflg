@@ -3,10 +3,12 @@ import api from "../api";
 import {
   nflApiGameResponse,
   nflApiGame,
-  nflDrive
+  nflDrive,
+  nflPlay
 } from "../../Entities/nflApiGame";
 import { Drive } from "../../Entities/Drive";
 import _ from "lodash";
+import Play from "../../Entities/Play";
 
 export default class GameWrapper {
   cache: LocalCache | null = null;
@@ -43,31 +45,16 @@ export default class GameWrapper {
       throw error;
     }
   }
-
-  private extractGameId(response: nflApiGameResponse) {
-    let k;
-    Object.keys(response).forEach(key => {
-      // console.log(key);
-      if (key != "nextupdate") {
-        k = key;
-      }
-    });
-    if (k) {
-      return k;
-    }
-    throw new Error("invalid response");
-  }
-
   parseDrives(response: nflApiGameResponse) {
     try {
-      const game_id = this.extractGameId(response);
+      const game_id = extractGameId(response);
       // console.log(game_id);
       const game = response[game_id] as nflApiGame;
       const drives = game.drives;
       return _.transform(
         drives,
         (result: Drive[], rawDrive, drive_id) => {
-          const d = this.driveRawToEntity(game_id, rawDrive, drive_id);
+          const d = driveRawToEntity(game_id, rawDrive, drive_id);
           if (d) {
             result.push(d);
           }
@@ -79,38 +66,108 @@ export default class GameWrapper {
     }
   }
 
-  private driveRawToEntity = (
-    game_id: string,
-    rawDrive: nflDrive,
-    drive_id: string
-  ) => {
-    if (rawDrive.start) {
-      const drive = new Drive();
-
-      drive.game_id = game_id;
-      drive.drive_id = drive_id;
-      drive.start_field = positionToOffset(
-        rawDrive.posteam,
-        rawDrive.start.yrdln
-      );
-      drive.end_field = positionToOffset(rawDrive.posteam, rawDrive.end.yrdln);
-      drive.first_downs = rawDrive.fds;
-      drive.pos_team = rawDrive.posteam;
-      drive.pos_time = rawDrive.postime;
-      drive.play_count = rawDrive.numplays;
-      drive.result = rawDrive.result;
-      drive.penalty_yds = rawDrive.penyds;
-      drive.yds_gained = rawDrive.ydsgained;
-      drive.start_qtr = rawDrive.start.qtr;
-      drive.start_time = rawDrive.start.time;
-      drive.end_qtr = rawDrive.end.qtr;
-      drive.end_time = rawDrive.end.time;
-
-      return drive;
+  parsePlays(response: nflApiGameResponse) {
+    try {
+      const game_id = extractGameId(response);
+      const game = response[game_id] as nflApiGame;
+      const drives = game.drives;
+      const plays: rawPlay[] = [];
+      _.forEach(drives, (drive, drive_id) => {
+        return _.forEach(drive.plays, (play, play_id) => {
+          const p = {
+            game_id,
+            drive_id,
+            play_id,
+            ...play
+          };
+          plays.push(_.omit(p, "players"));
+        });
+      });
+      return plays.map(mapPlayProperties);
+    } catch (error) {
+      throw error;
     }
-    return false;
-  };
+  }
 }
+
+interface rawPlay {
+  sp: number;
+  qtr: number;
+  down: number;
+  time: string;
+  yrdln: string;
+  ydstogo: number;
+  ydsnet: number;
+  posteam: string;
+  desc: string;
+  note: string;
+  game_id: string;
+  drive_id: string;
+  play_id: string;
+}
+
+function mapPlayProperties(play: rawPlay) {
+  const p: Play = {
+    game_id: play.game_id,
+    drive_id: play.drive_id,
+    play_id: play.play_id,
+    time: play.time,
+    pos_team: play.posteam,
+    yardline: positionToOffset(play.posteam, play.yrdln),
+    down: play.down,
+    yards_to_go: play.ydstogo,
+    description: play.desc,
+    note: play.note
+  };
+
+  return p;
+}
+
+function extractGameId(response: nflApiGameResponse) {
+  let k;
+  Object.keys(response).forEach(key => {
+    // console.log(key);
+    if (key != "nextupdate") {
+      k = key;
+    }
+  });
+  if (k) {
+    return k;
+  }
+  throw new Error("invalid response");
+}
+
+const driveRawToEntity = (
+  game_id: string,
+  rawDrive: nflDrive,
+  drive_id: string
+) => {
+  if (rawDrive.start) {
+    const drive = new Drive();
+
+    drive.game_id = game_id;
+    drive.drive_id = drive_id;
+    drive.start_field = positionToOffset(
+      rawDrive.posteam,
+      rawDrive.start.yrdln
+    );
+    drive.end_field = positionToOffset(rawDrive.posteam, rawDrive.end.yrdln);
+    drive.first_downs = rawDrive.fds;
+    drive.pos_team = rawDrive.posteam;
+    drive.pos_time = rawDrive.postime;
+    drive.play_count = rawDrive.numplays;
+    drive.result = rawDrive.result;
+    drive.penalty_yds = rawDrive.penyds;
+    drive.yds_gained = rawDrive.ydsgained;
+    drive.start_qtr = rawDrive.start.qtr;
+    drive.start_time = rawDrive.start.time;
+    drive.end_qtr = rawDrive.end.qtr;
+    drive.end_time = rawDrive.end.time;
+
+    return drive;
+  }
+  return false;
+};
 
 function positionToOffset(own: string, yrdln: string) {
   // Uses a varied offset technique than burntsushi/nfldb

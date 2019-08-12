@@ -32,9 +32,9 @@ export default class Play {
   @Column({ nullable: true })
   note: string;
   @CreateDateColumn()
-  time_inserted: string;
+  time_inserted?: string;
   @UpdateDateColumn()
-  time_updated: string;
+  time_updated?: string;
 
   // @Column()
   // first_down: number;
@@ -65,6 +65,6 @@ export default class Play {
   // @Column()
   // xp_aborted: number;
 
-  @OneToMany(type => PlayPlayer, playplayer => playplayer.play)
-  play_players: PlayPlayer[];
+  // @OneToMany(type => PlayPlayer, playplayer => playplayer.play)
+  // play_players: PlayPlayer[];
 }

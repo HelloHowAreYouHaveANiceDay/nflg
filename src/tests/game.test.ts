@@ -2,6 +2,7 @@ import path from "path";
 import GameWrapper from "../apis/game/GameWrapper";
 import LocalCache from "../cache/LocalCache";
 import { nflApiGameResponse } from "../Entities/nflApiGame";
+import _ from "lodash";
 
 const cache = new LocalCache(path.join(__dirname, "./testCache/"));
 
@@ -25,5 +26,10 @@ describe("game tests", () => {
     expect(drives.length).toEqual(nflGame[game_id].drives.crntdrv);
   });
   // parse game's plays
+  test("parse plays", () => {
+    const plays = game.parsePlays(nflGame);
+    expect(plays).toBeInstanceOf(Array);
+    expect(plays).toBeTruthy();
+  });
   // parse game's players
 });
