@@ -9,7 +9,7 @@ import {
 import { Drive } from "../../Entities/Drive";
 import _ from "lodash";
 import Play from "../../Entities/Play";
-import { statsDict } from "../../nflgame/Stats";
+import { statsDict } from "./Stats";
 import PlayPlayer from "../../Entities/PlayPlayer";
 
 export default class GameWrapper {
@@ -136,6 +136,45 @@ export default class GameWrapper {
         });
       });
       return playPlayers;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  parsePlayerStubs(response: nflApiGameResponse) {
+    try {
+      const game_id = extractGameId(response);
+      const game = response[game_id] as nflApiGame;
+      const drives = game.drives;
+
+      const player_ids: { player_id: string; short_name: string }[] = [];
+      const dupeCheck: string[] = [];
+      _.forEach(drives, (drive, drive_id) => {
+        _.forEach(drive.plays, (play, play_id) => {
+          _.forEach(play.players, (sequence, player_id) => {
+            let p_id = player_id;
+            let p_short = "";
+
+            sequence.forEach(stat => {
+              p_short = stat.playerName;
+              if (player_id == "0") {
+                p_id = stat.clubcode;
+                p_short = stat.clubcode;
+              }
+            });
+
+            if (dupeCheck.includes(p_id)) {
+            } else {
+              player_ids.push({
+                player_id: p_id,
+                short_name: p_short
+              });
+              dupeCheck.push(p_id);
+            }
+          });
+        });
+      });
+      return _.uniq(player_ids);
     } catch (error) {
       throw error;
     }

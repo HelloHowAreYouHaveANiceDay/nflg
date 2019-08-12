@@ -15,7 +15,7 @@ import Player from "../Entities/Player";
 import Play from "../Entities/Play";
 
 import nflGame from "../nflgame/nflgame";
-import { statsDict } from "../nflgame/Stats";
+import { statsDict } from "../apis/game/Stats";
 import { scheduleGame } from "../apis/schedule/scheduleGame";
 import { scheduleSearchArgs } from "../apis/schedule/scheduleSearchArgs";
 import ScheduleWrapper from "../apis/schedule/ScheduleWrapper";

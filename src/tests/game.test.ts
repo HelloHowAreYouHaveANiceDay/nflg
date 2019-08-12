@@ -38,4 +38,9 @@ describe("game tests", () => {
     expect(pp).toBeInstanceOf(Array);
   });
   // parse game's players
+  test("parse player stubs", () => {
+    const pp = game.parsePlayerStubs(nflGame);
+    console.log(pp);
+    expect(pp).toBeInstanceOf(Array);
+  });
 });
