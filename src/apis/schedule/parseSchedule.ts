@@ -21,12 +21,12 @@ export function parseScheduleResponse(xml: string) {
       game_type: $(e).attr("gt"),
       season_type: tToType(gameWeek.type, $(e).attr("gt")),
       week: gameWeek.week,
-      home_short: $(e).attr("h"),
-      home_name: $(e).attr("hnn"),
-      home_score: +$(e).attr("hs"),
-      away_short: $(e).attr("v"),
-      away_name: $(e).attr("vnn"),
-      away_score: +$(e).attr("vs")
+      home_team_id: $(e).attr("h"),
+      home_team_name: $(e).attr("hnn"),
+      home_total_score: +$(e).attr("hs"),
+      away_team_id: $(e).attr("v"),
+      away_team_name: $(e).attr("vnn"),
+      away_total_score: +$(e).attr("vs")
     };
   };
 

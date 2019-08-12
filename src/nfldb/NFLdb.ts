@@ -18,6 +18,7 @@ import nflGame from "../nflgame/nflgame";
 import { statsDict } from "../nflgame/Stats";
 import { scheduleGame } from "../apis/schedule/scheduleGame";
 import { scheduleSearchArgs } from "../apis/schedule/scheduleSearchArgs";
+import ScheduleWrapper from "../apis/schedule/ScheduleWrapper";
 
 export class NFLdb {
   connection: Connection;
@@ -41,6 +42,12 @@ export class NFLdb {
       this.connection = getConnectionManager().get(process.env.NODE_ENV);
     }
   }
+
+  // updates the games table based on schedule API
+  // async updateScheduleGames(config: { force: boolean }) {
+  //   try {
+  //   } catch (error) {}
+  // }
 
   /**
    * Prefills the team table with hard coded teams
