@@ -19,6 +19,7 @@ import { Team, teamLookup } from "../Entities/Team";
 import { Game } from "../Entities/Game";
 
 export class NFLdb {
+  chunk: 100;
   connection: Connection;
   nflSchedule: ScheduleWrapper;
   nflGame: GameWrapper;
@@ -114,7 +115,7 @@ export class NFLdb {
     }
   }
 
-  async updateScheduleGames(year: number, season_type: string) {
+  async updateScheduleGames(year: number, season_type?: string) {
     try {
       const weeks = this.nflSchedule.calculateWeeks(year, season_type);
       const games = await this.getGamesFromWeeks(weeks);
@@ -122,13 +123,11 @@ export class NFLdb {
         games.map(async g => await this.connection.manager.create(Game, g))
       );
 
-      await this.connection.manager.save(gameEntities);
+      await this.connection.manager.save(gameEntities, { chunk: this.chunk });
     } catch (error) {
       console.log(error);
     }
   }
-
-  async updateSchedulePlayerStubs(year: number, season_type: string) {}
 
   async getGamesFromWeeks(weeks: scheduleWeekArgs[]) {
     try {
@@ -141,16 +140,9 @@ export class NFLdb {
     }
   }
 
-  async updateGameDetails(year: number, season_type: string) {
+  async updateGameDetails(year: number, season_type?: string) {
     try {
-      const games = await this.connection
-        .createQueryBuilder(Game, "game")
-        .where("game.year == :year AND game.season_type == :season_type", {
-          year,
-          season_type
-        })
-        .getMany();
-
+      const games = await this.getGamesByYear(year);
       for (var i = 0; i < games.length; ) {
         await this.cascadeGameDetailsUpdate(games[i].game_id);
         i++;
@@ -245,7 +237,7 @@ export class NFLdb {
   private async extractPlayerStubEntities(game: nflApiGameResponse) {
     try {
       const rawPlayerStubs = this.nflGame.parsePlayerStubs(game);
-      console.log(rawPlayerStubs);
+      // console.log(rawPlayerStubs);
       return await Promise.all(
         rawPlayerStubs.map(p => this.connection.manager.create(Player, p))
       );
@@ -255,6 +247,20 @@ export class NFLdb {
   ////////////////////
   // Database Queries
   ///////////////////
+
+  async getGamesByYear(year: number) {
+    try {
+      const games = await this.connection
+        .createQueryBuilder(Game, "game")
+        .where("game.year == :year", {
+          year
+        })
+        .getMany();
+      return games;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   ////////////////////
   // Replaced Code

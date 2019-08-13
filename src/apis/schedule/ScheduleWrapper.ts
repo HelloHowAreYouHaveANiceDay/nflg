@@ -63,7 +63,7 @@ export default class ScheduleWrapper {
     }
   };
 
-  calculateWeeks(year: number, season_type: string) {
+  calculateWeeks(year: number, season_type?: string) {
     const weekArgs = (
       year: number,
       season_type: string,
@@ -76,18 +76,23 @@ export default class ScheduleWrapper {
       };
     };
 
-    switch (season_type) {
-      case "PRE":
-        return _.range(1, 5).map(w => weekArgs(year, "PRE", w));
-      case "REG":
-        return _.range(1, 18).map(w => weekArgs(year, "REG", w));
-      case "POST":
-        return _.filter(
-          _.range(1, 5).map(w => weekArgs(year, "REG", w))
-          // a => a.week != 21
-        );
-      default:
-        return [];
+    const preseason = _.range(1, 5).map(w => weekArgs(year, "PRE", w));
+    const regseason = _.range(1, 18).map(w => weekArgs(year, "REG", w));
+    const postseason = _.range(1, 5).map(w => weekArgs(year, "POST", w));
+
+    if (season_type) {
+      switch (season_type) {
+        case "PRE":
+          return preseason;
+        case "REG":
+          return regseason;
+        case "POST":
+          return postseason;
+        default:
+          return [];
+      }
+    } else {
+      return _.concat(preseason, regseason, postseason);
     }
   }
 

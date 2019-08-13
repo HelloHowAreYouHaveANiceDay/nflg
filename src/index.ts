@@ -30,8 +30,8 @@ async function connect() {
     await nfldb.setup();
     await nfldb.connection.synchronize();
     await nfldb.setupTeams();
-    await nfldb.updateScheduleGames(2018, "PRE");
-    const g = await nfldb.updateGameDetails(2018, "PRE");
+    // await nfldb.updateScheduleGames(2018);
+    const g = await nfldb.updateGameDetails(2018);
     console.log(g);
   } catch (error) {
     throw error;

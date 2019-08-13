@@ -71,6 +71,10 @@ export class Game {
 
   @Field()
   @Column({ nullable: true })
+  time?: string;
+
+  @Field()
+  @Column({ nullable: true })
   finished?: boolean;
 
   @Field(type => Team)
