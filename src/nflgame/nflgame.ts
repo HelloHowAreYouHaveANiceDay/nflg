@@ -210,7 +210,7 @@ export default class nflGame {
       if (match.length < 1) {
         console.log(`${gsisId} player not found... fetching`);
         const player = await this.fetchPlayer(gsisId);
-        console.log(`added ${player.fullName}`);
+        console.log(`added ${player.full_name}`);
         return player;
       } else {
         console.log("player found");

@@ -1,7 +1,5 @@
-import { ObjectType, Field, ID } from "type-graphql";
-import { Entity, PrimaryColumn, Column, OneToMany, ManyToOne } from "typeorm";
-import { Team } from "./Team";
-import PlayPlayer from "./PlayPlayer";
+import { Field, ID, ObjectType } from "type-graphql";
+import { Column, Entity, PrimaryColumn } from "typeorm";
 
 @ObjectType()
 @Entity()
@@ -11,62 +9,66 @@ export default class Player {
   player_id: string;
 
   @Field({ nullable: true })
-  @Column()
-  firstName: string;
-
-  @Field({ nullable: true })
-  @Column()
-  lastName: string;
-
-  @Field({ nullable: true })
-  @Column()
-  fullName: string;
+  @Column({ nullable: true })
+  first_name?: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  college: string;
+  short_name?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  last_name?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  full_name?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  college?: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
   // in inches
-  height: number;
+  height?: number;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
   // nfldb: uniform_number
-  number: number;
+  number?: number;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  position: string;
-
-  @Field()
-  @Column()
-  gsisId: string;
+  position?: string;
 
   @Field()
   @Column({ nullable: true })
-  profile_id: string;
+  gsisId?: string;
 
   @Field()
   @Column({ nullable: true })
-  profile_url: string;
+  profile_id?: string;
 
-  @Field({ nullable: true })
-  @Column()
-  birthdate: string;
+  @Field()
+  @Column({ nullable: true })
+  profile_url?: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
-  birthcity: string;
+  birthdate?: string;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  birthcity?: string;
 
   @Field({ nullable: true })
   @Column({ nullable: true })
   status?: string;
 
   @Field({ nullable: true })
-  @Column()
-  weight: number;
+  @Column({ nullable: true })
+  weight?: number;
 
   // @Field(type => Team)
   // @ManyToOne(type => Team, team => team.players)

@@ -59,6 +59,10 @@ export class Game {
 
   @Field()
   @Column({ nullable: true })
+  quarter?: string;
+
+  @Field()
+  @Column({ nullable: true })
   year: number;
 
   @Field()

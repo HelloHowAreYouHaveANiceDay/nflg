@@ -37,9 +37,9 @@ export function parseProfile(html: string): Player {
     let position = "";
 
     // TODO: a lot of redundancy here.
-    const firstName = nameStrip.split(" ")[0].trim();
-    const lastName = nameStrip.split(" ")[1].trim();
-    const fullName = `${firstName} ${lastName}`;
+    const first_name = nameStrip.split(" ")[0].trim();
+    const last_name = nameStrip.split(" ")[1].trim();
+    const full_name = `${first_name} ${last_name}`;
 
     let birthDate = "";
     let birthCity = "";
@@ -75,11 +75,11 @@ export function parseProfile(html: string): Player {
     }
 
     return {
-      fullName,
+      full_name,
       player_id: "",
-      firstName,
+      first_name,
       gsisId: playerId,
-      lastName,
+      last_name,
       birthcity: birthCity,
       birthdate: birthDate,
       college,

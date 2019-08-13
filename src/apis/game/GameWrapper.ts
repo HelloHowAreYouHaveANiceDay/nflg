@@ -156,7 +156,7 @@ export default class GameWrapper {
 
             sequence.forEach(stat => {
               p_short = stat.playerName;
-              if (player_id == "0") {
+              if (player_id === "0") {
                 p_id = stat.clubcode;
                 p_short = stat.clubcode;
               }
@@ -173,7 +173,8 @@ export default class GameWrapper {
           });
         });
       });
-      return _.uniq(player_ids);
+      // console.log(player_ids);
+      return player_ids;
     } catch (error) {
       throw error;
     }

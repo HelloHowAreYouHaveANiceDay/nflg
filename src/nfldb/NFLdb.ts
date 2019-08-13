@@ -1,33 +1,22 @@
+import _ from "lodash";
 import {
   Connection,
-  createConnections,
   ConnectionOptions,
+  createConnections,
   getConnectionManager
 } from "typeorm";
-import _ from "lodash";
-
-import {
-  nflApiGame,
-  nflPlay,
-  nflDrive,
-  nflApiGameResponse
-} from "../Entities/nflApiGame";
-import { Game } from "../Entities/Game";
-import { teamLookup, Team } from "../Entities/Team";
-import { Drive } from "../Entities/Drive";
-import PlayPlayer from "../Entities/PlayPlayer";
-import Player from "../Entities/Player";
-import Play from "../Entities/Play";
-
-import nflGame from "../nflgame/nflgame";
-import { statsDict } from "../apis/game/Stats";
-import { scheduleGame } from "../apis/schedule/scheduleGame";
-import { scheduleSearchArgs } from "../apis/schedule/scheduleSearchArgs";
+import GameWrapper from "../apis/game/GameWrapper";
 import ScheduleWrapper, {
   scheduleWeekArgs
 } from "../apis/schedule/ScheduleWrapper";
 import LocalCache from "../cache/LocalCache";
-import GameWrapper from "../apis/game/GameWrapper";
+import { Drive } from "../Entities/Drive";
+import { nflApiGameResponse } from "../Entities/nflApiGame";
+import Play from "../Entities/Play";
+import Player from "../Entities/Player";
+import PlayPlayer from "../Entities/PlayPlayer";
+import { Team, teamLookup } from "../Entities/Team";
+import { Game } from "../Entities/Game";
 
 export class NFLdb {
   connection: Connection;
@@ -128,68 +117,93 @@ export class NFLdb {
   async updateScheduleGames(year: number, season_type: string) {
     try {
       const weeks = this.nflSchedule.calculateWeeks(year, season_type);
-      // const games = weeks.map(this.nflSchedule.getWeekGames);
+      const games = await this.getGamesFromWeeks(weeks);
+      const gameEntities = await Promise.all(
+        games.map(async g => await this.connection.manager.create(Game, g))
+      );
+
+      await this.connection.manager.save(gameEntities);
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateSchedulePlayerStubs(year: number, season_type: string) {}
+
+  async getGamesFromWeeks(weeks: scheduleWeekArgs[]) {
+    try {
       const rawGames = await Promise.all(
         _.map(weeks, this.nflSchedule.getWeekGames)
       );
-      const games = await Promise.all(
-        _.map(
-          _.flatten(rawGames),
-          // g => g
-          async g => await this.connection.manager.create(Game, g)
-        )
-      );
-      // console.log(games);
-      await this.connection.manager.save(games);
+      return _.flatten(rawGames);
     } catch (error) {
-      console.log(error);
+      throw error;
+    }
+  }
+
+  async updateGameDetails(year: number, season_type: string) {
+    try {
+      const games = await this.connection
+        .createQueryBuilder(Game, "game")
+        .where("game.year == :year AND game.season_type == :season_type", {
+          year,
+          season_type
+        })
+        .getMany();
+
+      for (var i = 0; i < games.length; ) {
+        await this.cascadeGameDetailsUpdate(games[i].game_id);
+        i++;
+      }
+    } catch (error) {
+      throw error;
     }
   }
 
   async cascadeGameDetailsUpdate(game_id: string) {
     try {
       const game = await this.nflGame.getGame(game_id);
-
-      await this.updateDrives(game);
-      await this.updatePlays(game);
-      await this.updatePlayPlayers(game);
-      await this.updatePlayerStubs(game);
+      await this.updateDrivesFromGame(game);
+      await this.updatePlaysFromGame(game);
+      await this.updatePlayPlayersFromGame(game);
+      await this.updatePlayerStubsFromGame(game);
+      console.log(`updated: ${game_id}`);
     } catch (error) {
       throw error;
     }
   }
 
-  async updateDrives(game: nflApiGameResponse) {
+  async updateDrivesFromGame(game: nflApiGameResponse) {
     try {
       const drives = await this.extractDriveEntities(game);
-      await this.connection.manager.save(drives);
+      await this.connection.manager.save(drives, { chunk: 50 });
     } catch (error) {
       throw error;
     }
   }
 
-  async updatePlays(game: nflApiGameResponse) {
+  async updatePlaysFromGame(game: nflApiGameResponse) {
     try {
       const plays = await this.extractPlayEntities(game);
-      await this.connection.manager.save(plays);
+      await this.connection.manager.save(plays, { chunk: 50 });
     } catch (error) {
       throw error;
     }
   }
 
-  async updatePlayPlayers(game: nflApiGameResponse) {
+  async updatePlayPlayersFromGame(game: nflApiGameResponse) {
     try {
       const playPlayers = await this.extractPlayPlayerEntities(game);
-      await this.connection.manager.save(playPlayers);
+      await this.connection.manager.save(playPlayers, { chunk: 50 });
     } catch (error) {
       throw error;
     }
   }
 
-  async updatePlayerStubs(game: nflApiGameResponse) {
+  async updatePlayerStubsFromGame(game: nflApiGameResponse) {
     try {
       const playerStubs = await this.extractPlayerStubEntities(game);
-      await this.connection.manager.save(playerStubs);
+      await this.connection.manager.save(playerStubs, { chunk: 50 });
     } catch (error) {
       throw error;
     }
@@ -231,11 +245,20 @@ export class NFLdb {
   private async extractPlayerStubEntities(game: nflApiGameResponse) {
     try {
       const rawPlayerStubs = this.nflGame.parsePlayerStubs(game);
+      console.log(rawPlayerStubs);
       return await Promise.all(
         rawPlayerStubs.map(p => this.connection.manager.create(Player, p))
       );
     } catch (error) {}
   }
+
+  ////////////////////
+  // Database Queries
+  ///////////////////
+
+  ////////////////////
+  // Replaced Code
+  ///////////////////
 
   // async insertGameBySchedule(params: scheduleSearchArgs) {
   //   try {
