@@ -5,13 +5,13 @@ import {
   createConnections,
   getConnectionManager
 } from "typeorm";
-import GameWrapper from "../apis/game/GameWrapper";
+import GameWrapper from "../apis/nfl/game/GameWrapper";
 import ScheduleWrapper, {
   scheduleWeekArgs
-} from "../apis/schedule/ScheduleWrapper";
+} from "../apis/nfl/schedule/ScheduleWrapper";
 import LocalCache from "../cache/LocalCache";
 import { Drive } from "../Entities/Drive";
-import { nflApiGameResponse } from "../Entities/nflApiGame";
+import { nflApiGameResponse } from "../apis/nfl/nflApiGame";
 import Play from "../Entities/Play";
 import Player from "../Entities/Player";
 import PlayPlayer from "../Entities/PlayPlayer";

@@ -1,7 +1,7 @@
 import path from "path";
-import GameWrapper from "../apis/game/GameWrapper";
+import GameWrapper from "../apis/nfl/game/GameWrapper";
 import LocalCache from "../cache/LocalCache";
-import { nflApiGameResponse } from "../Entities/nflApiGame";
+import { nflApiGameResponse } from "../apis/nfl/nflApiGame";
 import _ from "lodash";
 
 const cache = new LocalCache(path.join(__dirname, "./testCache/"));

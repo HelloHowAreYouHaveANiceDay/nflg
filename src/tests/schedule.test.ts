@@ -1,4 +1,4 @@
-import ScheduleWrapper from "../apis/schedule/ScheduleWrapper";
+import ScheduleWrapper from "../apis/nfl/schedule/ScheduleWrapper";
 
 describe("schedule tests", () => {
   const schedule = new ScheduleWrapper();

@@ -1,4 +1,4 @@
-import axios from "./api";
+import axios from "../api";
 import cheerio from "cheerio";
 import _ from "lodash";
 import { gameWeekArgs } from "./schedule/gameWeekArgs";

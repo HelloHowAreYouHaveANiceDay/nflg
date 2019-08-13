@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import Player from "../Entities/Player";
+import Player from "../../Entities/Player";
 
 export function parseProfile(html: string): Player {
   try {
