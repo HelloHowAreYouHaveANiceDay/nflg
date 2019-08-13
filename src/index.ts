@@ -1,9 +1,9 @@
 require("dotenv").config();
 import "reflect-metadata";
 import { NFLdb } from "./nfldb/NFLdb";
-import nflGame from "./nflgame/nflgame";
+// import nflGame from "./nflgame/nflgame";
 
-nflGame.getInstance(process.env.CACHE_PATH);
+// nflGame.getInstance(process.env.CACHE_PATH);
 
 // GRAPHQL PORTION
 // async function bootstrap() {
@@ -25,14 +25,14 @@ nflGame.getInstance(process.env.CACHE_PATH);
 async function connect() {
   try {
     // await nflGame.getInstance().regenerateSchedule();
-    const nfldb = new NFLdb();
+    const nfldb = new NFLdb(process.env.CACHE_PATH);
     // const options = await getConnectionOptions(process.env.NODE_ENV);
     await nfldb.setup();
     await nfldb.connection.synchronize();
     await nfldb.setupTeams();
-    // await nfldb.updateScheduleGames(2018);
-    const g = await nfldb.updateGameDetails(2018);
-    console.log(g);
+    await nfldb.updateScheduleGames(2018);
+    // const g = await nfldb.updateGameDetails(2018, "POST");
+    // console.log(g);
   } catch (error) {
     throw error;
   }

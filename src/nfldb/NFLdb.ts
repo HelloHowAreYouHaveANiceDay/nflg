@@ -24,9 +24,15 @@ export class NFLdb {
   nflSchedule: ScheduleWrapper;
   nflGame: GameWrapper;
 
-  constructor(cache?: LocalCache) {
-    this.nflSchedule = new ScheduleWrapper();
-    this.nflGame = new GameWrapper();
+  constructor(cache?: string) {
+    if (cache) {
+      const c = new LocalCache(cache);
+      this.nflSchedule = new ScheduleWrapper(c);
+      this.nflGame = new GameWrapper(c);
+    } else {
+      this.nflSchedule = new ScheduleWrapper();
+      this.nflGame = new GameWrapper();
+    }
   }
 
   /**
