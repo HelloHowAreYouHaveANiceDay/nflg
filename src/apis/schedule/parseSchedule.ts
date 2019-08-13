@@ -20,7 +20,7 @@ export function parseScheduleResponse(xml: string) {
       quarter: $(e).attr("q"),
       game_type: $(e).attr("gt"),
       season_type: tToType(gameWeek.type, $(e).attr("gt")),
-      week: gameWeek.week,
+      week: +gameWeek.week,
       home_team_id: $(e).attr("h"),
       home_team_name: $(e).attr("hnn"),
       home_total_score: +$(e).attr("hs"),

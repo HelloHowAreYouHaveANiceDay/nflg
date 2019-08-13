@@ -14,12 +14,12 @@ export class Team {
   @Column()
   name: string;
 
-  @OneToMany(type => Player, player => player.team)
-  players?: Player[];
+  // @OneToMany(type => Player, player => player.team)
+  // players?: Player[];
 
-  @OneToMany(type => Game, game => game.home_team)
-  @OneToMany(type => Game, game => game.away_team)
-  games?: Game[];
+  // @OneToMany(type => Game, game => game.home_team)
+  // @OneToMany(type => Game, game => game.away_team)
+  // games?: Game[];
 }
 
 // NFL teams changeup all the time. need to figure out a team update function.

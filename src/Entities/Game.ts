@@ -42,12 +42,12 @@ export class gameSearchArgs {
 export class Game {
   @Field(type => ID)
   @PrimaryColumn()
-  gameid: string;
+  game_id: string;
 
   @Field({ nullable: true })
   @Column()
   // nfldb day_of_week
-  wday?: string;
+  weekday: string;
 
   @Field()
   @Column()
@@ -66,72 +66,72 @@ export class Game {
   week: number;
 
   @Field()
-  @Column()
-  finished: boolean;
+  @Column({ nullable: true })
+  finished?: boolean;
 
   @Field(type => Team)
-  @ManyToOne(type => Team, team => team.games)
-  home_team: Team;
+  @Column()
+  home_team_id: string;
 
   @Field()
   @Column()
-  home_score: number;
+  home_total_score: number;
 
   @Field()
-  @Column()
-  home_score_q1: number;
+  @Column({ nullable: true })
+  home_score_q1?: number;
 
   @Field()
-  @Column()
-  home_score_q2: number;
+  @Column({ nullable: true })
+  home_score_q2?: number;
 
   @Field()
-  @Column()
-  home_score_q3: number;
+  @Column({ nullable: true })
+  home_score_q3?: number;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
+  home_score_q4?: number;
 
   @Field()
-  @Column()
-  home_score_q4: number;
+  @Column({ nullable: true })
+  home_score_q5?: number;
 
   @Field()
-  @Column()
-  home_score_q5: number;
-
-  @Field()
-  @Column()
-  home_turnovers: number;
+  @Column({ nullable: true })
+  home_turnovers?: number;
 
   @Field(type => Team)
-  @ManyToOne(type => Team, team => team.games)
-  away_team: Team;
+  @Column()
+  away_team_id?: string;
 
   @Field()
-  @Column()
-  away_score: number;
+  @Column({ nullable: true })
+  away_total_score?: number;
 
   @Field()
-  @Column()
-  away_score_q1: number;
+  @Column({ nullable: true })
+  away_score_q1?: number;
 
   @Field()
-  @Column()
-  away_score_q2: number;
+  @Column({ nullable: true })
+  away_score_q2?: number;
 
   @Field()
-  @Column()
-  away_score_q3: number;
+  @Column({ nullable: true })
+  away_score_q3?: number;
 
   @Field()
-  @Column()
-  away_score_q4: number;
+  @Column({ nullable: true })
+  away_score_q4?: number;
 
   @Field()
-  @Column()
-  away_score_q5: number;
+  @Column({ nullable: true })
+  away_score_q5?: number;
 
   @Field()
-  @Column()
-  away_turnovers: number;
+  @Column({ nullable: true })
+  away_turnovers?: number;
 
   @Field()
   @CreateDateColumn()

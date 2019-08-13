@@ -68,10 +68,10 @@ export default class Player {
   @Column()
   weight: number;
 
-  @Field(type => Team)
-  @ManyToOne(type => Team, team => team.players)
-  team?: Team;
+  // @Field(type => Team)
+  // @ManyToOne(type => Team, team => team.players)
+  // team?: Team;
 
-  @ManyToOne(type => PlayPlayer, playplayer => playplayer.player)
-  play_players?: PlayPlayer[];
+  // @ManyToOne(type => PlayPlayer, playplayer => playplayer.player)
+  // play_players?: PlayPlayer[];
 }

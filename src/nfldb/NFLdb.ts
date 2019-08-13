@@ -18,12 +18,21 @@ import nflGame from "../nflgame/nflgame";
 import { statsDict } from "../apis/game/Stats";
 import { scheduleGame } from "../apis/schedule/scheduleGame";
 import { scheduleSearchArgs } from "../apis/schedule/scheduleSearchArgs";
-import ScheduleWrapper from "../apis/schedule/ScheduleWrapper";
+import ScheduleWrapper, {
+  scheduleWeekArgs
+} from "../apis/schedule/ScheduleWrapper";
+import LocalCache from "../cache/LocalCache";
+import GameWrapper from "../apis/game/GameWrapper";
 
 export class NFLdb {
   connection: Connection;
+  nflSchedule: ScheduleWrapper;
+  nflGame: GameWrapper;
 
-  constructor() {}
+  constructor(cache?: LocalCache) {
+    this.nflSchedule = new ScheduleWrapper();
+    this.nflGame = new GameWrapper();
+  }
 
   /**
    * sets up connection with sqlite
@@ -60,7 +69,7 @@ export class NFLdb {
       team.name = versions[1];
       team.team_id = key;
       team.city = versions[0];
-      team.players = [];
+      // team.players = [];
 
       await this.connection.manager.save(team);
     });
@@ -111,315 +120,336 @@ export class NFLdb {
     }
   }
 
-  async insertGameBySchedule(params: scheduleSearchArgs) {
+  async updateScheduleGames(year: number, season_type: string) {
     try {
-      const games = await nflGame.getInstance().searchSchedule(params);
-
-      for (var i = 0; i < games.length; i++) {
-        await this.insertSingleGame(games[i].game_id);
-        i++;
-      }
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  async updateGamesBySchedule(params: scheduleSearchArgs) {
-    try {
-      const games = await nflGame.getInstance().searchSchedule(params);
-      for (var i = 0; i < games.length; i++) {
-        const game = await nflGame.getInstance().getGame(games[i].game_id);
-        await this.insertGame(game, games[i]);
-        i++;
-      }
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  async insertSingleGame(game_id: string) {
-    try {
-      // get scheduled game from nfl
-      const scheduleGame = await nflGame.getInstance().getSingleGame(game_id);
-
-      // get the detailed game info
-      const game = await nflGame.getInstance().getGame(game_id);
-
-      // insert game into database
-      await this.insertGame(game, scheduleGame);
-
-      // insert game's drives in to the database
-      await this.insertDrives(game, scheduleGame);
-
-      // insert plays, players, and the combination of play players into the database
-      await this.insertPlayPlayers(game, scheduleGame);
-      return true;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  async insertPlayer(playerid: string) {
-    try {
-      const existingPlayer = await this.playerExistsInDb(playerid);
-
-      if (existingPlayer) {
-        return existingPlayer;
-      }
-
-      const player = await nflGame.getInstance().getPlayer(playerid);
-      const nPlayer = await this.connection.manager.create(Player, player);
-      return await this.connection.manager.save(nPlayer);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  private playerExistsInDb = async (player_id: string) => {
-    try {
-      const player = await this.connection
-        .getRepository(Player)
-        .createQueryBuilder("player")
-        .where("player.player_id = :id", { id: player_id })
-        .getOne();
-
-      return player ? player : false;
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  /**
-   * parses and inserts each playPlayer
-   *
-   * @param game
-   * @param scheduleGame
-   */
-  async insertPlayPlayers(game: nflApiGame, scheduleGame?: scheduleGame) {
-    if (!scheduleGame) {
-      throw new Error("scheduled game not found");
-    }
-
-    try {
-      const drivesRaw = game.drives;
-
-      const playPlayers: PlayPlayer[] = [];
-
-      const playerIds: string[] = [];
-
-      const plays: [string, string, string, nflPlay][] = [];
-
-      _.forIn(drivesRaw, (drive, driveId) => {
-        _.forIn(drive.plays, (play, playId) => {
-          plays.push([scheduleGame.game_id, driveId, playId, play]);
-
-          _.forIn(play.players, (sequence, playerId) => {
-            const playPlayer = new PlayPlayer();
-            playPlayer.game_id = scheduleGame.game_id;
-            playPlayer.drive_id = driveId;
-            playPlayer.play_id = playId;
-            playPlayer.player_id = playerId;
-            playerIds.push(playerId);
-
-            sequence.forEach(stat => {
-              // TODO: add relational
-              playPlayer.team = stat.clubcode;
-
-              const statdef = statsDict[`${stat.statId}`];
-
-              if (statdef) {
-                statdef.fields.forEach(field => {
-                  const val = statdef.value ? statdef.value : 1;
-                  //@ts-ignore
-                  playPlayer[field] = val;
-                });
-
-                if (statdef.yds.length > 0) {
-                  //@ts-ignore
-                  playPlayer[statdef.yds] = stat.yards;
-                }
-              }
-            });
-
-            playPlayers.push(playPlayer);
-          });
-        });
-      });
-
-      const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
-      // console.log(uniqueIds);
-      await Promise.all(uniqueIds.map(p => this.insertPlayer(p)));
-
-      await Promise.all(plays.map(this.insertPlay));
-
-      await Promise.all(
-        playPlayers.map(pp => this.connection.manager.save(pp))
+      const weeks = this.nflSchedule.calculateWeeks(year, season_type);
+      // const games = weeks.map(this.nflSchedule.getWeekGames);
+      const rawGames = await Promise.all(
+        _.map(weeks, this.nflSchedule.getWeekGames)
       );
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  insertPlay = async ([game_id, drive_id, play_id, play]: [
-    string,
-    string,
-    string,
-    nflPlay
-  ]) => {
-    try {
-      const nPlay = new Play();
-      nPlay.game_id = game_id;
-      nPlay.drive_id = drive_id;
-      nPlay.play_id = play_id;
-      nPlay.time = play.time;
-      nPlay.pos_team = play.posteam;
-      nPlay.yardline = this.positionToOffset(play.posteam, play.yrdln);
-      nPlay.down = play.down;
-      nPlay.yards_to_go = play.ydstogo;
-      nPlay.description = play.desc;
-      nPlay.note = play.note;
-      // console.log(nPlay);
-      return await this.connection.manager.save(nPlay);
-    } catch (error) {
-      throw error;
-    }
-  };
-
-  private driveRawToEntity = (game_id: string) => (
-    rawDrive: nflDrive,
-    drive_id: string
-  ) => {
-    if (rawDrive.start) {
-      const drive = new Drive();
-
-      drive.game_id = game_id;
-      drive.drive_id = drive_id;
-      drive.start_field = this.positionToOffset(
-        rawDrive.posteam,
-        rawDrive.start.yrdln
+      const games = await Promise.all(
+        _.map(
+          _.flatten(rawGames),
+          // g => g
+          async g => await this.connection.manager.create(Game, g)
+        )
       );
-      drive.end_field = this.positionToOffset(
-        rawDrive.posteam,
-        rawDrive.end.yrdln
-      );
-      drive.first_downs = rawDrive.fds;
-      drive.pos_team = rawDrive.posteam;
-      drive.pos_time = rawDrive.postime;
-      drive.play_count = rawDrive.numplays;
-      drive.result = rawDrive.result;
-      drive.penalty_yds = rawDrive.penyds;
-      drive.yds_gained = rawDrive.ydsgained;
-      drive.start_qtr = rawDrive.start.qtr;
-      drive.start_time = rawDrive.start.time;
-      drive.end_qtr = rawDrive.end.qtr;
-      drive.end_time = rawDrive.end.time;
-
-      return drive;
-    }
-    return false;
-  };
-
-  /**
-   * inserts each drive
-   * @param game
-   * @param scheduleGame
-   */
-  async insertDrives(game: nflApiGame, scheduleGame?: scheduleGame) {
-    if (!scheduleGame) {
-      throw new Error("scheduled game not found");
-    }
-
-    const drivesRaw = game.drives;
-
-    const drives = _.transform(
-      drivesRaw,
-      (r: Drive[], v, k) => {
-        const d = this.driveRawToEntity(scheduleGame.game_id)(v, k);
-        if (d) {
-          r.push(d);
-        }
-      },
-      []
-    );
-
-    await this.connection.manager.save(drives);
-  }
-
-  /**
-   * positional offset parser so play yardage is
-   * stored agnostically
-   *
-   * @param own
-   * @param yrdln
-   */
-  positionToOffset(own: string, yrdln: string) {
-    // Uses a varied offset technique than burntsushi/nfldb
-    // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
-    // Don't have to fiddle with embedded names
-
-    // if yrdln is 50 there isn't a team string
-    if (yrdln == "50") {
-      return 0;
-    }
-    const [team, yard] = yrdln.split(" ");
-    return team == own ? +yard - 50 : 50 - +yard;
-  }
-
-  /**
-   * converts the offset back with given team names
-   *
-   * @param own
-   * @param opp
-   * @param offset
-   */
-  offsetToPosition(own: string, opp: string, offset: number) {
-    const pos = offset > 0 ? opp : own;
-    const yds = offset > 0 ? 50 - offset : offset + 50;
-    return `${pos} ${yds}`;
-  }
-
-  async insertGame(game: nflApiGame, scheduleGame?: scheduleGame) {
-    try {
-      if (!scheduleGame) {
-        throw new Error("scheduled game not found");
-      }
-
-      const nflGame = new Game();
-      nflGame.gameid = scheduleGame.game_id;
-      nflGame.wday = scheduleGame.weekday;
-      nflGame.season_type = scheduleGame.season_type;
-      nflGame.finished =
-        scheduleGame.quarter == "F" || scheduleGame.quarter == "final overtime";
-      nflGame.home_score = scheduleGame.home_score;
-      nflGame.year = scheduleGame.year;
-      nflGame.week = scheduleGame.week;
-      nflGame.game_type = scheduleGame.game_type;
-      nflGame.home_score_q1 = game.home.score["1"];
-      nflGame.home_score_q2 = game.home.score["2"];
-      nflGame.home_score_q3 = game.home.score["3"];
-      nflGame.home_score_q4 = game.home.score["4"];
-      nflGame.home_score_q5 = game.home.score["5"];
-      nflGame.away_score = scheduleGame.away_score;
-      nflGame.away_score_q1 = game.away.score["1"];
-      nflGame.away_score_q2 = game.away.score["2"];
-      nflGame.away_score_q3 = game.away.score["3"];
-      nflGame.away_score_q4 = game.away.score["4"];
-      nflGame.away_score_q5 = game.away.score["5"];
-      nflGame.home_turnovers = game.home.to;
-      nflGame.away_turnovers = game.away.to;
-      nflGame.home_team = await this.findTeam(game.home.abbr);
-      nflGame.away_team = await this.findTeam(game.away.abbr);
-
-      // console.log(nflGame);
-
-      await this.connection.manager.save(nflGame);
-      console.log(
-        `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${
-          scheduleGame.game_id
-        }`
-      );
+      // console.log(games);
+      await this.connection.manager.save(games);
     } catch (error) {
-      throw error;
+      console.log(error);
     }
   }
+
+  // async insertGameBySchedule(params: scheduleSearchArgs) {
+  //   try {
+  //     const games = await nflGame.getInstance().searchSchedule(params);
+
+  //     for (var i = 0; i < games.length; i++) {
+  //       await this.insertSingleGame(games[i].game_id);
+  //       i++;
+  //     }
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
+  // async updateGamesBySchedule(params: scheduleSearchArgs) {
+  //   try {
+  //     const games = await nflGame.getInstance().searchSchedule(params);
+  //     for (var i = 0; i < games.length; i++) {
+  //       const game = await nflGame.getInstance().getGame(games[i].game_id);
+  //       await this.insertGame(game, games[i]);
+  //       i++;
+  //     }
+  //   } catch (err) {
+  //     throw err;
+  //   }
+  // }
+
+  // async insertSingleGame(game_id: string) {
+  //   try {
+  //     // get scheduled game from nfl
+  //     const scheduleGame = await nflGame.getInstance().getSingleGame(game_id);
+
+  //     // get the detailed game info
+  //     const game = await nflGame.getInstance().getGame(game_id);
+
+  //     // insert game into database
+  //     await this.insertGame(game, scheduleGame);
+
+  //     // insert game's drives in to the database
+  //     await this.insertDrives(game, scheduleGame);
+
+  //     // insert plays, players, and the combination of play players into the database
+  //     await this.insertPlayPlayers(game, scheduleGame);
+  //     return true;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // async insertPlayer(playerid: string) {
+  //   try {
+  //     const existingPlayer = await this.playerExistsInDb(playerid);
+
+  //     if (existingPlayer) {
+  //       return existingPlayer;
+  //     }
+
+  //     const player = await nflGame.getInstance().getPlayer(playerid);
+  //     const nPlayer = await this.connection.manager.create(Player, player);
+  //     return await this.connection.manager.save(nPlayer);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // private playerExistsInDb = async (player_id: string) => {
+  //   try {
+  //     const player = await this.connection
+  //       .getRepository(Player)
+  //       .createQueryBuilder("player")
+  //       .where("player.player_id = :id", { id: player_id })
+  //       .getOne();
+
+  //     return player ? player : false;
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+
+  // /**
+  //  * parses and inserts each playPlayer
+  //  *
+  //  * @param game
+  //  * @param scheduleGame
+  //  */
+  // async insertPlayPlayers(game: nflApiGame, scheduleGame?: scheduleGame) {
+  //   if (!scheduleGame) {
+  //     throw new Error("scheduled game not found");
+  //   }
+
+  //   try {
+  //     const drivesRaw = game.drives;
+
+  //     const playPlayers: PlayPlayer[] = [];
+
+  //     const playerIds: string[] = [];
+
+  //     const plays: [string, string, string, nflPlay][] = [];
+
+  //     _.forIn(drivesRaw, (drive, driveId) => {
+  //       _.forIn(drive.plays, (play, playId) => {
+  //         plays.push([scheduleGame.game_id, driveId, playId, play]);
+
+  //         _.forIn(play.players, (sequence, playerId) => {
+  //           const playPlayer = new PlayPlayer();
+  //           playPlayer.game_id = scheduleGame.game_id;
+  //           playPlayer.drive_id = driveId;
+  //           playPlayer.play_id = playId;
+  //           playPlayer.player_id = playerId;
+  //           playerIds.push(playerId);
+
+  //           sequence.forEach(stat => {
+  //             // TODO: add relational
+  //             playPlayer.team = stat.clubcode;
+
+  //             const statdef = statsDict[`${stat.statId}`];
+
+  //             if (statdef) {
+  //               statdef.fields.forEach(field => {
+  //                 const val = statdef.value ? statdef.value : 1;
+  //                 //@ts-ignore
+  //                 playPlayer[field] = val;
+  //               });
+
+  //               if (statdef.yds.length > 0) {
+  //                 //@ts-ignore
+  //                 playPlayer[statdef.yds] = stat.yards;
+  //               }
+  //             }
+  //           });
+
+  //           playPlayers.push(playPlayer);
+  //         });
+  //       });
+  //     });
+
+  //     const uniqueIds = _.uniq(_.filter(playerIds, k => k != "0"));
+  //     // console.log(uniqueIds);
+  //     await Promise.all(uniqueIds.map(p => this.insertPlayer(p)));
+
+  //     await Promise.all(plays.map(this.insertPlay));
+
+  //     await Promise.all(
+  //       playPlayers.map(pp => this.connection.manager.save(pp))
+  //     );
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
+
+  // insertPlay = async ([game_id, drive_id, play_id, play]: [
+  //   string,
+  //   string,
+  //   string,
+  //   nflPlay
+  // ]) => {
+  //   try {
+  //     const nPlay = new Play();
+  //     nPlay.game_id = game_id;
+  //     nPlay.drive_id = drive_id;
+  //     nPlay.play_id = play_id;
+  //     nPlay.time = play.time;
+  //     nPlay.pos_team = play.posteam;
+  //     nPlay.yardline = this.positionToOffset(play.posteam, play.yrdln);
+  //     nPlay.down = play.down;
+  //     nPlay.yards_to_go = play.ydstogo;
+  //     nPlay.description = play.desc;
+  //     nPlay.note = play.note;
+  //     // console.log(nPlay);
+  //     return await this.connection.manager.save(nPlay);
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // };
+
+  // private driveRawToEntity = (game_id: string) => (
+  //   rawDrive: nflDrive,
+  //   drive_id: string
+  // ) => {
+  //   if (rawDrive.start) {
+  //     const drive = new Drive();
+
+  //     drive.game_id = game_id;
+  //     drive.drive_id = drive_id;
+  //     drive.start_field = this.positionToOffset(
+  //       rawDrive.posteam,
+  //       rawDrive.start.yrdln
+  //     );
+  //     drive.end_field = this.positionToOffset(
+  //       rawDrive.posteam,
+  //       rawDrive.end.yrdln
+  //     );
+  //     drive.first_downs = rawDrive.fds;
+  //     drive.pos_team = rawDrive.posteam;
+  //     drive.pos_time = rawDrive.postime;
+  //     drive.play_count = rawDrive.numplays;
+  //     drive.result = rawDrive.result;
+  //     drive.penalty_yds = rawDrive.penyds;
+  //     drive.yds_gained = rawDrive.ydsgained;
+  //     drive.start_qtr = rawDrive.start.qtr;
+  //     drive.start_time = rawDrive.start.time;
+  //     drive.end_qtr = rawDrive.end.qtr;
+  //     drive.end_time = rawDrive.end.time;
+
+  //     return drive;
+  //   }
+  //   return false;
+  // };
+
+  // /**
+  //  * inserts each drive
+  //  * @param game
+  //  * @param scheduleGame
+  //  */
+  // async insertDrives(game: nflApiGame, scheduleGame?: scheduleGame) {
+  //   if (!scheduleGame) {
+  //     throw new Error("scheduled game not found");
+  //   }
+
+  //   const drivesRaw = game.drives;
+
+  //   const drives = _.transform(
+  //     drivesRaw,
+  //     (r: Drive[], v, k) => {
+  //       const d = this.driveRawToEntity(scheduleGame.game_id)(v, k);
+  //       if (d) {
+  //         r.push(d);
+  //       }
+  //     },
+  //     []
+  //   );
+
+  //   await this.connection.manager.save(drives);
+  // }
+
+  // /**
+  //  * positional offset parser so play yardage is
+  //  * stored agnostically
+  //  *
+  //  * @param own
+  //  * @param yrdln
+  //  */
+  // positionToOffset(own: string, yrdln: string) {
+  //   // Uses a varied offset technique than burntsushi/nfldb
+  //   // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
+  //   // Don't have to fiddle with embedded names
+
+  //   // if yrdln is 50 there isn't a team string
+  //   if (yrdln == "50") {
+  //     return 0;
+  //   }
+  //   const [team, yard] = yrdln.split(" ");
+  //   return team == own ? +yard - 50 : 50 - +yard;
+  // }
+
+  // /**
+  //  * converts the offset back with given team names
+  //  *
+  //  * @param own
+  //  * @param opp
+  //  * @param offset
+  //  */
+  // offsetToPosition(own: string, opp: string, offset: number) {
+  //   const pos = offset > 0 ? opp : own;
+  //   const yds = offset > 0 ? 50 - offset : offset + 50;
+  //   return `${pos} ${yds}`;
+  // }
+
+  // async insertGame(game: nflApiGame, scheduleGame?: scheduleGame) {
+  //   try {
+  //     if (!scheduleGame) {
+  //       throw new Error("scheduled game not found");
+  //     }
+
+  //     const nflGame = new Game();
+  //     nflGame.gameid = scheduleGame.game_id;
+  //     nflGame.wday = scheduleGame.weekday;
+  //     nflGame.season_type = scheduleGame.season_type;
+  //     nflGame.finished =
+  //       scheduleGame.quarter == "F" || scheduleGame.quarter == "final overtime";
+  //     nflGame.home_score = scheduleGame.home_score;
+  //     nflGame.year = scheduleGame.year;
+  //     nflGame.week = scheduleGame.week;
+  //     nflGame.game_type = scheduleGame.game_type;
+  //     nflGame.home_score_q1 = game.home.score["1"];
+  //     nflGame.home_score_q2 = game.home.score["2"];
+  //     nflGame.home_score_q3 = game.home.score["3"];
+  //     nflGame.home_score_q4 = game.home.score["4"];
+  //     nflGame.home_score_q5 = game.home.score["5"];
+  //     nflGame.away_score = scheduleGame.away_score;
+  //     nflGame.away_score_q1 = game.away.score["1"];
+  //     nflGame.away_score_q2 = game.away.score["2"];
+  //     nflGame.away_score_q3 = game.away.score["3"];
+  //     nflGame.away_score_q4 = game.away.score["4"];
+  //     nflGame.away_score_q5 = game.away.score["5"];
+  //     nflGame.home_turnovers = game.home.to;
+  //     nflGame.away_turnovers = game.away.to;
+  //     nflGame.home_team = await this.findTeam(game.home.abbr);
+  //     nflGame.away_team = await this.findTeam(game.away.abbr);
+
+  //     // console.log(nflGame);
+
+  //     await this.connection.manager.save(nflGame);
+  //     console.log(
+  //       `Updated ${scheduleGame.year}-week ${scheduleGame.week}-${
+  //         scheduleGame.game_id
+  //       }`
+  //     );
+  //   } catch (error) {
+  //     throw error;
+  //   }
+  // }
 }

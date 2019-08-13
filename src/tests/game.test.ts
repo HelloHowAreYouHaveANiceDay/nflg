@@ -7,7 +7,8 @@ import _ from "lodash";
 const cache = new LocalCache(path.join(__dirname, "./testCache/"));
 
 describe("game tests", () => {
-  const game = new GameWrapper(cache);
+  // const game = new GameWrapper(cache);
+  const game = new GameWrapper();
   const game_id = "2012020500";
   // retrieve game from the api
   let nflGame: nflApiGameResponse;
@@ -40,7 +41,7 @@ describe("game tests", () => {
   // parse game's players
   test("parse player stubs", () => {
     const pp = game.parsePlayerStubs(nflGame);
-    console.log(pp);
+    // console.log(pp);
     expect(pp).toBeInstanceOf(Array);
   });
 });

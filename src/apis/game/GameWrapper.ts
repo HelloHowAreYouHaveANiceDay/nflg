@@ -3,8 +3,7 @@ import api from "../api";
 import {
   nflApiGameResponse,
   nflApiGame,
-  nflDrive,
-  nflPlay
+  nflDrive
 } from "../../Entities/nflApiGame";
 import { Drive } from "../../Entities/Drive";
 import _ from "lodash";
@@ -13,7 +12,7 @@ import { statsDict } from "./Stats";
 import PlayPlayer from "../../Entities/PlayPlayer";
 
 export default class GameWrapper {
-  cache: LocalCache | null = null;
+  cache: LocalCache;
   constructor(cache?: LocalCache) {
     if (cache) {
       this.cache = cache;
@@ -42,7 +41,7 @@ export default class GameWrapper {
         await this.cache.saveGame(game_id, JSON.stringify(response.data));
       }
 
-      return JSON.parse(response.data);
+      return response.data;
     } catch (error) {
       throw error;
     }

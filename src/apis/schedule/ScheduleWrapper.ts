@@ -5,10 +5,11 @@ import {
   getWeekFromScheduleResponse
 } from "./parseSchedule";
 import LocalCache from "../../cache/LocalCache";
+import { Game } from "../../Entities/Game";
 
 const nflCurrentSchedule = "http://www.nfl.com/liveupdate/scorestrip/ss.xml";
 
-interface scheduleWeekArgs {
+export interface scheduleWeekArgs {
   year: number;
   season_type: string;
   week: number;
@@ -16,7 +17,7 @@ interface scheduleWeekArgs {
 
 export default class ScheduleWrapper {
   // games: scheduleGame[];
-  cache: LocalCache | null = null;
+  cache: LocalCache;
 
   constructor(cache?: LocalCache) {
     if (cache) {
@@ -35,7 +36,11 @@ export default class ScheduleWrapper {
     return `${baseUrl}season=${year}&seasonType=${season_type}&week=${week}`;
   }
 
-  async getWeekGames({ year, season_type, week }: scheduleWeekArgs) {
+  getWeekGames = async ({
+    year,
+    season_type,
+    week
+  }: scheduleWeekArgs): Promise<Game[]> => {
     try {
       if (this.cache) {
         const response = await this.cache.hasSchedule(year, season_type, week);
@@ -51,14 +56,14 @@ export default class ScheduleWrapper {
       if (this.cache) {
         await this.cache.saveSchedule(year, season_type, week, response.data);
       }
-
+      // console.log(response.data);
       return parseScheduleResponse(response.data);
     } catch (error) {
       throw error;
     }
-  }
+  };
 
-  calculateWeeks(year: number, season_type: "PRE" | "POST" | "REG") {
+  calculateWeeks(year: number, season_type: string) {
     const weekArgs = (
       year: number,
       season_type: string,
