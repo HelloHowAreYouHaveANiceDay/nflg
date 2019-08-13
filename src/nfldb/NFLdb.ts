@@ -6,7 +6,12 @@ import {
 } from "typeorm";
 import _ from "lodash";
 
-import { nflApiGame, nflPlay, nflDrive } from "../Entities/nflApiGame";
+import {
+  nflApiGame,
+  nflPlay,
+  nflDrive,
+  nflApiGameResponse
+} from "../Entities/nflApiGame";
 import { Game } from "../Entities/Game";
 import { teamLookup, Team } from "../Entities/Team";
 import { Drive } from "../Entities/Drive";
@@ -139,6 +144,97 @@ export class NFLdb {
     } catch (error) {
       console.log(error);
     }
+  }
+
+  async cascadeGameDetailsUpdate(game_id: string) {
+    try {
+      const game = await this.nflGame.getGame(game_id);
+
+      await this.updateDrives(game);
+      await this.updatePlays(game);
+      await this.updatePlayPlayers(game);
+      await this.updatePlayerStubs(game);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateDrives(game: nflApiGameResponse) {
+    try {
+      const drives = await this.extractDriveEntities(game);
+      await this.connection.manager.save(drives);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePlays(game: nflApiGameResponse) {
+    try {
+      const plays = await this.extractPlayEntities(game);
+      await this.connection.manager.save(plays);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePlayPlayers(game: nflApiGameResponse) {
+    try {
+      const playPlayers = await this.extractPlayPlayerEntities(game);
+      await this.connection.manager.save(playPlayers);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updatePlayerStubs(game: nflApiGameResponse) {
+    try {
+      const playerStubs = await this.extractPlayerStubEntities(game);
+      await this.connection.manager.save(playerStubs);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async extractDriveEntities(game: nflApiGameResponse) {
+    try {
+      const rawDrives = this.nflGame.parseDrives(game);
+      return await Promise.all(
+        rawDrives.map(d => this.connection.manager.create(Drive, d))
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async extractPlayEntities(game: nflApiGameResponse) {
+    try {
+      const rawPlays = this.nflGame.parsePlays(game);
+      return await Promise.all(
+        rawPlays.map(p => this.connection.manager.create(Play, p))
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async extractPlayPlayerEntities(game: nflApiGameResponse) {
+    try {
+      const rawPlayPlayers = this.nflGame.parsePlayPlayers(game);
+      return await Promise.all(
+        rawPlayPlayers.map(p => this.connection.manager.create(PlayPlayer, p))
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async extractPlayerStubEntities(game: nflApiGameResponse) {
+    try {
+      const rawPlayerStubs = this.nflGame.parsePlayerStubs(game);
+      return await Promise.all(
+        rawPlayerStubs.map(p => this.connection.manager.create(Player, p))
+      );
+    } catch (error) {}
   }
 
   // async insertGameBySchedule(params: scheduleSearchArgs) {
