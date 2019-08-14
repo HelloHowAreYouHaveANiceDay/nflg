@@ -107,7 +107,7 @@ export default class LocalCache {
   // playerProfileHandler
   async hasPlayerProfile(player_id: string) {
     try {
-      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      const p = `${this.cachePath}/playerProfiles/${player_id}.html`;
       return await fs.pathExists(p);
     } catch (error) {
       throw error;
@@ -116,7 +116,7 @@ export default class LocalCache {
 
   async savePlayerProfile(player_id: string, page: string) {
     try {
-      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      const p = `${this.cachePath}/playerProfiles/${player_id}.html`;
       await fs.outputFile(p, page);
     } catch (error) {
       throw error;
@@ -125,7 +125,7 @@ export default class LocalCache {
 
   async readPlayerProfile(player_id: string) {
     try {
-      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      const p = `${this.cachePath}/playerProfiles/${player_id}.html`;
       return await fs.readFile(p, "utf-8");
     } catch (error) {
       throw error;
@@ -134,7 +134,7 @@ export default class LocalCache {
 
   async deletePlayerProfile(player_id: string) {
     try {
-      const p = `${this.cachePath}/playerProfiles/${player_id}.json`;
+      const p = `${this.cachePath}/playerProfiles/${player_id}.html`;
       return await fs.remove(p);
     } catch (error) {
       throw error;

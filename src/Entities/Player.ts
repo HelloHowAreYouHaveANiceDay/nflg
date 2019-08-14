@@ -8,6 +8,10 @@ export default class Player {
   @PrimaryColumn()
   player_id: string;
 
+  @Field()
+  @Column({ nullable: true })
+  team: string;
+
   @Field({ nullable: true })
   @Column({ nullable: true })
   first_name?: string;

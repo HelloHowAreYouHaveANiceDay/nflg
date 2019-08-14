@@ -4,7 +4,7 @@ import NFLApi from "../apis/nfl/nflApi";
 import { scheduleGame } from "../apis/nfl/schedule/scheduleGame";
 import _ from "lodash";
 import { nflApiGame, nflApiGameResponse } from "../apis/nfl/nflApiGame";
-import { parseProfile } from "../apis/nfl/nflPlayer";
+import { parseProfile } from "../apis/nfl/playerProfile/parseProfile";
 // import { getPlayerStats } from "../temp/Game";
 import { gameSearchArgs, Game } from "../Entities/Game";
 
