@@ -17,6 +17,7 @@ import Player from "../Entities/Player";
 import PlayPlayer from "../Entities/PlayPlayer";
 import { Team, teamLookup } from "../Entities/Team";
 import { Game } from "../Entities/Game";
+import ProfileWrapper from "../apis/nfl/playerProfile/ProfileWrapper";
 
 export class NFLdb {
   chunk: 100;
@@ -24,14 +25,18 @@ export class NFLdb {
   nflSchedule: ScheduleWrapper;
   nflGame: GameWrapper;
 
+  nflPlayer: ProfileWrapper;
+
   constructor(cache?: string) {
     if (cache) {
       const c = new LocalCache(cache);
       this.nflSchedule = new ScheduleWrapper(c);
       this.nflGame = new GameWrapper(c);
+      this.nflPlayer = new ProfileWrapper();
     } else {
       this.nflSchedule = new ScheduleWrapper();
       this.nflGame = new GameWrapper();
+      this.nflPlayer = new ProfileWrapper();
     }
   }
 
@@ -250,6 +255,41 @@ export class NFLdb {
     } catch (error) {}
   }
 
+  // Player Profile
+  async updateAllPlayers() {
+    try {
+      const players = await this.getAllPlayers();
+      await Promise.all(players.map(p => this.updatePlayer(p.player_id)));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateStubPlayers() {
+    try {
+      const players = await this.getStubPlayers();
+      await Promise.all(players.map(p => this.updatePlayer(p.player_id)));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // Player Profile will time out if too many requests are ongoing
+  async updatePlayer(player_id: string) {
+    try {
+      const rawPlayer = await this.nflPlayer.getPlayerProfile(player_id);
+      if (Object.values(rawPlayer).length > 0) {
+        await this.connection.manager.update(Player, player_id, rawPlayer);
+        console.log(`${rawPlayer.full_name} updated`);
+      } else {
+        console.log(`${player_id} invalid: skipped`);
+      }
+      return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   ////////////////////
   // Database Queries
   ///////////////////
@@ -263,6 +303,36 @@ export class NFLdb {
         })
         .getMany();
       return games;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllPlayers() {
+    try {
+      // const players = await this.connection.query("select * from player");
+      const players = await this.connection
+        .createQueryBuilder(Player, "player")
+        // .where("game.year == :year", {
+        //   year
+        // })
+        .getMany();
+      return players;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getStubPlayers() {
+    try {
+      const players = await this.connection
+        .createQueryBuilder(Player, "player")
+        .where("player.college IS NULL")
+        .andWhere("Player.height IS NULL")
+        .andWhere("Player.weight IS NULL")
+        .andWhere("Player.full_name IS NULL")
+        .getMany();
+      return players;
     } catch (error) {
       throw error;
     }

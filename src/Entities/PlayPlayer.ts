@@ -1,5 +1,12 @@
 import "reflect-metadata";
-import { Entity, PrimaryColumn, Column, ManyToOne } from "typeorm";
+import {
+  Entity,
+  PrimaryColumn,
+  Column,
+  ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn
+} from "typeorm";
 import Play from "./Play";
 import Player from "./Player";
 
@@ -198,6 +205,11 @@ export default class PlayPlayer {
   @Column({ nullable: true })
   rushing_yds?: number;
 
+  @CreateDateColumn()
+  time_inserted?: string;
+
+  @UpdateDateColumn()
+  time_updated?: string;
   // @ManyToOne(type => Play, play => play.play_players)
   // play: Play;
 

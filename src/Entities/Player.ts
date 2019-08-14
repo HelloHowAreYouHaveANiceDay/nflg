@@ -1,5 +1,11 @@
 import { Field, ID, ObjectType } from "type-graphql";
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  PrimaryColumn,
+  CreateDateColumn,
+  UpdateDateColumn
+} from "typeorm";
 
 @ObjectType()
 @Entity()
@@ -73,6 +79,12 @@ export default class Player {
   @Field({ nullable: true })
   @Column({ nullable: true })
   weight?: number;
+
+  @CreateDateColumn()
+  time_inserted?: string;
+
+  @UpdateDateColumn()
+  time_updated?: string;
 
   // @Field(type => Team)
   // @ManyToOne(type => Team, team => team.players)

@@ -45,10 +45,10 @@ export function parseProfile(html: string) {
     }
 
     // find and assign player_id
-    const playerIdMatch = html.match(/(?:GSIS ID: )\W*(\d+\W+\d+)/);
-    if (playerIdMatch) {
-      profile.player_id = playerIdMatch[1];
-    }
+    // const playerIdMatch = html.match(/(?:GSIS ID: )\W*(\d+\W+\d+)/);
+    // if (playerIdMatch) {
+    //   profile.player_id = playerIdMatch[1];
+    // }
 
     // height
     const heightMatch = html.match(

@@ -14,7 +14,9 @@ export default class ProfileWrapper {
       const response = await api.get(url);
       return parseProfile(response.data);
     } catch (error) {
-      throw error;
+      console.log(error.message);
+      // throw error;
+      return {};
     }
   }
 }
