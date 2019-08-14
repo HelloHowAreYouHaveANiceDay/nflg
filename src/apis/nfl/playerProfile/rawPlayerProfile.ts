@@ -3,15 +3,23 @@ export interface rawPlayerProfile {
   team?: string;
   first_name?: string;
 
+  last_name?: string;
+
+  full_name?: string;
+
+  position?: string;
+
   number?: number;
 
   college?: string;
 
+  birthdate?: string;
+
+  birthcity?: string;
+
   profile_url?: string;
 
   profile_id?: string;
-
-  position?: string;
 
   weight?: number;
 

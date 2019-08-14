@@ -6,83 +6,93 @@ export function parseProfile(html: string) {
   try {
     const $ = cheerio.load(html);
 
+    const playerNotFoundRedirect = $("#teamRostersSection");
+    if (playerNotFoundRedirect.length) {
+      return {};
+    }
+
     const profile: rawPlayerProfile = {};
+
     // number and postion only available to active players
-    const numberStrip = $("span.player-number").text();
-    // const playerInfo = $('div.player-info').children()
-    const nameStrip = $("#playerName").attr("content");
-    const playerId = $("#playerId").attr("content");
-    let team = $("#playerTeam").attr("content");
-    const url = $("link[rel=canonical]").attr("href");
-    // const physicalRow = playerInfo.filter((i, e) => i == 2);
-    // regex seems to be the easiest way to get at these specific pieces of data.
-    const player_id = html.match(/(?:GSIS ID: )\W*(\d+\W+\d+)/)![1];
+    const numberStrip = $("span.player-number");
+    if (numberStrip.length) {
+      const number = numberStrip.text().match(/(\d+)/);
+      const position = numberStrip.text().match(/([A-Z]+)/);
+
+      if (number) {
+        profile.number = +number[0];
+      }
+
+      if (position) {
+        profile.position = position[0];
+      }
+    }
+
+    // find and assign player names
+    const nameStrip = $("#playerName");
+
+    if (nameStrip.length) {
+      const n = nameStrip.attr("content");
+
+      profile.full_name = n;
+
+      const name = n.split(" ");
+
+      if (name) {
+        profile.first_name = name[0].trim();
+        profile.last_name = name[1].trim();
+      }
+    }
+
+    // find and assign player_id
+    const playerIdMatch = html.match(/(?:GSIS ID: )\W*(\d+\W+\d+)/);
+    if (playerIdMatch) {
+      profile.player_id = playerIdMatch[1];
+    }
+
+    // height
     const heightMatch = html.match(
       /(?:<strong>)(?:Height)(?:<\/strong>)\W\s(\d+\W\d+)/
     );
-    const heightStrip = heightMatch ? heightMatch[1] : null;
+    if (heightMatch) {
+      const h = heightMatch[1];
+      profile.height = feetInchesToInches(h);
+    }
+
+    // weight
     const weightMatch = html.match(
       /(?:<strong>)(?:Weight)(?:<\/strong>)\W\s(\d+)/
     );
-    const weightStrip = weightMatch ? weightMatch[1] : null;
-    // const ageStrip = html.match(/(?:<strong>)(?:Age)(?:<\/strong>)\W\s(\d+)/)![1];
+    if (weightMatch) {
+      const w = weightMatch[1];
+      profile.weight = +w;
+    }
+
+    // birthdate
     const birthStrip = html.match(
       /(?:<strong>)(?:Born)(?:<\/strong>)\W+\s+(\d{1,2}\/\d{1,2}\/\d{4})\s+(\b[a-zA-Z\s]+,[ ]?[A-Z]{2}\b)/
     );
+
+    if (birthStrip) {
+      profile.birthdate = birthStrip[1];
+      profile.birthcity = birthStrip[2];
+    }
+
     const collegeStrip = html.match(
       /(?:<strong>)(?:College)(?:<\/strong>)\W\s+([\w-\s]+)/
     );
-    // console.log(numberStrip);
-    let number = 0;
-    let position = "";
-    // TODO: a lot of redundancy here.
-    const first_name = nameStrip.split(" ")[0].trim();
-    const last_name = nameStrip.split(" ")[1].trim();
-    const full_name = `${first_name} ${last_name}`;
-    let birthDate = "";
-    let birthCity = "";
-    if (birthStrip != null) {
-      birthDate = birthStrip![1];
-      birthCity = birthStrip![2];
-    }
-    let weight = 0;
-    if (weightStrip != null) {
-      weight = +weightStrip;
-    }
-    let college = "";
     if (collegeStrip) {
-      college = collegeStrip[1];
+      profile.college = collegeStrip[1];
     }
-    // const age = +ageStrip;
-    let height = 0;
-    if (heightStrip != null) {
-      height = feetInchesToInches(heightStrip);
+
+    const playerId = $("#playerId").attr("content");
+
+    const url = $("link[rel=canonical]").attr("href");
+    if (url.length) {
+      profile.profile_url = url;
+      profile.profile_id = profileIdFromUrl(url);
     }
-    if (numberStrip == null) {
-      team = "";
-    } else {
-      const numberPresent = numberStrip.match(/(\d+)/);
-      const positionPresent = numberStrip.match(/([A-Z]+)/);
-      if (numberPresent != null && positionPresent != null) {
-        number = +numberStrip.match(/(\d+)/)![0];
-        position = numberStrip.match(/([A-Z]+)/)![0];
-      }
-    }
-    // return {
-    //   full_name,
-    //   first_name,
-    //   player_id,
-    //   last_name,
-    //   birthcity: birthCity,
-    //   birthdate: birthDate,
-    //   college,
-    //   profile_url: url,
-    //   profile_id: profileIdFromUrl(url),
-    //   number,
-    //   position,
-    //   weight,
-    //   height
-    // };
+
     return profile;
   } catch (error) {
     throw error;
