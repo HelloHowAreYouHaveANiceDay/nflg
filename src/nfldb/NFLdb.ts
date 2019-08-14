@@ -18,14 +18,16 @@ import PlayPlayer from "../Entities/PlayPlayer";
 import { Team, teamLookup } from "../Entities/Team";
 import { Game } from "../Entities/Game";
 import ProfileWrapper from "../apis/nfl/playerProfile/ProfileWrapper";
+import espnPlayersWrapper from "../apis/espn/players/espnPlayersWrapper";
+import EspnPlayer from "../Entities/EspnPlayer";
 
 export class NFLdb {
-  chunk: 100;
+  chunk: 50;
   connection: Connection;
   nflSchedule: ScheduleWrapper;
   nflGame: GameWrapper;
-
   nflPlayer: ProfileWrapper;
+  espnPlayers: espnPlayersWrapper;
 
   constructor(cache?: string) {
     if (cache) {
@@ -33,10 +35,12 @@ export class NFLdb {
       this.nflSchedule = new ScheduleWrapper(c);
       this.nflGame = new GameWrapper(c);
       this.nflPlayer = new ProfileWrapper();
+      this.espnPlayers = new espnPlayersWrapper();
     } else {
       this.nflSchedule = new ScheduleWrapper();
       this.nflGame = new GameWrapper();
       this.nflPlayer = new ProfileWrapper();
+      this.espnPlayers = new espnPlayersWrapper();
     }
   }
 
@@ -285,6 +289,21 @@ export class NFLdb {
         console.log(`${player_id} invalid: skipped`);
       }
       return;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateAllEspnPlayers() {
+    try {
+      const players = await this.espnPlayers.getFantasyPlayers();
+      const p = await Promise.all(
+        players.map((rawP: object) =>
+          this.connection.manager.create(EspnPlayer, rawP)
+        )
+      );
+      // console.log(p);
+      await this.connection.manager.save(p, { chunk: 10 });
     } catch (error) {
       throw error;
     }

@@ -37,7 +37,7 @@ export interface espnFantasyPlayer {
 
   defaultPositionId: number;
 
-  draftRanksByType: {
+  draftRanksByRankType: {
     STANDARD: espnDraftRank;
     PPR: espnDraftRank;
   };
