@@ -30,8 +30,8 @@ async function connect() {
     await nfldb.setup();
     await nfldb.connection.synchronize();
     await nfldb.setupTeams();
-    await nfldb.updateScheduleGames(2017);
-    await nfldb.updateGameDetails(2017);
+    await nfldb.updateScheduleGames(2016);
+    await nfldb.updateGameDetails(2016);
     await nfldb.updateStubPlayers();
     // await nfldb.updateAllEspnPlayers();
     // console.log(g);
