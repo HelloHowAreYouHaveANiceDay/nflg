@@ -17,6 +17,7 @@ export default class espnPlayersWrapper {
         }
       });
       const players = response.data.players;
+      // console.log(players);
       return players.map(parseRawPlayer);
     } catch (error) {
       throw error;

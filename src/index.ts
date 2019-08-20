@@ -29,11 +29,11 @@ async function connect() {
     // const options = await getConnectionOptions(process.env.NODE_ENV);
     await nfldb.setup();
     await nfldb.connection.synchronize();
-    await nfldb.setupTeams();
-    await nfldb.updateScheduleGames(2016);
-    await nfldb.updateGameDetails(2016);
-    await nfldb.updateStubPlayers();
-    // await nfldb.updateAllEspnPlayers();
+    // await nfldb.setupTeams();
+    // await nfldb.updateScheduleGames(2016);
+    // await nfldb.updateGameDetails(2016);
+    // await nfldb.updateStubPlayers();
+    await nfldb.updateAllEspnPlayers();
     // console.log(g);
   } catch (error) {
     throw error;

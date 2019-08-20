@@ -38,8 +38,8 @@ export interface espnFantasyPlayer {
   defaultPositionId: number;
 
   draftRanksByRankType: {
-    STANDARD: espnDraftRank;
-    PPR: espnDraftRank;
+    STANDARD?: espnDraftRank;
+    PPR?: espnDraftRank;
   };
 
   droppable: boolean;
