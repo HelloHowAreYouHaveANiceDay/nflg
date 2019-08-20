@@ -1,0 +1,68 @@
+    select player.full_name,
+    player.position,
+    player.player_id,
+    game.game_id,
+    game.home_team_id,
+    game.away_team_id,
+    game.year,
+    game.week,
+    game.weekday,
+    game.season_type,
+    SUM(play_player.receiving_yds) as receiving_yds,
+    SUM(play_player.receiving_tar) as receiving_tar,
+    SUM(play_player.receiving_rec) as receiving_rec,
+    SUM(play_player.receiving_yac_yds) as receiving_yac,
+    SUM(play_player.receiving_tds) as receiving_tds,
+    SUM(play_player.receiving_twopta) as receiving_twopta,
+    SUM(play_player.receiving_twoptm) as receiving_twoptm,
+    SUM(play_player.receiving_twoptm) as receiving_twoptmissed,
+
+
+    SUM(play_player.rushing_yds) as rushing_yds,
+    SUM(play_player.rushing_loss_yds) as rushing_loss_yds,
+    SUM(play_player.rushing_loss) as rushing_loss,
+    SUM(play_player.rushing_twopta) as rushing_twopta,
+    SUM(play_player.rushing_twoptm) as rushing_twoptm,
+    SUM(play_player.rushing_twoptmissed) as rushing_twoptmiss,
+    SUM(play_player.rushing_att) as rushing_att,
+    SUM(play_player.rushing_tds) as rushing_tds,
+    
+    SUM(play_player.passing_att) as passing_att,
+    sum(play_player.passing_cmp) as passing_cmp,
+    SUM(play_player.passing_cmp_air_yds) as passing_cmp_air_yds,
+    SUM(play_player.passing_incmp) as passing_incmp,
+    sum(play_player.passing_int) as passing_int,
+    SUM(play_player.passing_tds) as passing_tds,
+    SUM(play_player.passing_twopta) as passing_twopta,
+    SUM(play_player.passing_twoptm) as passing_twoptm,
+    SUM(play_player.passing_twoptmissed) as passing_twoptmissed,
+    SUM(play_player.passing_yds) as passing_yds,
+    
+    SUM(play_player.kicking_xpa) as kicking_xpa,
+    SUM(play_player.kicking_xpmade) as kicking_xpmade,
+    SUM(play_player.kicking_yds) as kicking_yds,
+    
+    
+    sum(play_player.defense_ffum) as defense_ffum,
+    sum(play_player.defense_int) as defense_int,
+    sum(play_player.defense_safe) as defense_safe,
+    sum(play_player.defense_frec_tds) as defense_frec_tds,
+    sum(play_player.puntret_tds) as puntret_tds,
+    
+    sum(play_player.kickret_tds) as kickret_tds,
+    sum(play_player.fumbles_rec_yds) as fumbles_rec_yds,
+    SUM(play_player.fumbles_lost) as fumbles_lost,
+    sum(play_player.fumbles_rec_tds) as fumbles_rec_tds
+    
+    from play_player
+    left join player
+    on play_player.player_id = player.player_id
+    left join game
+    on play_player.game_id = game.game_id
+    left join play
+    on play.play_id = play_player.play_id and play.game_id = play_player.game_id
+    where game.year = 2018
+    and player.full_name = 'Christian McCaffrey'
+    and game.week = 2
+    and game.season_type = 'REG'
+    group by game.game_id, player.player_id

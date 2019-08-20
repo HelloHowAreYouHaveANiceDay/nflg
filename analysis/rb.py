@@ -71,8 +71,6 @@ rbs['total_points'] = rbs.apply(totalPoints, axis = 1)
 
 rbs = rbs.loc[rbs['total_points'] >= 100]
 
-g = sns.PairGrid(rbs, x_vars=['receiving_tar', 'receiving_tar','receiving_yds',
-                              'rushing_att', 'rushing_yds', 'fpts', 'total_points'], 
-    y_vars=['receiving_tar', 'receiving_tar','receiving_yds',
-                              'rushing_att', 'rushing_yds', 'fpts', 'total_points'])
+g = sns.PairGrid(rbs, x_vars=[ 'receiving_tar','receiving_yds', 'rushing_att', 'rushing_yds', 'fpts', 'total_points'], 
+    y_vars=['receiving_tar','receiving_yds', 'rushing_att', 'rushing_yds', 'fpts', 'total_points'])
 g = g.map(plt.scatter)
