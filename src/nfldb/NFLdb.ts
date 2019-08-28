@@ -20,6 +20,7 @@ import { Game } from "../Entities/Game";
 import ProfileWrapper from "../apis/nfl/playerProfile/ProfileWrapper";
 import espnPlayersWrapper from "../apis/espn/players/espnPlayersWrapper";
 import EspnPlayer from "../Entities/EspnPlayer";
+import { filter } from "minimatch";
 
 export class NFLdb {
   chunk: 50;
@@ -32,8 +33,8 @@ export class NFLdb {
   constructor(cache?: string) {
     if (cache) {
       const c = new LocalCache(cache);
-      this.nflSchedule = new ScheduleWrapper(c);
-      this.nflGame = new GameWrapper(c);
+      this.nflSchedule = new ScheduleWrapper();
+      this.nflGame = new GameWrapper();
       this.nflPlayer = new ProfileWrapper();
       this.espnPlayers = new espnPlayersWrapper();
     } else {
@@ -61,12 +62,6 @@ export class NFLdb {
       this.connection = getConnectionManager().get(process.env.NODE_ENV);
     }
   }
-
-  // updates the games table based on schedule API
-  // async updateScheduleGames(config: { force: boolean }) {
-  //   try {
-  //   } catch (error) {}
-  // }
 
   /**
    * Prefills the team table with hard coded teams
@@ -144,6 +139,19 @@ export class NFLdb {
     }
   }
 
+  async updateCurrentGames() {
+    try {
+      const currentWeek = await this.nflSchedule.getCurrentWeek();
+      const games = await this.getGamesFromWeeks([currentWeek]);
+      const gameEntities = await Promise.all(
+        games.map(async g => await this.connection.manager.create(Game, g))
+      );
+      await this.connection.manager.save(gameEntities, { chunk: this.chunk });
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async getGamesFromWeeks(weeks: scheduleWeekArgs[]) {
     try {
       const rawGames = await Promise.all(
@@ -158,8 +166,9 @@ export class NFLdb {
   async updateGameDetails(year: number, season_type?: string) {
     try {
       const games = await this.getGamesByYear(year);
-      for (var i = 0; i < games.length; ) {
-        await this.cascadeGameDetailsUpdate(games[i].game_id);
+      const filteredGames = games.filter(g => g.quarter !== "P");
+      for (var i = 0; i < filteredGames.length; ) {
+        await this.cascadeGameDetailsUpdate(filteredGames[i].game_id);
         i++;
       }
     } catch (error) {
