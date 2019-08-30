@@ -1,8 +1,8 @@
 export interface espnFantasyPlayers {
-  players: espnPlayerEntry[];
+  players: EspnPlayerEntry[];
 }
 
-export interface espnPlayerEntry {
+export interface EspnPlayerEntry {
   id: number;
   draftAuctionValue: number;
   keeperValue: number;
@@ -18,6 +18,8 @@ export interface espnPlayerEntry {
   rosterLocked: boolean;
 
   stats: string;
+
+  status?: string;
 
   tradeLocked: boolean;
 
@@ -97,7 +99,7 @@ export interface espnPlayerOwnership {
 
   averageDraftPosition: number;
 
-  averageDraftPositionPercentageChange: number;
+  averageDraftPositionPercentChange: number;
 
   date: number;
 

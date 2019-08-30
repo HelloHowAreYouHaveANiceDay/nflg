@@ -1,6 +1,7 @@
 require("dotenv").config();
 import "reflect-metadata";
 import { NFLdb } from "./nfldb/NFLdb";
+import fs from "fs-extra";
 // import nflGame from "./nflgame/nflgame";
 
 // nflGame.getInstance(process.env.CACHE_PATH);
@@ -22,18 +23,32 @@ import { NFLdb } from "./nfldb/NFLdb";
 
 // bootstrap();
 
+//@ts-ignore;
+import EspnApi from "./apis/espn/espnApi";
+
 async function connect() {
   try {
     // await nflGame.getInstance().regenerateSchedule();
-    const nfldb = new NFLdb(process.env.CACHE_PATH);
+    const nfldb = new NFLdb({
+      //@ts-ignore
+      leagueId: process.env.LEAGUEID,
+      espns2: process.env.ESPN_S2,
+      swid: process.env.SWID
+    });
     // const options = await getConnectionOptions(process.env.NODE_ENV);
     await nfldb.setup();
     await nfldb.connection.synchronize();
+
+    // await nfldb.updateAllEspnPlayers();
+    // await nfldb.updateEspnFantasyTeams();
+    await nfldb.matchEspnNflPlayers();
+
     // await nfldb.setupTeams();
-    // await nfldb.updateScheduleGames(2016);
-    // await nfldb.updateGameDetails(2016);
+    // await nfldb.updateScheduleGames(2019);
+    // await nfldb.updateCurrentGames();
+    // await nfldb.updateGameDetails(2019);
     // await nfldb.updateStubPlayers();
-    await nfldb.updateAllEspnPlayers();
+    // await nfldb.updateAllEspnPlayers();
     // console.log(g);
   } catch (error) {
     throw error;

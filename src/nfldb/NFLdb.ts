@@ -9,7 +9,6 @@ import GameWrapper from "../apis/nfl/game/GameWrapper";
 import ScheduleWrapper, {
   scheduleWeekArgs
 } from "../apis/nfl/schedule/ScheduleWrapper";
-import LocalCache from "../cache/LocalCache";
 import { Drive } from "../Entities/Drive";
 import { nflApiGameResponse } from "../apis/nfl/nflApiGame";
 import Play from "../Entities/Play";
@@ -18,9 +17,11 @@ import PlayPlayer from "../Entities/PlayPlayer";
 import { Team, teamLookup } from "../Entities/Team";
 import { Game } from "../Entities/Game";
 import ProfileWrapper from "../apis/nfl/playerProfile/ProfileWrapper";
-import espnPlayersWrapper from "../apis/espn/players/espnPlayersWrapper";
 import EspnPlayer from "../Entities/EspnPlayer";
-import { filter } from "minimatch";
+import EspnApi, { EspnApiParams } from "../apis/espn/espnApi";
+import EspnFantasyTeam from "../Entities/EspnFantasyTeam";
+import { PlayersMaster } from "../Entities/PlayersMaster";
+import { isEspnNflMatch } from "./Matches";
 
 export class NFLdb {
   chunk: 50;
@@ -28,21 +29,16 @@ export class NFLdb {
   nflSchedule: ScheduleWrapper;
   nflGame: GameWrapper;
   nflPlayer: ProfileWrapper;
-  espnPlayers: espnPlayersWrapper;
+  // espnPlayers: espnPlayersWrapper;
 
-  constructor(cache?: string) {
-    if (cache) {
-      const c = new LocalCache(cache);
-      this.nflSchedule = new ScheduleWrapper();
-      this.nflGame = new GameWrapper();
-      this.nflPlayer = new ProfileWrapper();
-      this.espnPlayers = new espnPlayersWrapper();
-    } else {
-      this.nflSchedule = new ScheduleWrapper();
-      this.nflGame = new GameWrapper();
-      this.nflPlayer = new ProfileWrapper();
-      this.espnPlayers = new espnPlayersWrapper();
-    }
+  espnApi: EspnApi;
+
+  constructor(params: EspnApiParams) {
+    this.nflSchedule = new ScheduleWrapper();
+    this.nflGame = new GameWrapper();
+    this.nflPlayer = new ProfileWrapper();
+    this.espnApi = new EspnApi(params);
+    // this.espnPlayers = new espnPlayersWrapper();
   }
 
   /**
@@ -303,12 +299,30 @@ export class NFLdb {
     }
   }
 
+  ///////////
+  // ESPN  //
+  ///////////
   async updateAllEspnPlayers() {
     try {
-      const players = await this.espnPlayers.getFantasyPlayers();
+      const players = await this.espnApi.getFantasyPlayers();
       const p = await Promise.all(
         players.map((rawP: object) =>
           this.connection.manager.create(EspnPlayer, rawP)
+        )
+      );
+      // console.log(p);
+      await this.connection.manager.save(p, { chunk: 10 });
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateEspnFantasyTeams() {
+    try {
+      const teams = await this.espnApi.getFantasyTeams();
+      const p = await Promise.all(
+        teams.map((rawP: object) =>
+          this.connection.manager.create(EspnFantasyTeam, rawP)
         )
       );
       // console.log(p);
@@ -341,9 +355,6 @@ export class NFLdb {
       // const players = await this.connection.query("select * from player");
       const players = await this.connection
         .createQueryBuilder(Player, "player")
-        // .where("game.year == :year", {
-        //   year
-        // })
         .getMany();
       return players;
     } catch (error) {
@@ -361,6 +372,53 @@ export class NFLdb {
         .andWhere("Player.full_name IS NULL")
         .getMany();
       return players;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async getAllEspnPlayers() {
+    try {
+      const players = await this.connection
+        .createQueryBuilder(EspnPlayer, "player")
+        .getMany();
+      return players;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async matchEspnNflPlayers() {
+    try {
+      const nflPlayers = await this.getAllPlayers();
+      const espnPlayers = await this.getAllEspnPlayers();
+      const matches: PlayersMaster[] = [];
+      _.forEach(espnPlayers, p => {
+        const nflMatch = _.find(nflPlayers, isEspnNflMatch(p));
+        if (nflMatch) {
+          matches.push({
+            espn_id: p.espn_player_id,
+            espn_full_name: p.full_name,
+            espn_pos: p.position,
+            nfl_id: nflMatch.player_id,
+            nfl_full_name: nflMatch.full_name,
+            nfl_pos: nflMatch.position
+          });
+        } else {
+          matches.push({
+            espn_id: p.espn_player_id,
+            espn_full_name: p.full_name,
+            espn_pos: p.position
+          });
+        }
+      });
+      const m = await Promise.all(
+        matches.map((rawP: object) =>
+          this.connection.manager.create(PlayersMaster, rawP)
+        )
+      );
+
+      await this.connection.manager.save(m, { chunk: 10 });
     } catch (error) {
       throw error;
     }

@@ -6,77 +6,86 @@ export default class EspnPlayer {
   espn_player_id: number;
 
   @Column({ nullable: true })
-  active: boolean;
+  active?: boolean;
 
   @Column({ nullable: true })
-  rank_standard: number;
+  rank_standard?: number;
 
   @Column({ nullable: true })
-  auction_val_standard: number;
+  auc_val_standard?: number;
 
   @Column({ nullable: true })
-  rank_ppr: number;
+  rank_ppr?: number;
 
   @Column({ nullable: true })
-  auction_val_ppr: number;
+  auc_val_ppr?: number;
 
   @Column({ nullable: true })
-  droppable: boolean;
+  droppable?: boolean;
 
   @Column({ nullable: true })
-  eligiable_slots: string;
+  eligiable_slots?: string;
 
   @Column({ nullable: true })
-  first_name: string;
+  first_name?: string;
 
   @Column({ nullable: true })
-  last_name: string;
+  last_name?: string;
 
   @Column({ nullable: true })
-  full_name: string;
+  full_name?: string;
 
   @Column({ nullable: true })
-  number: number;
+  position?: string;
 
   @Column({ nullable: true })
-  injured: string;
+  team?: string;
 
   @Column({ nullable: true })
-  injury_status: string;
+  number?: number;
 
   @Column({ nullable: true })
-  own_activity_level: string;
+  injured?: boolean;
 
   @Column({ nullable: true })
-  own_auction_val_avg: number;
+  injury_status?: string;
 
   @Column({ nullable: true })
-  own_auction_val_avg_change: number;
+  own_activity_level?: string;
 
   @Column({ nullable: true })
-  own_draft_pos_avg: number;
+  own_auc_val_avg?: number;
 
   @Column({ nullable: true })
-  own_draft_pos_pct_change: number;
+  own_auc_val_avg_change?: number;
 
   @Column({ nullable: true })
-  own_pct: number;
+  own_draft_pos_avg?: number;
 
   @Column({ nullable: true })
-  own_pct_changed: number;
+  own_draft_pos_pct_change?: number;
 
   @Column({ nullable: true })
-  own_pct_started: number;
+  own_pct?: number;
 
   @Column({ nullable: true })
-  pro_team_id: number;
+  own_pct_changed?: number;
 
   @Column({ nullable: true })
-  pos_rank: number;
+  own_pct_started?: number;
 
   @Column({ nullable: true })
-  tot_rank: number;
+  pro_team_id?: number;
 
   @Column({ nullable: true })
-  tot_rating: number;
+  pos_rank?: number;
+
+  @Column({ nullable: true })
+  tot_rank?: number;
+
+  @Column({ nullable: true })
+  tot_rating?: number;
+
+  @Column({ nullable: true })
+  status?: string;
 }
