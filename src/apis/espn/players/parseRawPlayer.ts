@@ -52,9 +52,11 @@ export default function parseRawPlayer(player: EspnPlayerEntry) {
     p.pro_team_id = player.player.proTeamId;
     p.status = player.status;
 
-    p.pos_rank = player.ratings["0"].positionalRanking;
-    p.tot_rank = player.ratings["0"].totalRanking;
-    p.tot_rating = player.ratings["0"].totalRating;
+    if (player.ratings) {
+      p.pos_rank = player.ratings["0"].positionalRanking;
+      p.tot_rank = player.ratings["0"].totalRanking;
+      p.tot_rating = player.ratings["0"].totalRating;
+    }
 
     if (p.tot_rating === 0) {
       p.pos_rank = 366;

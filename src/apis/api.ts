@@ -1,7 +1,7 @@
 import axios from "axios";
 
 // player profile will timeout if too many requests are going on at the same time.
-const MAX_REQUESTS_COUNT = 4;
+const MAX_REQUESTS_COUNT = 3;
 const INTERVAL_MS = 1000;
 let PENDING_REQUESTS = 0; // create new axios instance
 const api = axios.create();

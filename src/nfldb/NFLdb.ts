@@ -22,6 +22,7 @@ import EspnApi, { EspnApiParams } from "../apis/espn/espnApi";
 import EspnFantasyTeam from "../Entities/EspnFantasyTeam";
 import { PlayersMaster } from "../Entities/PlayersMaster";
 import { isEspnNflMatch } from "./Matches";
+import { gameWeekArgs } from "../apis/nfl/schedule/gameWeekArgs";
 
 export class NFLdb {
   chunk: 50;
@@ -154,6 +155,19 @@ export class NFLdb {
         _.map(weeks, this.nflSchedule.getWeekGames)
       );
       return _.flatten(rawGames);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async updateGameDetailsByConfig(params: gameWeekArgs) {
+    try {
+      const games = await this.getGamesByParams(params);
+      const filteredGames = games.filter(g => g.quarter !== "P");
+      for (var i = 0; i < filteredGames.length; ) {
+        await this.cascadeGameDetailsUpdate(filteredGames[i].game_id);
+        i++;
+      }
     } catch (error) {
       throw error;
     }
@@ -335,6 +349,26 @@ export class NFLdb {
   ////////////////////
   // Database Queries
   ///////////////////
+
+  async getGamesByParams(params: gameWeekArgs) {
+    try {
+      const games = await this.connection
+        .createQueryBuilder(Game, "game")
+        .where("game.year == :year", {
+          year: params.year
+        })
+        .andWhere("game.week == :week", {
+          week: params.week
+        })
+        .andWhere("game.game_type == :type", {
+          type: params.season_type
+        })
+        .getMany();
+      return games;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   async getGamesByYear(year: number) {
     try {

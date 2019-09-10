@@ -41,14 +41,17 @@ async function connect() {
 
     // await nfldb.updateAllEspnPlayers();
     // await nfldb.updateEspnFantasyTeams();
-    await nfldb.matchEspnNflPlayers();
+    // await nfldb.matchEspnNflPlayers();
 
     // await nfldb.setupTeams();
     // await nfldb.updateScheduleGames(2019);
     // await nfldb.updateCurrentGames();
-    // await nfldb.updateGameDetails(2019);
+    await nfldb.updateGameDetailsByConfig({
+      year: 2019,
+      week: 1,
+      season_type: "REG"
+    });
     // await nfldb.updateStubPlayers();
-    // await nfldb.updateAllEspnPlayers();
     // console.log(g);
   } catch (error) {
     throw error;
