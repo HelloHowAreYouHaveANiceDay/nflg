@@ -386,7 +386,6 @@ export class NFLdb {
 
   async getAllPlayers() {
     try {
-      // const players = await this.connection.query("select * from player");
       const players = await this.connection
         .createQueryBuilder(Player, "player")
         .getMany();

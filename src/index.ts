@@ -1,8 +1,6 @@
 require("dotenv").config();
 import "reflect-metadata";
 import { NFLdb } from "./nfldb/NFLdb";
-import fs from "fs-extra";
-// import nflGame from "./nflgame/nflgame";
 
 // nflGame.getInstance(process.env.CACHE_PATH);
 
@@ -44,13 +42,13 @@ async function connect() {
     // await nfldb.matchEspnNflPlayers();
 
     // await nfldb.setupTeams();
-    // await nfldb.updateScheduleGames(2019);
+    await nfldb.updateScheduleGames(2019);
     // await nfldb.updateCurrentGames();
-    await nfldb.updateGameDetailsByConfig({
-      year: 2019,
-      week: 1,
-      season_type: "REG"
-    });
+    // await nfldb.updateGameDetailsByConfig({
+    //   year: 2019,
+    //   week: 2,
+    //   season_type: "REG"
+    // });
     // await nfldb.updateStubPlayers();
     // console.log(g);
   } catch (error) {

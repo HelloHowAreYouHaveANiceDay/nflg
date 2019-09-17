@@ -97,8 +97,7 @@
   },
   {
     "espn": "Ted Ginn Jr.",
-    "nfl": "Ted Ginn",
-    "datagorgon": "Ted Ginn"
+    "nfl": "Ted Ginn"
   },
   {
     "espn": "Joe Webb III",
@@ -115,8 +114,7 @@
   },
   {
     "espn": "Marvin Jones Jr.",
-    "nfl": "Marvin Jones",
-    "datagorgon": "Marvin Jones"
+    "nfl": "Marvin Jones"
   },
   {
     "espn": "Bobby Rainey Jr.",
@@ -136,8 +134,7 @@
   },
   {
     "espn": "Willie Snead IV",
-    "nfl": "Willie Snead",
-    "datagorgon": "Willie Snead"
+    "nfl": "Willie Snead"
   },
   {
     "espn": "Sammie Coates Jr.",
@@ -149,8 +146,7 @@
   },
   {
     "espn": "Duke Johnson Jr.",
-    "nfl": "Duke Johnson",
-    "datagorgon": "Duke Johnson"
+    "nfl": "Duke Johnson"
   },
   {
     "espn": "Kolby Listenbee",
@@ -158,8 +154,7 @@
   },
   {
     "espn": "Todd Gurley II",
-    "nfl": "Todd Gurley",
-    "datagorgon": "Todd Gurley"
+    "nfl": "Todd Gurley"
   },
   {
     "espn": "Lance Lenoir Jr.",
@@ -175,8 +170,7 @@
   },
   {
     "espn": "Will Fuller V",
-    "nfl": "Will Fuller",
-    "datagorgon": "Will Fuller"
+    "nfl": "Will Fuller"
   },
   {
     "espn": "Victor Bolden Jr.",
@@ -216,8 +210,7 @@
   },
   {
     "espn": "Benny Snell Jr.",
-    "nfl": "Benny Snell",
-    "beersheet": "Benny Snell"
+    "nfl": "Benny Snell"
   },
   {
     "espn": "Irv Smith Jr.",
@@ -228,21 +221,15 @@
     "nfl": "D.K. Metcalf"
   },
   {
-    "espn": "Mitchell Trubisky",
-    "datagorgon": "Mitch Trubisky",
-    "beersheet": "Mitchell Trubisky"
+    "espn": "Mitchell Trubisky"
   },
   {
-    "espn": "Chris Herndon",
-    "datagorgon": "Chris Herndon IV",
-    "beersheet": "Chris Herndon"
+    "espn": "Chris Herndon"
   },
   {
-    "espn": "Ronald Jones",
-    "datagorgon": "Ronald Jones II"
+    "espn": "Ronald Jones"
   },
   {
-    "espn": "Garry Jennings Jr",
-    "datagorgon": "Garry Jennings"
+    "espn": "Garry Jennings Jr"
   }
 ]

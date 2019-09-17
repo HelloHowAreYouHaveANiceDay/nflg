@@ -15,10 +15,11 @@ describe("player profile tests", () => {
     expect(profile.first_name).toEqual("Eli");
   });
 
-  test("inactive player", async () => {
-    const profile = await playerProfile.getPlayerProfile(inactive_player_id);
-    expect(profile.first_name).toEqual("Victor");
-  });
+  // inactive players no long return anything
+  // test("inactive player", async () => {
+  //   const profile = await playerProfile.getPlayerProfile(inactive_player_id);
+  //   expect(profile.first_name).toEqual("Victor");
+  // });
 
   test("invalid player", async () => {
     const profile = await playerProfile.getPlayerProfile(invalid_player_id);

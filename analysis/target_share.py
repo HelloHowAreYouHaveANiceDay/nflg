@@ -33,8 +33,8 @@ query = f"""select *
                  on drive.drive_id = play_player.drive_id
                  and drive.game_id = play_player.game_id
                  where game.year = {year}
-                 and game.week = {week}
                  and game.game_type = '{s_type}'
+                 and game.week = {week}
                  and play_player.team = '{team}'
                  """
                  
@@ -60,4 +60,8 @@ sns.catplot(y="player_short", hue="start_qtr", kind="count", data=targeted_playe
 
 #receiver_stats = targeted_players[id_columns + game_columns + rec_columns]
 
-sns.catplot(y="player_short", x="dot",hue="start_qtr",  data=targeted_players, jitter=False)
+sns.catplot(y="player_short", x="dot", kind="box", data=targeted_players)
+
+sns.catplot(y="player_short", x="receiving_yac_yds", kind="box", data=targeted_players)
+
+sns.catplot(y="player_short", x="yardline", data=targeted_players, jitter=False, alpha=0.5)

@@ -39,6 +39,9 @@ export default class EspnPlayer {
   position?: string;
 
   @Column({ nullable: true })
+  on_team?: number;
+
+  @Column({ nullable: true })
   team?: string;
 
   @Column({ nullable: true })

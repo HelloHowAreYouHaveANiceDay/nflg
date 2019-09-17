@@ -23,6 +23,8 @@ export default function parseRawPlayer(player: EspnPlayerEntry) {
       }
     }
 
+    p.on_team = player.onTeamId;
+
     p.droppable = player.player.droppable;
     p.first_name = player.player.firstName;
     p.last_name = player.player.lastName;

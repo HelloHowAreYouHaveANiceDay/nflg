@@ -52,12 +52,26 @@ id_columns = ['player_short', 'team']
 
 game_columns = ['yards_to_go', 'start_qtr']
 
+
 att_players = df[(df['rushing_att'] > 0 )| (df['receiving_tar'] > 0)]
 
-attempts = att_players.groupby('player_short', as_index=False).agg({'rushing_att': 'sum'})
+atp = att_players[att_players['rushing_att'] > 0]['player_short'].unique()
+
+att_players = att_players[att_players['player_short'].isin(atp)]
+
+attempts = att_players[att_players['player_short'].isin(atp)]
+
+attempts = att_players.groupby(['player_short', 'start_qtr'], as_index=False).agg({'rushing_att': 'sum'})
+
+att_by_down = att_players.groupby(['player_short', 'down'], as_index=False).agg({'rushing_att': 'sum'})
+
 
 #targeted_players['dot'] = targeted_players['receiving_yds'] - targeted_players['receiving_yac_yds']
-sns.catplot(y="player_short", x="rushing_att", kind="bar", data=attempts)
+sns.catplot(y="player_short", hue="start_qtr", x="rushing_att", kind="bar", data=attempts)
+
+sns.catplot(y="player_short", hue="down", x="rushing_att", kind="bar", data=att_by_down)
 
 #receiver_stats = targeted_players[id_columns + game_columns + rb_columns]
-sns.catplot(y="player_short", x="rushing_yds", hue="start_qtr",  data=att_players, jitter=False)
+sns.catplot(y="player_short", x="rushing_yds", data=att_players, jitter=False, alpha=0.5)
+
+sns.catplot(y="player_short", x="yardline", data=att_players, jitter=False, alpha=0.5)
