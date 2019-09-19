@@ -21,9 +21,6 @@ import { NFLdb } from "./nfldb/NFLdb";
 
 // bootstrap();
 
-//@ts-ignore;
-import EspnApi from "./apis/espn/espnApi";
-
 async function connect() {
   try {
     // await nflGame.getInstance().regenerateSchedule();
@@ -42,13 +39,13 @@ async function connect() {
     // await nfldb.matchEspnNflPlayers();
 
     // await nfldb.setupTeams();
-    await nfldb.updateScheduleGames(2019);
+    // await nfldb.updateScheduleGames(2019);
     // await nfldb.updateCurrentGames();
-    // await nfldb.updateGameDetailsByConfig({
-    //   year: 2019,
-    //   week: 2,
-    //   season_type: "REG"
-    // });
+    await nfldb.updateGameDetailsByConfig({
+      year: 2019,
+      week: 2,
+      season_type: "REG"
+    });
     // await nfldb.updateStubPlayers();
     // console.log(g);
   } catch (error) {
