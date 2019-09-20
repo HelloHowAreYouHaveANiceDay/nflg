@@ -1,7 +1,7 @@
 import path from "path";
 import GameWrapper from "../apis/nfl/game/GameWrapper";
 import LocalCache from "../cache/LocalCache";
-import { nflApiGameResponse } from "../apis/nfl/nflApiGame";
+import { INFLApiGameResponse } from "../apis/nfl/nflApiGame";
 import _ from "lodash";
 
 const cache = new LocalCache(path.join(__dirname, "./testCache/"));
@@ -11,7 +11,7 @@ describe("game tests", () => {
   const game = new GameWrapper();
   const game_id = "2012020500";
   // retrieve game from the api
-  let nflGame: nflApiGameResponse;
+  let nflGame: INFLApiGameResponse;
   beforeAll(async () => {
     nflGame = await game.getGame(game_id);
   });

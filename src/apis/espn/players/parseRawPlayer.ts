@@ -2,6 +2,7 @@ import _ from "lodash";
 import { nflTeamIdToNFLTeamAbbreviation } from "../espnConstants";
 import { EspnPlayerEntry } from "./espnFantasyPlayers";
 import EspnPlayer from "../../../Entities/EspnPlayer";
+import R from "ramda";
 
 export default function parseRawPlayer(player: EspnPlayerEntry) {
   try {

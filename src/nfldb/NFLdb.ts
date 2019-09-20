@@ -10,7 +10,7 @@ import ScheduleWrapper, {
   scheduleWeekArgs
 } from "../apis/nfl/schedule/ScheduleWrapper";
 import { Drive } from "../Entities/Drive";
-import { nflApiGameResponse } from "../apis/nfl/nflApiGame";
+import { INFLApiGameResponse } from "../apis/nfl/nflApiGame";
 import Play from "../Entities/Play";
 import Player from "../Entities/Player";
 import PlayPlayer from "../Entities/PlayPlayer";
@@ -199,7 +199,7 @@ export class NFLdb {
     }
   }
 
-  async updateDrivesFromGame(game: nflApiGameResponse) {
+  async updateDrivesFromGame(game: INFLApiGameResponse) {
     try {
       const drives = await this.extractDriveEntities(game);
       await this.connection.manager.save(drives, { chunk: 50 });
@@ -208,7 +208,7 @@ export class NFLdb {
     }
   }
 
-  async updatePlaysFromGame(game: nflApiGameResponse) {
+  async updatePlaysFromGame(game: INFLApiGameResponse) {
     try {
       const plays = await this.extractPlayEntities(game);
       await this.connection.manager.save(plays, { chunk: 50 });
@@ -217,7 +217,7 @@ export class NFLdb {
     }
   }
 
-  async updatePlayPlayersFromGame(game: nflApiGameResponse) {
+  async updatePlayPlayersFromGame(game: INFLApiGameResponse) {
     try {
       const playPlayers = await this.extractPlayPlayerEntities(game);
       await this.connection.manager.save(playPlayers, { chunk: 50 });
@@ -226,7 +226,7 @@ export class NFLdb {
     }
   }
 
-  async updatePlayerStubsFromGame(game: nflApiGameResponse) {
+  async updatePlayerStubsFromGame(game: INFLApiGameResponse) {
     try {
       const playerStubs = await this.extractPlayerStubEntities(game);
       await this.connection.manager.save(playerStubs, { chunk: 50 });
@@ -235,7 +235,7 @@ export class NFLdb {
     }
   }
 
-  private async extractDriveEntities(game: nflApiGameResponse) {
+  private async extractDriveEntities(game: INFLApiGameResponse) {
     try {
       const rawDrives = this.nflGame.parseDrives(game);
       return await Promise.all(
@@ -246,7 +246,7 @@ export class NFLdb {
     }
   }
 
-  private async extractPlayEntities(game: nflApiGameResponse) {
+  private async extractPlayEntities(game: INFLApiGameResponse) {
     try {
       const rawPlays = this.nflGame.parsePlays(game);
       return await Promise.all(
@@ -257,7 +257,7 @@ export class NFLdb {
     }
   }
 
-  private async extractPlayPlayerEntities(game: nflApiGameResponse) {
+  private async extractPlayPlayerEntities(game: INFLApiGameResponse) {
     try {
       const rawPlayPlayers = this.nflGame.parsePlayPlayers(game);
       return await Promise.all(
@@ -268,7 +268,7 @@ export class NFLdb {
     }
   }
 
-  private async extractPlayerStubEntities(game: nflApiGameResponse) {
+  private async extractPlayerStubEntities(game: INFLApiGameResponse) {
     try {
       const rawPlayerStubs = this.nflGame.parsePlayerStubs(game);
       // console.log(rawPlayerStubs);

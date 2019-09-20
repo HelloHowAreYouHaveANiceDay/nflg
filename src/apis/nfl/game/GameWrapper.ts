@@ -1,6 +1,6 @@
 import LocalCache from "../../../cache/LocalCache";
 import api from "../../api";
-import { nflApiGameResponse, nflApiGame, nflDrive } from "../nflApiGame";
+import { INFLApiGameResponse, nflApiGame, nflDrive } from "../nflApiGame";
 import { Drive } from "../../../Entities/Drive";
 import _ from "lodash";
 import Play from "../../../Entities/Play";
@@ -19,7 +19,7 @@ export default class GameWrapper {
     return `https://www.nfl.com/liveupdate/game-center/${game_id}/${game_id}_gtd.json`;
   }
 
-  async getGame(game_id: string): Promise<nflApiGameResponse> {
+  async getGame(game_id: string): Promise<INFLApiGameResponse> {
     try {
       if (this.cache) {
         const exists = await this.cache.hasGame(game_id);
@@ -42,7 +42,7 @@ export default class GameWrapper {
       throw error;
     }
   }
-  parseDrives(response: nflApiGameResponse) {
+  parseDrives(response: INFLApiGameResponse) {
     try {
       const game_id = extractGameId(response);
       // console.log(game_id);
@@ -63,7 +63,7 @@ export default class GameWrapper {
     }
   }
 
-  parsePlays(response: nflApiGameResponse) {
+  parsePlays(response: INFLApiGameResponse) {
     try {
       const game_id = extractGameId(response);
       const game = response[game_id] as nflApiGame;
@@ -86,7 +86,7 @@ export default class GameWrapper {
     }
   }
 
-  parsePlayPlayers(response: nflApiGameResponse) {
+  parsePlayPlayers(response: INFLApiGameResponse) {
     try {
       const game_id = extractGameId(response);
       const game = response[game_id] as nflApiGame;
@@ -136,7 +136,7 @@ export default class GameWrapper {
     }
   }
 
-  parsePlayerStubs(response: nflApiGameResponse) {
+  parsePlayerStubs(response: INFLApiGameResponse) {
     try {
       const game_id = extractGameId(response);
       const game = response[game_id] as nflApiGame;
@@ -210,7 +210,7 @@ function mapPlayProperties(play: rawPlay) {
   return p;
 }
 
-function extractGameId(response: nflApiGameResponse) {
+function extractGameId(response: INFLApiGameResponse) {
   let k;
   Object.keys(response).forEach(key => {
     // console.log(key);

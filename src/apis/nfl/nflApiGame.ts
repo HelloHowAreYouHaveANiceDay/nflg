@@ -1,11 +1,11 @@
 // JSON structure returned from nflGame endpoint.
-export interface nflApiGameResponse {
+export type INFLApiGameResponse = {
   // key is game_id
   [key: string]: nflApiGame | number;
   nextupdate: number;
-}
+};
 
-export interface nflApiGame {
+export type nflApiGame = {
   // home and away team summaries
   home: nflTeamData;
   away: nflTeamData;
@@ -24,13 +24,13 @@ export interface nflApiGame {
   clock: string;
   posteam: string;
   stadium: string | null;
-}
+};
 
-export interface nflScoringPlays {
+export type nflScoringPlays = {
   [key: string]: nflScoringPlay;
-}
+};
 
-export interface nflScoringPlay {
+export type nflScoringPlay = {
   type: string;
   desc: string;
   qtr: number;
@@ -39,9 +39,9 @@ export interface nflScoringPlay {
     // playerName: playerid
     [key: string]: string;
   };
-}
+};
 
-export interface nflTeamData {
+export type nflTeamData = {
   score: {
     1: number;
     2: number;
@@ -54,9 +54,9 @@ export interface nflTeamData {
   to: number;
   stats: nflAggGameStats;
   players: any | null;
-}
+};
 
-export interface nflPlayerAggGameStat {
+export type nflPlayerAggGameStat = {
   name: string;
   att?: number;
   cmp?: number;
@@ -94,14 +94,14 @@ export interface nflPlayerAggGameStat {
   sk?: number;
   int?: number;
   ffum?: number;
-}
+};
 
-export interface nflDrives {
+export type nflDrives = {
   [key: string]: nflDrive;
   // crntdrv: number;
-}
+};
 
-export interface nflDrive {
+export type nflDrive = {
   sp: number;
   posteam: string;
   qtr: number;
@@ -127,9 +127,9 @@ export interface nflDrive {
     yrdln: string;
     team: string;
   };
-}
+};
 
-export interface nflPlay {
+export type nflPlay = {
   sp: number;
   qtr: number;
   down: number;
@@ -141,21 +141,21 @@ export interface nflPlay {
   desc: string;
   note: string;
   players: nflPlayPlayerStats;
-}
+};
 
-export interface nflPlayPlayerStats {
+export type nflPlayPlayerStats = {
   [key: string]: nflPlayPlayerStat[];
-}
+};
 
-export interface nflPlayPlayerStat {
+export type nflPlayPlayerStat = {
   sequence: number;
   clubcode: string;
   playerName: string;
   statId: number;
   yards: number;
-}
+};
 
-export interface nflAggGameStats {
+export type nflAggGameStats = {
   passing: {
     [key: string]: nflPlayerAggGameStat;
   };
@@ -198,4 +198,4 @@ export interface nflAggGameStats {
       top: string;
     };
   };
-}
+};

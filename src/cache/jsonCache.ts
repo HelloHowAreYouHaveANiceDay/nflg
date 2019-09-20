@@ -1,5 +1,5 @@
 import fs from "fs-extra";
-import { nflApiGame, nflApiGameResponse } from "../apis/nfl/nflApiGame";
+import { nflApiGame, INFLApiGameResponse } from "../apis/nfl/nflApiGame";
 import Player from "../Entities/Player";
 import ScheduleWrapper from "../apis/nfl/schedule/ScheduleWrapper";
 
