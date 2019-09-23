@@ -1,5 +1,5 @@
 import { Result } from "./Result";
 export interface Endpoint {
   url: string;
-  execute(): Promise<Result<any>>;
+  execute(params?: any): Promise<Result<any>>;
 }
