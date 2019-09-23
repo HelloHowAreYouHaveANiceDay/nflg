@@ -1,4 +1,4 @@
-import { IEspnFantasyPlayers } from "./espn/players/espnFantasyPlayers";
+import { IEspnFantasyPlayers } from "./espn/entities/espnFantasyPlayers";
 import EspnPlayer from "../Entities/EspnPlayer";
 
 // Describes generic parsers that various endpoint should provide

@@ -1,9 +1,9 @@
 import { PlayersParser } from "../parser";
-import { INFLApiGameResponse } from "./nflApiGame";
+import { NFLSingleGameResponse } from "./entities/NFLSingleGameResponse";
 import Player from "../../Entities/Player";
 
 class nflParser implements PlayersParser {
-  parsePlayers(root: INFLApiGameResponse): Player[] {
+  parsePlayers(root: NFLSingleGameResponse): Player[] {
     return [];
   }
 }

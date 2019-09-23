@@ -1,6 +1,6 @@
 import _ from "lodash";
 import { nflTeamIdToNFLTeamAbbreviation } from "../espnConstants";
-import { EspnPlayerEntry } from "./espnFantasyPlayers";
+import { EspnPlayerEntry } from "../entities/espnFantasyPlayers";
 import EspnPlayer from "../../../Entities/EspnPlayer";
 import R from "ramda";
 

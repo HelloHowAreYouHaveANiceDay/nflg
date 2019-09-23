@@ -1,5 +1,5 @@
 // JSON structure returned from nflGame endpoint.
-export type INFLApiGameResponse = {
+export type NFLSingleGameResponse = {
   // key is game_id
   [key: string]: nflApiGame | number;
   nextupdate: number;
