@@ -1,12 +1,19 @@
 import { NFLSingleGameEndpoint } from "../NFLSingleGameEndpoint";
-import NFLSingleGameResponse from "../__fixtures__/NFLSingleGameResponse.json";
+import NFLSingleGameResponse from "../__fixtures__/NFLSingleGameSuccessResponse.json";
+import { request } from "../../../__mocks__/MockRequest";
 
-const request = {
-  get: jest.fn(() => Promise.resolve({ data: "any" }))
-};
+import fs from "fs";
+import path from "path";
 
-test("fetches nfl single game endpoint", async () => {
+const example404Response = fs
+  .readFileSync(
+    path.join(__dirname, "../__fixtures__/NFLSingleGameFailResponse.html")
+  )
+  .toString();
+
+test("successfully fetches nfl single game endpoint", async () => {
   // setup
+  request.get.mockClear();
   request.get.mockImplementationOnce(() =>
     Promise.resolve({
       headers: {
@@ -30,8 +37,42 @@ test("fetches nfl single game endpoint", async () => {
       statusText: "OK"
     })
   );
+  const game_id = 2019081553;
 
-  const NFLSingleGameRequest = new NFLSingleGameEndpoint(2019081553, request);
+  // request
+  const NFLSingleGameRequest = new NFLSingleGameEndpoint(request, game_id);
   const NFLSGResponse = await NFLSingleGameRequest.execute();
+
+  // verification
   expect(NFLSGResponse.isSuccess).toEqual(true);
+  expect(request.get).toBeCalledTimes(1);
+  expect(request.get).toBeCalledWith(
+    `https://www.nfl.com/liveupdate/game-center/${game_id}/${game_id}_gtd.json`
+  );
+});
+
+test("unsuccessful request returns false", async () => {
+  request.get.mockClear();
+  request.get.mockImplementationOnce(() =>
+    Promise.reject({
+      response: {
+        status: 404,
+        statusText: "Not Found",
+        data: example404Response
+      }
+    })
+  );
+
+  const game_id = 2022081553;
+
+  // request
+  const NFLSingleGameRequest = new NFLSingleGameEndpoint(request, game_id);
+  const NFLSGResponse = await NFLSingleGameRequest.execute();
+
+  // verification
+  expect(NFLSGResponse.isFailure).toEqual(true);
+  expect(request.get).toBeCalledTimes(1);
+  expect(request.get).toBeCalledWith(
+    `https://www.nfl.com/liveupdate/game-center/${game_id}/${game_id}_gtd.json`
+  );
 });

@@ -1,17 +1,14 @@
 import { Endpoint } from "../../../core/Endpoint";
 import { Result } from "../../../core/Result";
-import { AxiosInstance } from "axios";
+import { WebRequest } from "../../../core/WebRequest";
 import { NFLSingleGameResponse } from "../entities/NFLSingleGameResponse";
 
-interface request {
-  get(url: string): Promise<any>;
-}
 export class NFLSingleGameEndpoint implements Endpoint {
   url: string;
   game_id: number;
-  request: request;
+  request: WebRequest;
 
-  constructor(game_id: number, request: request) {
+  constructor(request: WebRequest, game_id: number) {
     this.request = request;
     this.game_id = game_id;
     this.url = `https://www.nfl.com/liveupdate/game-center/${game_id}/${game_id}_gtd.json`;
