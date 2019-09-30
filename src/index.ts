@@ -40,10 +40,10 @@ async function connect() {
 
     // await nfldb.setupTeams();
     // await nfldb.updateScheduleGames(2019);
-    // await nfldb.updateCurrentGames();
+    await nfldb.updateCurrentGames();
     await nfldb.updateGameDetailsByConfig({
       year: 2019,
-      week: 2,
+      week: 3,
       season_type: "REG"
     });
     // await nfldb.updateStubPlayers();
