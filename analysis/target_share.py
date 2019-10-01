@@ -17,9 +17,9 @@ db_path = os.path.join(dirname, '../nfldb.db')
 conn = sqlite3.connect(db_path)
 
 year = 2019
-week = 3
+week = 4
 s_type = "REG"
-team = "DET"
+team = "BUF"
 
 
 query = f"""select *

@@ -18,7 +18,7 @@ conn = sqlite3.connect(db_path)
 
 year = 2019
 s_type = "REG"
-team = "BAL"
+team = "PHI"
 
 
 query = f"""select *
