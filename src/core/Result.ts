@@ -51,4 +51,8 @@ export class Result<T> {
     }
     return Result.ok<any>();
   }
+
+  public static unwrap<T>(r: Result<T>): T {
+    return r.getValue();
+  }
 }

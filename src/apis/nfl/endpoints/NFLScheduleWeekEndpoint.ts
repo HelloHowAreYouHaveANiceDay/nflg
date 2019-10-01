@@ -1,5 +1,5 @@
 import { Endpoint } from "../../../core/Endpoint";
-import NFLScheduleWeekParams from "../entities/NFLScheduleWeekParams";
+import { NFLWeek } from "../values/NFLScheduleWeekParams";
 import { Result } from "../../../core/Result";
 import { WebRequest } from "../../../core/WebRequest";
 
@@ -8,7 +8,7 @@ export class NFLScheduleWeekEndpoint implements Endpoint {
 
   request: WebRequest;
 
-  constructor(request: WebRequest, params: NFLScheduleWeekParams) {
+  constructor(request: WebRequest, params: NFLWeek) {
     this.url = `https://www.nfl.com/ajax/scorestrip?season=${params.year}&seasonType=${params.type}&week=${params.week}`;
     this.request = request;
   }
