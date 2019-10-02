@@ -26,16 +26,16 @@ export class NFLDrive {
   end_field: number;
 
   @Column()
-  start_time: string;
+  start_time?: string;
 
   @Column()
-  start_qtr: number;
+  start_qtr?: number;
 
   @Column()
-  end_qtr: number;
+  end_qtr?: number;
 
   @Column()
-  end_time: string;
+  end_time?: string;
 
   @Column()
   pos_team: string;
