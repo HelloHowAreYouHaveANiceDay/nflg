@@ -4,23 +4,42 @@ import {
   nflPlay
 } from "../entities/NFLSingleGameResponse";
 import { NFLPlay } from "../entities/NFLPlay";
-import { gameIDandGameFromGameResponse, denestWithKey } from "./Utils";
-import R from "ramda";
+import { gameIDandGameFromGameResponse, positionToOffset } from "./Utils";
+import _ from "lodash";
 
 export function NFLPlaysFromSingleGameResponse(
   res: NFLSingleGameResponse
 ): NFLPlay[] {
   const [game_id, game] = gameIDandGameFromGameResponse(res);
 
-  const drives = denestWithKey("drives")("drive_id")(game);
-  const denestPlays = denestWithKey("plays")("play_id");
+  const plays: NFLPlay[] = [];
+  _.forEach(game.drives, (drive: nflDrive, drive_id: string) => {
+    _.forEach(drive.plays, (rawPlay, play_id) => {
+      plays.push(NFLPlayFromRawPlay(game_id)(drive_id)(play_id)(rawPlay));
+    });
+  });
 
-  const rawPlays = R.flatten(drives.map(denestPlays));
-  console.log(drives);
-
-  return drives;
+  return plays;
 }
 
-function playIDAndRawPlaysFromDrive(d: nflDrive): [string, nflPlay][] {
-  return R.toPairs(d.plays);
-}
+const NFLPlayFromRawPlay = (game_id: string) => (drive_id: string) => (
+  play_id: string
+) => (play: nflPlay): NFLPlay => {
+  const p: NFLPlay = {
+    game_id,
+    drive_id,
+    play_id,
+    time: play.time,
+    pos_team: play.posteam,
+    yardline: positionToOffset(play.posteam, play.yrdln),
+    down: play.down,
+    yards_to_go: play.ydstogo,
+    description: play.desc,
+    note: play.note
+  };
+  return p;
+};
+
+// function playIDAndRawPlaysFromDrive(d: nflDrive): [string, nflPlay][] {
+//   return R.toPairs(d.plays);
+// }

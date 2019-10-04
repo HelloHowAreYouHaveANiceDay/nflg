@@ -5,12 +5,12 @@ import {
 } from "../entities/NFLSingleGameResponse";
 import { NFLDrive } from "../entities/NFLDrive";
 import R from "ramda";
-import { gameIDandGameFromGameResponse as gameIDandGameFromSingleGameResponse } from "./Utils";
+import { gameIDandGameFromGameResponse, positionToOffset } from "./Utils";
 
 export function NFLDrivesFromSingleGameResponse(
   res: NFLSingleGameResponse
 ): NFLDrive[] {
-  const [game_id, game] = gameIDandGameFromSingleGameResponse(res);
+  const [game_id, game] = gameIDandGameFromGameResponse(res);
   const rawDrives = game.drives;
 
   const parsedDrives: NFLDrive[] = [];
@@ -50,15 +50,15 @@ const NFLDriveFromRawDrive = (game_id: string) => (drive_id: string) => (
   return parsedDrive;
 };
 
-function positionToOffset(own: string, yrdln: string) {
-  // Uses a varied offset technique than burntsushi/nfldb
-  // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
-  // Don't have to fiddle with embedded names
+// function positionToOffset(own: string, yrdln: string) {
+//   // Uses a varied offset technique than burntsushi/nfldb
+//   // Own -50 -40 -30 -20 -10 0 10 20 30 40 50 Opp
+//   // Don't have to fiddle with embedded names
 
-  // if yrdln is 50 there isn't a team string
-  if (yrdln == "50") {
-    return 0;
-  }
-  const [team, yard] = yrdln.split(" ");
-  return team == own ? +yard - 50 : 50 - +yard;
-}
+//   // if yrdln is 50 there isn't a team string
+//   if (yrdln == "50") {
+//     return 0;
+//   }
+//   const [team, yard] = yrdln.split(" ");
+//   return team == own ? +yard - 50 : 50 - +yard;
+// }

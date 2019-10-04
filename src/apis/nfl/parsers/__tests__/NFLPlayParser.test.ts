@@ -16,6 +16,6 @@ test("plays from single game response", () => {
   const ex = JSON.parse(exampleResponse);
   const plays = NFLPlaysFromSingleGameResponse(ex);
 
-  console.log(plays);
   expect(plays).toBeInstanceOf(Array);
+  expect(plays[0].game_id).toEqual("2019081553");
 });
