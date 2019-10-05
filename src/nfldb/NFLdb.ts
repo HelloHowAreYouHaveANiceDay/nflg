@@ -5,10 +5,10 @@ import {
   createConnections,
   getConnectionManager
 } from "typeorm";
-import GameWrapper from "../apis/nfl/game/GameWrapper";
+import GameWrapper from "../apis/nfl/__archive__/game/GameWrapper";
 import ScheduleWrapper, {
   scheduleWeekArgs
-} from "../apis/nfl/schedule/ScheduleWrapper";
+} from "../apis/nfl/__archive__/schedule/ScheduleWrapper";
 import { Drive } from "../Entities/Drive";
 import { NFLSingleGameResponse } from "../apis/nfl/entities/NFLSingleGameResponse";
 import Play from "../Entities/Play";
@@ -16,13 +16,13 @@ import Player from "../Entities/Player";
 import PlayPlayer from "../Entities/PlayPlayer";
 import { Team, teamLookup } from "../Entities/Team";
 import { Game } from "../Entities/Game";
-import ProfileWrapper from "../apis/nfl/playerProfile/ProfileWrapper";
+import ProfileWrapper from "../apis/nfl/__archive__/playerProfile/ProfileWrapper";
 import EspnPlayer from "../Entities/EspnPlayer";
 import EspnApi, { EspnApiParams } from "../apis/espn/espnApi";
 import EspnFantasyTeam from "../Entities/EspnFantasyTeam";
 import { PlayersMaster } from "../Entities/PlayersMaster";
 import { isEspnNflMatch } from "./Matches";
-import { gameWeekArgs } from "../apis/nfl/schedule/gameWeekArgs";
+import { gameWeekArgs } from "../apis/nfl/__archive__/schedule/gameWeekArgs";
 
 export class NFLdb {
   chunk: 50;

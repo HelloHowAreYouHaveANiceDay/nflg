@@ -39,7 +39,3 @@ const NFLPlayFromRawPlay = (game_id: string) => (drive_id: string) => (
   };
   return p;
 };
-
-// function playIDAndRawPlaysFromDrive(d: nflDrive): [string, nflPlay][] {
-//   return R.toPairs(d.plays);
-// }

@@ -1,13 +1,13 @@
 import jsonCache from "../cache/jsonCache";
 import Player from "../Entities/Player";
-import NFLApi from "../apis/nfl/nflApi";
-import { scheduleGame } from "../apis/nfl/schedule/scheduleGame";
+import NFLApi from "../apis/nfl/__archive__/nflApi";
+import { scheduleGame } from "../apis/nfl/__archive__/schedule/scheduleGame";
 import _ from "lodash";
 import {
   nflApiGame,
   NFLSingleGameResponse
 } from "../apis/nfl/entities/NFLSingleGameResponse";
-import { parseProfile } from "../apis/nfl/playerProfile/parseProfile";
+import { parseProfile } from "../apis/nfl/__archive__/playerProfile/parseProfile";
 // import { getPlayerStats } from "../temp/Game";
 import { gameSearchArgs, Game } from "../Entities/Game";
 

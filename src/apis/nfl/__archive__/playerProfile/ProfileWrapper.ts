@@ -1,5 +1,5 @@
 import { parseProfile } from "./parseProfile";
-import api from "../../api";
+import api from "../../../api";
 
 export default class ProfileWrapper {
   constructor() {}

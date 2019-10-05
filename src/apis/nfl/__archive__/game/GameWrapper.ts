@@ -1,15 +1,15 @@
-import LocalCache from "../../../cache/LocalCache";
-import api from "../../api";
+import LocalCache from "../../../../cache/LocalCache";
+import api from "../../../api";
 import {
   NFLSingleGameResponse,
   nflApiGame,
   nflDrive
-} from "../entities/NFLSingleGameResponse";
-import { Drive } from "../../../Entities/Drive";
+} from "../../entities/NFLSingleGameResponse";
+import { Drive } from "../../../../Entities/Drive";
 import _ from "lodash";
-import Play from "../../../Entities/Play";
-import { statsDict } from "./Stats";
-import PlayPlayer from "../../../Entities/PlayPlayer";
+import Play from "../../../../Entities/Play";
+import { statsDict } from "../../parsers/Stats";
+import PlayPlayer from "../../../../Entities/PlayPlayer";
 
 export default class GameWrapper {
   cache: LocalCache;

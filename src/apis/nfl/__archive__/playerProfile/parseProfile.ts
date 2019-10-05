@@ -1,5 +1,5 @@
 import cheerio from "cheerio";
-import Player from "../../../Entities/Player";
+import Player from "../../../../Entities/Player";
 import { feetInchesToInches, profileIdFromUrl } from "../nflPlayer";
 import { rawPlayerProfile } from "./rawPlayerProfile";
 export function parseProfile(html: string) {

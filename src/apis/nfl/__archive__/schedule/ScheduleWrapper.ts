@@ -1,11 +1,11 @@
 import _ from "lodash";
-import api from "../../api";
+import api from "../../../api";
 import {
   parseScheduleResponse,
   getWeekFromScheduleResponse
 } from "./parseSchedule";
-import LocalCache from "../../../cache/LocalCache";
-import { Game } from "../../../Entities/Game";
+import LocalCache from "../../../../cache/LocalCache";
+import { Game } from "../../../../Entities/Game";
 
 const nflCurrentSchedule = "http://www.nfl.com/liveupdate/scorestrip/ss.xml";
 

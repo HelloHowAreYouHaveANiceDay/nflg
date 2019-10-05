@@ -4,7 +4,7 @@ import {
   NFLSingleGameResponse
 } from "../apis/nfl/entities/NFLSingleGameResponse";
 import Player from "../Entities/Player";
-import ScheduleWrapper from "../apis/nfl/schedule/ScheduleWrapper";
+import ScheduleWrapper from "../apis/nfl/__archive__/schedule/ScheduleWrapper";
 
 export default class jsonCache {
   folderpath: string;

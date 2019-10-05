@@ -11,7 +11,7 @@ export class NFLPlayer {
   player_id: string;
 
   @Column({ nullable: true })
-  team: string;
+  team?: string;
 
   @Column({ nullable: true })
   first_name?: string;
