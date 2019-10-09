@@ -1,4 +1,4 @@
-import ProfileWrapper from "../apis/nfl/__archive__/playerProfile/ProfileWrapper";
+import ProfileWrapper from "../datasources/nfl/__archive__/playerProfile/ProfileWrapper";
 
 // describe("player profile tests", () => {
 //   const playerProfile = new ProfileWrapper();

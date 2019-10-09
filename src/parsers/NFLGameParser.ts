@@ -1,4 +1,4 @@
-import { NFLSingleGameResponse } from "../apis/nfl/entities/NFLSingleGameResponse";
+import { NFLSingleGameResponse } from "../datasources/nfl/entities/NFLSingleGameResponse";
 import { Game } from "../Entities/Game";
 import { Parser } from "./Parser";
 import { Result } from "../core/Result";
